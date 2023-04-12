@@ -1,18 +1,12 @@
 import '@/styles/globals.css';
-
-import { PersistGate } from 'redux-persist/integration/react';
+import { wrapper } from '@/redux/store';
 import { Provider } from 'react-redux';
-import { store, persistor } from '@/redux/store';
 
 export default function App({ Component, pageProps }) {
+  const { store, props } = wrapper.useWrappedStore(pageProps);
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        {/* <ThemeProvider enableSystem attribute="class"> */}
-        <Component {...pageProps} />
-        {/* <ToastContainer className="bottom-0" position="bottom-right" /> */}
-        {/* </ThemeProvider> */}
-      </PersistGate>
+      <Component {...props.pageProps} />
     </Provider>
   );
 }

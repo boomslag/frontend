@@ -2,7 +2,7 @@ import '@/styles/globals.css';
 import '@/styles/toastStyles.css';
 import '@/styles/customVideo.css';
 
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'next-themes';
 
 import { ToastContainer } from 'react-toastify';

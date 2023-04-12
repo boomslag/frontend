@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Head from 'next/head';
 import Layout from '@/hocs/Layout';
 import Header from './components/Header';
@@ -5,13 +8,7 @@ import Badges from './components/Badges';
 import AffiliatesInfo from './components/AffiliatesInfo';
 import Teach from './components/Teach';
 import TeachCTA from './components/TeachCTA';
-import { useCallback } from 'react';
-import FetchCourses from '@/api/courses/List';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import FetchPopularCourseCategories from '@/api/courses/GetPopularCategories';
-import FetchProducts from '@/api/products/List';
-import FetchProductPopularCourseCategories from '@/api/products/GetPopularCategories';
+import { setMetadata } from '@/redux/actions/metadata/metadata';
 
 const SeoList = {
   title: 'Boomslag - The Ultimate NFT Marketplace for Courses & Products',
@@ -31,49 +28,55 @@ const SeoList = {
 };
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const metadata = useSelector((state) => state.metadata.metadata);
+
+  useEffect(() => {
+    dispatch(setMetadata(SeoList));
+  }, [dispatch]);
   return (
     <>
       <Head>
-        <title>{SeoList.title}</title>
-        <meta name="description" content={SeoList.description} />
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
 
-        <meta name="keywords" content={SeoList.keywords} />
-        <link rel="canonical" href={SeoList.href} />
-        <meta name="robots" content={SeoList.robots} />
-        <meta name="author" content={SeoList.author} />
-        <meta name="publisher" content={SeoList.publisher} />
+        <meta name="keywords" content={metadata.keywords} />
+        <link rel="canonical" href={metadata.href} />
+        <meta name="robots" content={metadata.robots} />
+        <meta name="author" content={metadata.author} />
+        <meta name="publisher" content={metadata.publisher} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
 
         {/* Social Media Tags */}
-        <meta property="og:title" content={SeoList.title} />
-        <meta property="og:description" content={SeoList.description} />
-        <meta property="og:url" content={SeoList.url} />
-        <meta property="og:image" content={SeoList.image} />
+        <meta property="og:title" content={metadata.title} />
+        <meta property="og:description" content={metadata.description} />
+        <meta property="og:url" content={metadata.url} />
+        <meta property="og:image" content={metadata.image} />
         <meta property="og:image:width" content="1370" />
         <meta property="og:image:height" content="849" />
-        <meta property="og:image:alt" content={SeoList.image} />
+        <meta property="og:image:alt" content={metadata.image} />
         <meta property="og:type" content="website" />
 
         <meta property="fb:app_id" content="555171873348164" />
 
         {/* Video meta tags */}
-        <meta property="og:video" content={SeoList.video} />
-        <meta property="og:video:url" content={SeoList.video} />
+        <meta property="og:video" content={metadata.video} />
+        <meta property="og:video:url" content={metadata.video} />
         <meta property="og:video:type" content="video/mp4" />
         <meta property="og:video:width" content="1280" />
         <meta property="og:video:height" content="720" />
-        <meta property="og:video:secure_url" content={SeoList.video} />
+        <meta property="og:video:secure_url" content={metadata.video} />
 
         {/* Twitter meta Tags */}
-        <meta name="twitter:title" content={SeoList.title} />
-        <meta name="twitter:description" content={SeoList.description} />
-        <meta name="twitter:image" content={SeoList.image} />
+        <meta name="twitter:title" content={metadata.title} />
+        <meta name="twitter:description" content={metadata.description} />
+        <meta name="twitter:image" content={metadata.image} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content={SeoList.twitterHandle} />
+        <meta name="twitter:site" content={metadata.twitterHandle} />
         <meta name="twitter:player:width" content="1280" />
         <meta name="twitter:player:height" content="720" />
-        <meta name="twitter:player:stream" content={SeoList.video} />
+        <meta name="twitter:player:stream" content={metadata.video} />
       </Head>
       <main className="dark:bg-dark-main">
         <div className="text-gray-700 dark:text-dark-txt space-y-12">

@@ -17,7 +17,6 @@ import products from './products';
 import create from './create';
 import coupons from './coupons';
 import analytics from './analytics';
-import metadata from './metadata';
 
 export default combineReducers({
   alert,
@@ -38,5 +37,4 @@ export default combineReducers({
   create,
   coupons,
   analytics,
-  metadata,
 });

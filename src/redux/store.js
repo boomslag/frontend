@@ -1,41 +1,37 @@
 import { configureStore } from '@reduxjs/toolkit';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer, persistStore } from 'redux-persist';
 import thunk from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
 import rootReducer from './reducers';
 
-const makeStore = () => {
-  const isClient = typeof window !== 'undefined';
-  let store;
-
-  if (isClient) {
-    const storage = require('redux-persist/lib/storage').default;
-    const { persistReducer, persistStore } = require('redux-persist');
-
-    const persistConfig = {
-      key: 'root',
-      storage,
-    };
-
-    const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-    store = configureStore({
-      reducer: persistedReducer,
-      middleware: [thunk],
-      devTools: process.env.NODE_ENV !== 'production',
-    });
-
-    store.__persistor = persistStore(store);
-  } else {
-    store = configureStore({
-      reducer: rootReducer,
-      middleware: [thunk],
-      devTools: process.env.NODE_ENV !== 'production',
-    });
-  }
-
-  return store;
+const persistConfig = {
+  key: 'root',
+  storage,
 };
 
-const wrapper = createWrapper(makeStore, { debug: false });
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const makeStore = () => {
+  const store = configureStore({
+    reducer: persistedReducer,
+    middleware: [thunk],
+    devTools: process.env.NODE_ENV !== 'production',
+  });
+
+  let persistor = persistStore(store);
+  store.__persistor = persistor;
+
+  // Return both the store and persistor
+  return { store };
+};
+
+const wrapper = createWrapper(
+  () => makeStore().store, // Update this line to use the store from the returned object
+  { debug: false },
+);
+
+// Export store and persistor individually
+export const { store } = makeStore();
 
 export { wrapper };

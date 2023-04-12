@@ -1,10 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}',
-    './src/app/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
@@ -41,6 +37,9 @@ module.exports = {
         wiggle: 'wiggle 200ms ease-in-out',
         click: 'click 10000ms ease-in-out',
         card: 'card 10000ms ease-in-out',
+      },
+      maxWidth: {
+        1340: '1340px',
       },
       colors: {
         'dark-main': '#0D1117', // Dark background color for the main areas
@@ -278,6 +277,19 @@ module.exports = {
           700: '#29093E',
           800: '#1D072C',
           900: '#0F0316',
+        },
+
+        'blue-violet': {
+          50: '#EFE2F8',
+          100: '#E0C6F1',
+          200: '#C08DE3',
+          300: '#A153D4',
+          400: '#7E2DB4',
+          500: '#571F7D',
+          600: '#451862',
+          700: '#33124A',
+          800: '#220C31',
+          900: '#110619',
         },
 
         'forest-green': {

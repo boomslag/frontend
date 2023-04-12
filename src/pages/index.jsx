@@ -1,4 +1,22 @@
 import Head from 'next/head';
+import Layout from '@/hocs/Layout';
+import Header from './components/Header';
+import Badges from './components/Badges';
+import AffiliatesInfo from './components/AffiliatesInfo';
+import Teach from './components/Teach';
+import TeachCTA from './components/TeachCTA';
+import { useCallback } from 'react';
+import FetchCourses from '@/api/courses/List';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import FetchPopularCourseCategories from '@/api/courses/GetPopularCategories';
+import CategoryTabs from './components/courses/CategoryTabs';
+import MostViewed from './components/courses/MostViewed';
+import PopularTopics from './components/courses/PopularTopics';
+import FetchProducts from '@/api/products/List';
+import MostViewedProducts from './components/products/MostViewed';
+import FetchProductPopularCourseCategories from '@/api/products/GetPopularCategories';
+import PopularProductCategories from './components/products/PopularTopics';
 
 const SeoList = {
   title: 'Boomslag - The Ultimate NFT Marketplace for Courses & Products',
@@ -18,6 +36,132 @@ const SeoList = {
 };
 
 export default function Home() {
+  const [courses, setCourses] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [count, setCount] = useState([]);
+  const [pageSize, setPageSize] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPageSize, setMaxPageSize] = useState(100);
+  const [filterBy, setFilterBy] = useState(null);
+  const [filterByAuthor, setFilterByAuthor] = useState(null);
+  const [searchBy, setSearchBy] = useState('');
+  const [filterByCategory, setFilterByCategory] = useState(null);
+  const [filterByBusinessActivity, setFilterByBusinessActivity] = useState(null);
+  const [filterByType, setFilterByType] = useState(null);
+  const [orderBy, setOrderBy] = useState('-published');
+
+  const fetchCourses = useCallback(
+    async (page, searchBy) => {
+      setLoading(true);
+      try {
+        const res = await FetchCourses(
+          page,
+          pageSize,
+          maxPageSize,
+          filterBy,
+          orderBy,
+          filterByAuthor,
+          filterByCategory,
+          filterByBusinessActivity,
+          filterByType,
+          searchBy,
+        );
+        if (res.data) {
+          setCount(res.data.count);
+          setCourses(res.data.results);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      pageSize,
+      maxPageSize,
+      filterBy,
+      orderBy,
+      filterByAuthor,
+      filterByCategory,
+      filterByBusinessActivity,
+      filterByType,
+    ],
+  );
+
+  useEffect(() => {
+    fetchCourses(currentPage, '');
+  }, [fetchCourses]);
+
+  const fetchProducts = useCallback(
+    async (page, searchBy) => {
+      setLoading(true);
+      try {
+        const res = await FetchProducts(
+          page,
+          pageSize,
+          maxPageSize,
+          filterBy,
+          orderBy,
+          filterByAuthor,
+          filterByCategory,
+          filterByBusinessActivity,
+          filterByType,
+          searchBy,
+        );
+        if (res.data) {
+          setCount(res.data.count);
+          setProducts(res.data.results);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      pageSize,
+      maxPageSize,
+      filterBy,
+      orderBy,
+      filterByAuthor,
+      filterByCategory,
+      filterByBusinessActivity,
+      filterByType,
+    ],
+  );
+
+  useEffect(() => {
+    fetchProducts(currentPage, '');
+  }, [fetchProducts, currentPage]);
+
+  // Fetch Categories
+  const [categories, setCategories] = useState(null);
+  const fetchPopularCategories = useCallback(async () => {
+    const res = await FetchPopularCourseCategories();
+    if (res.status === 200) {
+      setCategories(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPopularCategories();
+  }, [fetchPopularCategories]);
+  // Fetch Product Categories
+  const [productCategories, setProductCategories] = useState(null);
+  const fetchProductCategories = useCallback(async () => {
+    const res = await FetchProductPopularCourseCategories();
+    if (res.status === 200) {
+      setProductCategories(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProductCategories();
+  }, [fetchProductCategories]);
+
   return (
     <>
       <Head>
@@ -62,7 +206,24 @@ export default function Home() {
         <meta name="twitter:player:height" content="720" />
         <meta name="twitter:player:stream" content={SeoList.video} />
       </Head>
-      <p>Home</p>
+      <main className="dark:bg-dark-main">
+        <div className="text-gray-700 dark:text-dark-txt space-y-12">
+          <Header />
+          <Badges />
+          <CategoryTabs categories={categories} />
+          <MostViewed courses={courses} />
+          <MostViewedProducts products={products} />
+          <PopularTopics categories={categories} />
+          <PopularProductCategories categories={productCategories} />
+          <AffiliatesInfo />
+          <Teach />
+          <TeachCTA />
+        </div>
+      </main>
     </>
   );
 }
+
+Home.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};

@@ -28,8 +28,8 @@ export default function Layout({ children }) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(refresh());
-      dispatch(checkAuthenticated());
+      // dispatch(refresh());
+      // dispatch(checkAuthenticated());
       dispatch(loadUser());
       // dispatch(loadUserProfile());
       // dispatch(loadUserWallet()).then(() => {

@@ -14,6 +14,7 @@ import AnimatedTippy from '@/components/tooltip';
 import AuthLinks from '../Auth';
 import GuestLinks from '../Guest';
 import { useSelector } from 'react-redux';
+import NavSearchbar from '../Search/NavSearchbar';
 
 export default function DesktopNavbar() {
   const router = useRouter();
@@ -38,7 +39,9 @@ export default function DesktopNavbar() {
             Market
           </Link>
         </NavbarLink>
-        <SearchContainer>Search Bar</SearchContainer>
+        <SearchContainer>
+          <NavSearchbar />
+        </SearchContainer>
         <RightMenuContainer>
           <NavbarLink>
             <Link

@@ -40,11 +40,13 @@ import {
   GET_USER_FAIL,
   GET_USER_CONTACTS_SUCCESS,
   GET_USER_CONTACTS_FAIL,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAIL,
+  RESET_REGISTER_SUCCESS,
 } from './types';
 
 import PraediumToken from '@/contracts/PraediumToken.sol/PraediumToken.json';
 import GalacticReserveToken from '@/contracts/GalacticReserveToken.sol/GalacticReserveToken.json';
-import { synchCart } from '../cart/cart';
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.NEXT_PUBLIC_APP_RPC_ETH_PROVIDER),
@@ -53,39 +55,28 @@ const polygonWeb3 = new Web3(
   new Web3.providers.HttpProvider(process.env.NEXT_PUBLIC_APP_RPC_POLYGON_PROVIDER),
 );
 
-export const loadUser = (currentState) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    if (currentState && currentState.user) {
-      // If the user is already in the state, don't make an API call
-      return;
-    }
-
-    const config = {
+export const loadUser = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/auth/user', {
+      method: 'GET',
       headers: {
-        Authorization: `JWT ${localStorage.getItem('access')}`,
         Accept: 'application/json',
       },
-    };
+    });
 
-    try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_APP_API_URL}/auth/users/me/`, config);
+    const data = await res.json();
 
-      if (res.status === 200) {
-        dispatch({
-          type: USER_LOADED_SUCCESS,
-          payload: res.data,
-        });
-      } else {
-        dispatch({
-          type: USER_LOADED_FAIL,
-        });
-      }
-    } catch (err) {
+    if (res.status === 200) {
+      dispatch({
+        type: USER_LOADED_SUCCESS,
+        payload: data.user,
+      });
+    } else {
       dispatch({
         type: USER_LOADED_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: USER_LOADED_FAIL,
     });
@@ -129,6 +120,29 @@ export const getUser = (username) => async (dispatch) => {
   }
 };
 
+// export const testCache = () => async () => {
+//   try {
+//     const config = {
+//       headers: {
+//         Accept: 'application/json',
+//       },
+//     };
+
+//     const res = await axios.get(
+//       `${process.env.NEXT_PUBLIC_APP_API_URL}/api/users/test_cache/`,
+//       config,
+//     );
+
+//     if (res.status === 200) {
+//       console.log(res.data.results);
+//     } else {
+//       console.log('Fetch Test Cache Failed');
+//     }
+//   } catch (err) {
+//     console.log('Fetch Test Cache Failed');
+//   }
+// };
+
 export const getUserDelivery = () => async (dispatch) => {
   if (localStorage.getItem('access')) {
     try {
@@ -163,36 +177,26 @@ export const getUserDelivery = () => async (dispatch) => {
 };
 
 export const loadUserProfile = () => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    const config = {
+  try {
+    const res = await fetch('/api/auth/user_profile', {
+      method: 'GET',
       headers: {
-        Authorization: `JWT ${localStorage.getItem('access')}`,
         Accept: 'application/json',
       },
-    };
+    });
 
-    try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/my_profile`,
-        config,
-      );
-
-      if (res.status === 200) {
-        dispatch({
-          type: MY_USER_PROFILE_LOADED_SUCCESS,
-          payload: res.data.profile,
-        });
-      } else {
-        dispatch({
-          type: MY_USER_PROFILE_LOADED_FAIL,
-        });
-      }
-    } catch (err) {
+    const data = await res.json();
+    if (res.status === 200) {
+      dispatch({
+        type: MY_USER_PROFILE_LOADED_SUCCESS,
+        payload: data.profile,
+      });
+    } else {
       dispatch({
         type: MY_USER_PROFILE_LOADED_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: MY_USER_PROFILE_LOADED_FAIL,
     });
@@ -237,36 +241,26 @@ export const loadUserContacts = () => async (dispatch) => {
 };
 
 export const loadUserWallet = () => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    const config = {
+  try {
+    const res = await fetch('/api/auth/user_wallet', {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
-        Authorization: `JWT ${localStorage.getItem('access')}`,
       },
-    };
+    });
 
-    try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/wallets/my_wallet`,
-        config,
-      );
-
-      if (res.status === 200) {
-        dispatch({
-          type: MY_USER_WALLET_LOADED_SUCCESS,
-          payload: res.data.results,
-        });
-      } else {
-        dispatch({
-          type: MY_USER_WALLET_LOADED_FAIL,
-        });
-      }
-    } catch (err) {
+    const data = await res.json();
+    if (res.status === 200) {
+      dispatch({
+        type: MY_USER_WALLET_LOADED_SUCCESS,
+        payload: data.wallet,
+      });
+    } else {
       dispatch({
         type: MY_USER_WALLET_LOADED_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: MY_USER_WALLET_LOADED_FAIL,
     });
@@ -363,7 +357,7 @@ export const loadMaticPolygonBalance = (address) => async (dispatch) => {
   }
 };
 
-export const loadWalletAndBalances = () => async (dispatch, getState) => {
+export const loadWalletAndBalances = () => async (dispatch) => {
   const wallet = await dispatch(loadUserWallet());
   if (wallet) {
     const { address, polygon_address } = wallet;
@@ -375,51 +369,38 @@ export const loadWalletAndBalances = () => async (dispatch, getState) => {
 };
 
 export const login = (email, password) => async (dispatch) => {
-  dispatch({
-    type: SET_AUTH_LOADING,
-  });
-
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
   const body = JSON.stringify({
     email,
     password,
   });
 
+  dispatch({
+    type: SET_AUTH_LOADING,
+  });
+
   try {
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_API_URL}/user/jwt/create/`,
+    const res = await fetch(`/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body,
-      config,
-    );
+    });
 
     if (res.status === 200) {
-      dispatch({
+      await dispatch({
         type: LOGIN_SUCCESS,
-        payload: res.data,
       });
-
-      dispatch(loadUser());
-      dispatch(loadUserProfile());
-      dispatch(loadUserWallet());
-      dispatch(loadUserContacts());
-
-      dispatch({
-        type: REMOVE_AUTH_LOADING,
-      });
-      dispatch(synchCart());
-      // dispatch(get_wishlist_items());
-      // dispatch(get_wishlist_item_total());
+      await dispatch(loadUser());
+      await dispatch(loadUserProfile());
+      await dispatch(loadUserWallet());
+      // await dispatch(load_ethereum_balance());
+      // await dispatch(get_user_delivery());
+      // await dispatch(get_notifications());
+      // await dispatch(get_items());
     } else {
       dispatch({
         type: LOGIN_FAIL,
-      });
-      dispatch({
-        type: REMOVE_AUTH_LOADING,
       });
       ToastError('Error con el servidor');
     }
@@ -427,152 +408,119 @@ export const login = (email, password) => async (dispatch) => {
     dispatch({
       type: LOGIN_FAIL,
     });
-    dispatch({
-      type: REMOVE_AUTH_LOADING,
-    });
     ToastError('Error, Correo o Contraseña incorrecto.');
   }
+
+  dispatch({
+    type: REMOVE_AUTH_LOADING,
+  });
 };
 
 export const register =
-  (email, username, agreed, firstName, lastName, password, rePassword) => async (dispatch) => {
+  (first_name, last_name, email, username, password, re_password, agreed) => async (dispatch) => {
+    const body = JSON.stringify({
+      first_name,
+      last_name,
+      email,
+      username,
+      password,
+      re_password,
+      agreed,
+    });
+
     dispatch({
       type: SET_AUTH_LOADING,
     });
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    const body = JSON.stringify({
-      email,
-      username,
-      agreed,
-      first_name: firstName,
-      last_name: lastName,
-      password,
-      re_password: rePassword,
-    });
-
     try {
-      //   // eslint-disable-next-line no-console
-      //   console.log(body);
-
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/auth/users/`,
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
         body,
-        config,
-      );
+      });
 
       if (res.status === 201) {
         dispatch({
           type: SIGNUP_SUCCESS,
-          payload: res.data,
         });
-        ToastSuccess('We have sent you a confirmation email. Check all your inboxes.');
+        dispatch(
+          ToastSuccess('We have sent you an email, please click the link to verify your account.'),
+        );
       } else {
         dispatch({
           type: SIGNUP_FAIL,
         });
-        dispatch({
-          type: REMOVE_AUTH_LOADING,
-        });
-        ToastError('Error con el servidor', 'error');
+        ToastError('Error con el servidor');
       }
-
-      dispatch({
-        type: REMOVE_AUTH_LOADING,
-      });
     } catch (err) {
       dispatch({
         type: SIGNUP_FAIL,
       });
-      dispatch({
-        type: REMOVE_AUTH_LOADING,
-      });
       ToastError(err.request.response);
     }
+
+    dispatch({
+      type: REMOVE_AUTH_LOADING,
+    });
   };
 
-export const checkAuthenticated = () => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    const config = {
+export const checkAuthStatus = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/auth/verify', {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
-    };
-
-    const body = JSON.stringify({
-      token: localStorage.getItem('access'),
     });
 
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/auth/jwt/verify/`,
-        body,
-        config,
-      );
-
-      if (res.status === 200) {
-        dispatch({
-          type: AUTHENTICATED_SUCCESS,
-        });
-      } else {
-        dispatch({
-          type: AUTHENTICATED_FAIL,
-        });
-      }
-    } catch (err) {
+    if (res.status === 200) {
+      dispatch({
+        type: AUTHENTICATED_SUCCESS,
+      });
+      dispatch(loadUser());
+      // dispatch(load_user_profile());
+      // dispatch(load_user_wallet());
+      // dispatch(load_ethereum_balance());
+      // dispatch(get_user_delivery());
+      // dispatch(get_notifications());
+      // dispatch(get_total());
+      // dispatch(get_items());
+      // dispatch(get_item_total());
+    } else {
       dispatch({
         type: AUTHENTICATED_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: AUTHENTICATED_FAIL,
     });
   }
 };
 
-export const refresh = () => async (dispatch) => {
-  if (localStorage.getItem('refresh')) {
-    const config = {
+export const refreshJWTToken = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/auth/refresh', {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
-    };
-
-    const body = JSON.stringify({
-      refresh: localStorage.getItem('refresh'),
     });
 
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/auth/jwt/refresh/`,
-        body,
-        config,
-      );
-
-      if (res.status === 200) {
-        dispatch({
-          type: REFRESH_SUCCESS,
-          payload: res.data,
-        });
-      } else {
-        dispatch({
-          type: REFRESH_FAIL,
-        });
-      }
-    } catch (err) {
+    if (res.status === 200) {
+      dispatch({
+        type: REFRESH_SUCCESS,
+      });
+      dispatch(checkAuthStatus());
+    } else {
       dispatch({
         type: REFRESH_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: REFRESH_FAIL,
     });
@@ -626,6 +574,15 @@ export const activate = (uid, token) => async (dispatch) => {
     });
     ToastError(err.request.response);
   }
+};
+
+export const resetRegisterSuccess = () => (dispatch) => {
+  dispatch({
+    type: RESET_REGISTER_SUCCESS,
+  });
+  dispatch({
+    type: REMOVE_AUTH_LOADING,
+  });
 };
 
 export const resetPassword = (email) => async (dispatch) => {
@@ -787,8 +744,28 @@ export const resetPasswordConfirm =
     }
   };
 
-export const logout = () => (dispatch) => {
-  dispatch({
-    type: LOGOUT,
-  });
+export const logout = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (res.status === 200) {
+      dispatch({
+        type: LOGOUT_SUCCESS,
+      });
+      // localStorage.removeItem('persist:root', accounts[0]);
+    } else {
+      dispatch({
+        type: LOGOUT_FAIL,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: LOGOUT_FAIL,
+    });
+  }
 };

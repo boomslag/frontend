@@ -4,6 +4,7 @@ import Link from 'next/link';
 import ScrollToTop from './components/ScrollToTop';
 import Footer from '@/features/footer';
 import Navbar from '@/features/navbar';
+import useTokenRefresh from '@/hooks/useTokenRefresh';
 
 export default function Layout({ children }) {
   const [cookiesAccepted, setCookiesAccepted] = useState(true);
@@ -23,6 +24,8 @@ export default function Layout({ children }) {
     Cookies.set('gdpr', 'rejected', { expires: 365 });
     setCookiesAccepted(false);
   };
+
+  useTokenRefresh();
 
   return (
     <>

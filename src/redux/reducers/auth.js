@@ -1,5 +1,4 @@
 /* eslint-disable default-param-last */
-import cookie from 'cookie';
 import {
   SIGNUP_SUCCESS,
   SIGNUP_FAIL,
@@ -49,9 +48,9 @@ const initialState = {
   access: null,
   isAuthenticated: false,
   loading: false,
-  user_loading: true,
-  profile_loading: true,
-  wallet_loading: true,
+  user_loading: false,
+  profile_loading: false,
+  wallet_loading: false,
   register_success: false,
   profile: null,
   wallet: null,
@@ -59,9 +58,9 @@ const initialState = {
   matic_balance: null,
   pdm_balance: null,
   galr_balance: null,
-  eth_balance_loading: true,
+  eth_balance_loading: false,
   get_user: null,
-  get_user_loading: true,
+  get_user_loading: false,
   delivery_address: null,
   sellerContacts: [],
   instructorContacts: [],
@@ -101,14 +100,9 @@ const authReducer = (state = initialState, action) => {
         register_success: false,
       };
     case LOGIN_SUCCESS:
-      localStorage.setItem('access', payload.access);
-      localStorage.setItem('refresh', payload.refresh);
-      setAccessTokenCookie(payload.access);
       return {
         ...state,
         isAuthenticated: true,
-        access: localStorage.getItem('access'),
-        refresh: localStorage.getItem('refresh'),
       };
     case LOGIN_FAIL:
       return {
@@ -242,14 +236,10 @@ const authReducer = (state = initialState, action) => {
         isAuthenticated: true,
       };
     case AUTHENTICATED_FAIL:
-      localStorage.removeItem('access');
-      localStorage.removeItem('refresh');
-      removeAccessTokenCookie();
       return {
         ...state,
         isAuthenticated: false,
-        access: null,
-        refresh: null,
+        user: null,
       };
 
     case REFRESH_SUCCESS:
@@ -275,7 +265,6 @@ const authReducer = (state = initialState, action) => {
         ...state,
       };
     case LOGOUT_SUCCESS:
-      removeAccessTokenCookie();
       return {
         ...state,
         isAuthenticated: false,

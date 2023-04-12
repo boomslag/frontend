@@ -19,6 +19,7 @@ import LogoImg from '@/components/LogoImg';
 import GlobeButton from '@/components/GlobeButton';
 import DarkModeButton from '@/components/DarkModeButton.jsx';
 import CartComponent from '../Cart/CartComponent';
+import NavSearchbar from '../Search/NavSearchbar';
 
 export default function MobileNavbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,7 +39,7 @@ export default function MobileNavbar() {
                 ${searchNav ? 'flex' : 'hidden'}
                 fixed z-30 w-full bg-white py-[14px] px-2 shadow-navbar dark:bg-dark-main md:hidden`}
       >
-        SEARCH
+        <NavSearchbar />
         <button
           type="button"
           className="ml-2 mr-1"

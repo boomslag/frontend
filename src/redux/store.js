@@ -16,13 +16,14 @@ const makeStore = () => {
   const store = configureStore({
     reducer: persistedReducer,
     middleware: [thunk],
+    devTools: process.env.NODE_ENV !== 'production',
   });
 
   let persistor = persistStore(store);
   store.__persistor = persistor;
 
   // Return both the store and persistor
-  return { store, persistor };
+  return { store };
 };
 
 const wrapper = createWrapper(
@@ -31,6 +32,6 @@ const wrapper = createWrapper(
 );
 
 // Export store and persistor individually
-export const { store, persistor } = makeStore();
+export const { store } = makeStore();
 
 export { wrapper };

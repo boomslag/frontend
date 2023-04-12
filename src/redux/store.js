@@ -20,9 +20,17 @@ const makeStore = () => {
 
   let persistor = persistStore(store);
   store.__persistor = persistor;
-  return store;
+
+  // Return both the store and persistor
+  return { store, persistor };
 };
 
-const wrapper = createWrapper(makeStore, { debug: false });
+const wrapper = createWrapper(
+  () => makeStore().store, // Update this line to use the store from the returned object
+  { debug: false },
+);
+
+// Export store and persistor individually
+export const { store, persistor } = makeStore();
 
 export { wrapper };

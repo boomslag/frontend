@@ -11,7 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import NProgress from 'nprogress';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { wrapper } from '@/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { wrapper, persistor } from '@/redux/store';
 
 NProgress.configure({ showSpinner: false });
 
@@ -29,10 +30,12 @@ export default function App({ Component, pageProps }) {
   const { store, props } = wrapper.useWrappedStore(pageProps);
   return (
     <Provider store={store}>
-      <ThemeProvider enableSystem attribute="class">
-        {getLayout(<Component {...props} />)}
-        <ToastContainer className="bottom-0" position="bottom-right" />
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider enableSystem attribute="class">
+          {getLayout(<Component {...props} />)}
+          <ToastContainer className="bottom-0" position="bottom-right" />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   );
 }

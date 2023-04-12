@@ -46,6 +46,7 @@ export default function Home() {
 
         {/* Video meta tags */}
         <meta property="og:video" content={SeoList.video} />
+        <meta property="og:video:url" content={SeoList.video} />
         <meta property="og:video:type" content="video/mp4" />
         <meta property="og:video:width" content="1280" />
         <meta property="og:video:height" content="720" />
@@ -57,6 +58,9 @@ export default function Home() {
         <meta name="twitter:image" content={SeoList.image} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content={SeoList.twitterHandle} />
+        <meta name="twitter:player:width" content="1280" />
+        <meta name="twitter:player:height" content="720" />
+        <meta name="twitter:player:stream" content={SeoList.video} />
       </Head>
       <p>Home</p>
     </>

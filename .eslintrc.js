@@ -37,6 +37,7 @@ module.exports = {
     'react/button-has-type': 'off',
     'jsx-a11y/media-has-caption': 'off',
     'arrow-body-style': 'off',
+    'import/no-extraneous-dependencies': 'off',
     // 'import/extensions': [
     //   'error',
     //   'ignorePackages',

@@ -53,8 +53,13 @@ const polygonWeb3 = new Web3(
   new Web3.providers.HttpProvider(process.env.NEXT_PUBLIC_APP_RPC_POLYGON_PROVIDER),
 );
 
-export const loadUser = () => async (dispatch) => {
+export const loadUser = (currentState) => async (dispatch) => {
   if (localStorage.getItem('access')) {
+    if (currentState && currentState.user) {
+      // If the user is already in the state, don't make an API call
+      return;
+    }
+
     const config = {
       headers: {
         Authorization: `JWT ${localStorage.getItem('access')}`,

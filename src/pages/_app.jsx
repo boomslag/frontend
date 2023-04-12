@@ -30,12 +30,10 @@ export default function App({ Component, pageProps }) {
   const { store, props } = wrapper.useWrappedStore(pageProps);
   return (
     <Provider store={store}>
-      <PersistGate persistor={store.__persistor} loading={<div>Loading</div>}>
-        <ThemeProvider enableSystem attribute="class">
-          {getLayout(<Component {...props} />)}
-          <ToastContainer className="bottom-0" position="bottom-right" />
-        </ThemeProvider>
-      </PersistGate>
+      <ThemeProvider enableSystem attribute="class">
+        {getLayout(<Component {...props} />)}
+        <ToastContainer className="bottom-0" position="bottom-right" />
+      </ThemeProvider>
     </Provider>
   );
 }

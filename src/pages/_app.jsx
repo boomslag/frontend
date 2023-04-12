@@ -28,12 +28,15 @@ export default function App({ Component, pageProps }) {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page);
   const { store, props } = wrapper.useWrappedStore(pageProps);
+
   return (
     <Provider store={store}>
-      <ThemeProvider enableSystem attribute="class">
-        {getLayout(<Component {...props} />)}
-        <ToastContainer className="bottom-0" position="bottom-right" />
-      </ThemeProvider>
+      <PersistGate persistor={store.__persistor} loading={null}>
+        <ThemeProvider enableSystem attribute="class">
+          {getLayout(<Component {...props} />)}
+          <ToastContainer className="bottom-0" position="bottom-right" />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   );
 }

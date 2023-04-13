@@ -11,6 +11,8 @@ import { ToastSuccess } from '@/components/ToastSuccess';
 import AnimatedTippy from '@/components/tooltip';
 import CartComponent from '../Cart/CartComponent';
 import UserDropDownMenu from './UserDropDownMenu';
+import MenuDropdown from './MenuDropdown';
+import Notifications from './Notifications';
 
 export default function AuthLinks() {
   const dispatch = useDispatch();
@@ -61,6 +63,7 @@ export default function AuthLinks() {
   ];
   return (
     <ul className="ml-1 flex space-x-4">
+      <MenuDropdown />
       <AnimatedTippy
         offsetY={20}
         content={
@@ -208,6 +211,7 @@ export default function AuthLinks() {
         </li>
       </AnimatedTippy>
       <CartComponent />
+      <Notifications />
       <li className="overflow:hidden relative inline-flex">
         {userLoading ? (
           <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
@@ -221,8 +225,6 @@ export default function AuthLinks() {
             myProfile={myProfile && myProfile}
             logoutHandler={logoutHandler}
           />
-          // <ProfileDropdown myProfile={myProfile} />
-          // <PopoverDropdown myUser={myUser} myProfile={myProfile} logoutHandler={logoutHandler} />
         )}
       </li>
       <DarkModeButton />

@@ -20,9 +20,15 @@ import GlobeButton from '@/components/GlobeButton';
 import DarkModeButton from '@/components/DarkModeButton.jsx';
 import CartComponent from '../Cart/CartComponent';
 import NavSearchbar from '../Search/NavSearchbar';
+import CartComponentButton from './CartComponent';
+import { useSelector } from 'react-redux';
+import AuthLinkNavigation from './AuthLinkNavigation';
+import GuestLinkNavigation from './GuestLinkNavigation';
 
 export default function MobileNavbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const myUser = useSelector((state) => state.auth.user);
+  const myProfile = useSelector((state) => state.auth.profile);
 
   const [searchNav, setSearchNav] = useState(false);
   const [openPanel, setOpenPanel] = useState(false);
@@ -96,7 +102,7 @@ export default function MobileNavbar() {
                                 <DialogContainer>
                                   {isAuthenticated ? (
                                     <ul className="px-2 flex space-x-2">
-                                      CART
+                                      {/* <CartComponentButton /> */}
                                       <Link
                                         href="/wallet"
                                         onMouseDown={() => {
@@ -202,7 +208,17 @@ export default function MobileNavbar() {
                                   </button>
                                 </DialogContainer>
                               </TopPanel>
-                              <BottomPanel>USER MENU</BottomPanel>
+                              <BottomPanel>
+                                {isAuthenticated ? (
+                                  <AuthLinkNavigation
+                                    isAuthenticated={isAuthenticated}
+                                    myProfile={myProfile}
+                                    myUser={myUser}
+                                  />
+                                ) : (
+                                  <GuestLinkNavigation />
+                                )}
+                              </BottomPanel>
                             </div>
                           </Dialog.Panel>
                         </Transition.Child>

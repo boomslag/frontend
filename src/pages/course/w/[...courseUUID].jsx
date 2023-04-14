@@ -61,12 +61,11 @@ import UpdateReview from '@/api/courses/UpdateReview';
 import WatchList from './components/WatchList';
 import AboutCourseSec from './components/AboutCourseSec';
 import QuestionsSec from './components/QuestionsSec';
-import DarkModeSwitch from './components/DarkMode';
 import ReviewsSec from './components/ReviewsSec';
 import { useSelector } from 'react-redux';
-import DarkModeButton from '@/features/navbar/DarkModeButton.jsx';
 import Button from '@/components/Button';
 import { useRouter } from 'next/router';
+import DarkModeButton from '@/components/DarkModeButton.jsx';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ToastError } from '../components/ToastError';
+import { ToastError } from '../components/toast/ToastError';
 
 export default async function PolygonPayment(userID, address, cartItems, deliveryAddress, agreed) {
   const controller = new AbortController();

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ToastError } from '../../../../components/ToastError';
+import { ToastError } from '../../../../components/toast/ToastError';
 
 export default async function CreateCoupon(name, uses, price, percentage, type, object) {
   const controller = new AbortController();

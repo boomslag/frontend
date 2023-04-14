@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-export default async function ListTokenBalances(tokens) {
-  // const controller = new AbortController();
-  // const abortSignal = controller.signal;
-
+export default async function ListTokenBalances(tokens, address) {
   try {
     const access = localStorage.getItem('access');
     const config = {
@@ -16,6 +13,7 @@ export default async function ListTokenBalances(tokens) {
 
     const body = JSON.stringify({
       tokens,
+      address,
     });
 
     const res = await axios.post(

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ToastSuccess } from '@/components/ToastSuccess';
-import { ToastError } from '../../../components/ToastError';
+import { ToastError } from '../../../components/toast/ToastError';
 import {
   GET_PRODUCT_SUCCESS,
   GET_PRODUCT_FAIL,

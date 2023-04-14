@@ -12,6 +12,13 @@ import {
   GET_POLYGON_TOKENS_SUCCESS,
   GET_TOKENS_FAIL,
   GET_TOKENS_SUCCESS,
+  GET_TOKENS_COUNT_SUCCESS,
+  GET_TOKENS_COUNT_FAIL,
+  GET_POLYGON_TOKENS_COUNT_SUCCESS,
+  GET_POLYGON_TOKENS_COUNT_FAIL,
+  SEND_TOKENS_SUCCESS,
+  SEND_TOKENS_FAIL,
+  SET_SENDING_TOKENS,
 } from './types';
 
 export const cryptoPay = (userID, address, cartItems) => async (dispatch) => {
@@ -68,6 +75,132 @@ export const getTokens = (tokens) => async (dispatch) => {
     payload: tokens,
   });
 };
+
+export const resetSendTokens = () => async (dispatch) => {
+  dispatch({
+    type: SET_SENDING_TOKENS,
+    payload: false,
+  });
+};
+
+export const sendTokens =
+  (fromAccount, toAccount, amount, token, speed, gasLimit) => async (dispatch) => {
+    try {
+      dispatch({
+        type: SET_SENDING_TOKENS,
+        payload: true,
+      });
+      const response = await fetch('/api/tokens/sendTokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromAccount,
+          toAccount,
+          amount,
+          token,
+          speed,
+          gasLimit,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({
+          type: SEND_TOKENS_SUCCESS,
+          payload: data.results,
+        });
+      } else {
+        // const errorData = await response.json();
+        dispatch({
+          type: SEND_TOKENS_FAIL,
+          // payload: errorData.error,
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: SEND_TOKENS_FAIL,
+        payload: 'Something went wrong while sending tokens',
+      });
+    }
+  };
+
+export const sendTokensPolygon =
+  (fromAccount, toAccount, amount, token, speed, gasLimit) => async (dispatch) => {
+    try {
+      dispatch({
+        type: SET_SENDING_TOKENS,
+        payload: true,
+      });
+      const response = await fetch('/api/tokens/sendTokensPolygon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromAccount,
+          toAccount,
+          amount,
+          token,
+          speed,
+          gasLimit,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({
+          type: SEND_TOKENS_SUCCESS,
+          payload: data.results,
+        });
+      } else {
+        // const errorData = await response.json();
+        dispatch({
+          type: SEND_TOKENS_FAIL,
+          // payload: errorData.error,
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: SEND_TOKENS_FAIL,
+        payload: 'Something went wrong while sending tokens',
+      });
+    }
+  };
+export const listTokens =
+  (page, pageSize, maxPageSize, search, name, symbol, address, decimals, walletAddress) =>
+  async (dispatch) => {
+    try {
+      const res = await fetch(
+        `/api/tokens/getTokens?page=${page}&pageSize=${pageSize}&maxPageSize=${maxPageSize}&search=${search}&name=${name}&symbol=${symbol}&address=${address}&decimals=${decimals}&wallet=${walletAddress}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+        },
+      );
+      const data = await res.json();
+      if (res.status === 200) {
+        dispatch({
+          type: GET_TOKENS_SUCCESS,
+          payload: data.data.results,
+        });
+        dispatch({
+          type: GET_TOKENS_COUNT_SUCCESS,
+          payload: data.data.count,
+        });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      dispatch({
+        type: GET_TOKENS_FAIL,
+        payload: err.message,
+      });
+    }
+  };
 
 export const getPolygonTokens = (tokens) => async (dispatch) => {
   dispatch({

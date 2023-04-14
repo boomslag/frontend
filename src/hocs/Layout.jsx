@@ -5,6 +5,13 @@ import ScrollToTop from './components/ScrollToTop';
 import Footer from '@/features/footer';
 import Navbar from '@/features/navbar';
 import useTokenRefresh from '@/hooks/useTokenRefresh';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  loadEthereumBalance,
+  loadMaticPolygonBalance,
+  loadPraediumBalance,
+  loadUriBalance,
+} from '@/redux/actions/auth/auth';
 
 export default function Layout({ children }) {
   const [cookiesAccepted, setCookiesAccepted] = useState(true);
@@ -25,7 +32,7 @@ export default function Layout({ children }) {
     setCookiesAccepted(false);
   };
 
-  useTokenRefresh();
+  // useTokenRefresh();
 
   return (
     <>

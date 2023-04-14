@@ -255,8 +255,8 @@ export default function NavSearchbar() {
     setLoading(true);
     setNoData(false);
 
-    // await fetchCourses(currentPage, searchQuery);
-    // await fetchProducts(currentPage, searchQuery);
+    await fetchCourses(currentPage, searchQuery);
+    await fetchProducts(currentPage, searchQuery);
 
     setLoading(false);
     setNoData(data.length === 0);

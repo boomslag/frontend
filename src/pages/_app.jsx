@@ -9,20 +9,38 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import NProgress from 'nprogress';
-import { useRouter } from 'next/router';
+import 'nprogress/nprogress.css';
+
+import Router from 'next/router';
 import { useEffect } from 'react';
 import { wrapper } from '@/redux/store';
 
 NProgress.configure({ showSpinner: false });
 
 export default function App({ Component, pageProps }) {
-  const router = useRouter();
-
   useEffect(() => {
-    router.events.on('routeChangeStart', () => NProgress.start());
-    router.events.on('routeChangeComplete', () => NProgress.done());
-    router.events.on('routeChangeError', () => NProgress.done());
-  });
+    const handleRouteChangeStart = () => {
+      NProgress.start();
+    };
+
+    const handleRouteChangeComplete = () => {
+      NProgress.done();
+    };
+
+    const handleRouteChangeError = () => {
+      NProgress.done();
+    };
+
+    Router.events.on('routeChangeStart', handleRouteChangeStart);
+    Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    Router.events.on('routeChangeError', handleRouteChangeError);
+
+    return () => {
+      Router.events.off('routeChangeStart', handleRouteChangeStart);
+      Router.events.off('routeChangeComplete', handleRouteChangeComplete);
+      Router.events.off('routeChangeError', handleRouteChangeError);
+    };
+  }, []);
 
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page);

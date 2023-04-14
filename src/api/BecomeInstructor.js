@@ -1,12 +1,14 @@
 import axios from 'axios';
-import { ToastSuccess } from '../components/ToastSuccess';
+import Cookies from 'js-cookie';
 
-export default async function UpdateAnalytics(userID) {
+import { ToastSuccess } from '../components/toast/ToastSuccess';
+
+export default async function BecomeInstructor(userID) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
+    const access = Cookies.get('access');
     const config = {
       headers: {
         'Content-Type': 'application/json',

@@ -1,11 +1,6 @@
 import React from 'react';
 import Tippy from '@tippyjs/react/headless';
-import styled from 'styled-components';
 import { useSpring, motion } from 'framer-motion';
-
-const Box = styled(motion.div)`
-  w-auto bg-white  leading-6 shadow-lg rounded-lg
-`;
 
 function AnimatedTippy({ children, content, offsetX, offsetY }) {
   const springConfig = { damping: 15, stiffness: 300 };
@@ -35,9 +30,13 @@ function AnimatedTippy({ children, content, offsetX, offsetY }) {
       interactive
       offset={[offsetX, offsetY]}
       render={(attrs) => (
-        <Box style={{ scale, opacity }} {...attrs}>
+        <motion.div
+          className="w-auto bg-white  leading-6 shadow-lg rounded-lg"
+          style={{ scale, opacity }}
+          {...attrs}
+        >
           {content}
-        </Box>
+        </motion.div>
       )}
       animation
       // eslint-disable-next-line

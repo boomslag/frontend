@@ -15,6 +15,10 @@ import {
   GET_TOKENS_FAIL,
   GET_POLYGON_TOKENS_FAIL,
   GET_POLYGON_TOKENS_SUCCESS,
+  GET_TOKENS_COUNT_SUCCESS,
+  SEND_TOKENS_SUCCESS,
+  SEND_TOKENS_FAIL,
+  SET_SENDING_TOKENS,
 } from '../actions/crypto/types';
 
 const initialState = {
@@ -29,12 +33,29 @@ const initialState = {
   txHashes: null,
   tokens: [],
   polygonTokens: [],
+  sending_tokens: false,
 };
 
 export default function crypto(state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case SET_SENDING_TOKENS:
+      return {
+        ...state,
+        sending_tokens: payload,
+      };
+    case SEND_TOKENS_SUCCESS:
+      return {
+        ...state,
+        sending_tokens: false,
+        tx_hash: payload,
+      };
+    case SEND_TOKENS_FAIL:
+      return {
+        ...state,
+        sending_tokens: false,
+      };
     case GET_TOKENS_FAIL:
       return {
         ...state,
@@ -44,6 +65,11 @@ export default function crypto(state = initialState, action) {
       return {
         ...state,
         tokens: payload,
+      };
+    case GET_TOKENS_COUNT_SUCCESS:
+      return {
+        ...state,
+        count: payload,
       };
     case GET_POLYGON_TOKENS_SUCCESS:
       return {

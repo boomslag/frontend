@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Web3 from 'web3';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import { ToastError } from '@/components/ToastError';
+import { ToastError } from '@/components/toast/ToastError';
 import { getItems, removeCartItem, updateCartItem } from '@/redux/actions/cart/cart';
 import GetContractABIPolygon from '@/api/tokens/GetContractABIPolygon';
 

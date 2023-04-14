@@ -122,12 +122,12 @@ export default function MenuDropdown() {
               </p>
             </div>
             <div className="mx-4 mt-4 flex-shrink-0">
-              {/* <button
+              <button
                 type="button"
                 className="relative inline-flex items-center rounded-md bg-dark px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-gray-900"
               >
                 Create
-              </button> */}
+              </button>
             </div>
           </div>
           <div className=" p-4">
@@ -166,9 +166,6 @@ export default function MenuDropdown() {
     >
       <button
         type="button"
-        onClick={() => {
-          setOpen(true);
-        }}
         className="ring-none relative items-center justify-center rounded-full border-none text-dark-gray hover:text-iris-400 dark:text-dark-txt-secondary  dark:hover:text-dark-primary md:inline-flex "
       >
         <Squares2X2Icon

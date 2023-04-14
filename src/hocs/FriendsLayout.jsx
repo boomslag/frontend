@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserPlusIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function FriendsLayout({ children }) {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function FriendsLayout({ children }) {
               {/* Left column area */}
               <ul className="divide-y divide-gray-200 space-y-2">
                 {navigation.map((item) => (
-                  <a key={item.id} href={item.href}>
+                  <Link key={item.id} href={item.href}>
                     <li
                       className={`${
                         item.active ? 'bg-gray-50' : 'hover:bg-gray-50'
@@ -51,7 +52,7 @@ export default function FriendsLayout({ children }) {
                         {/* <p className="text-sm text-gray-500">{item.email}</p> */}
                       </div>
                     </li>
-                  </a>
+                  </Link>
                 ))}
               </ul>
             </div>

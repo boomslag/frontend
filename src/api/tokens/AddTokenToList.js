@@ -1,11 +1,19 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
-export default async function AddTokenToList(address, name, symbol, decimals) {
+export default async function AddTokenToList(
+  address,
+  name,
+  symbol,
+  decimals,
+  network,
+  userAddress,
+) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
+    const access = Cookies.get('access');
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -18,6 +26,8 @@ export default async function AddTokenToList(address, name, symbol, decimals) {
       name,
       symbol,
       decimals,
+      network,
+      userAddress,
     });
 
     await axios.put(`${process.env.NEXT_PUBLIC_APP_CRYPTO_URL}/api/tokens/list/add/`, body, {

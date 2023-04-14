@@ -6,13 +6,20 @@ import { WalletIcon } from '@heroicons/react/24/outline';
 
 import DarkModeButton from '@/components/DarkModeButton.jsx';
 import GlobeButton from '@/components/GlobeButton';
-import { logout } from '@/redux/actions/auth/auth';
+import {
+  loadEthereumBalance,
+  loadMaticPolygonBalance,
+  loadPraediumBalance,
+  loadUriBalance,
+  logout,
+} from '@/redux/actions/auth/auth';
 import { ToastSuccess } from '@/components/ToastSuccess';
 import AnimatedTippy from '@/components/tooltip';
 import CartComponent from '../Cart/CartComponent';
 import UserDropDownMenu from './UserDropDownMenu';
 import MenuDropdown from './MenuDropdown';
 import Notifications from './Notifications';
+import { useEffect } from 'react';
 
 export default function AuthLinks() {
   const dispatch = useDispatch();
@@ -61,6 +68,17 @@ export default function AuthLinks() {
       network: 'Polygon',
     },
   ];
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  useEffect(() => {
+    if (isAuthenticated && wallet && wallet.address) {
+      dispatch(loadEthereumBalance(wallet.address));
+      dispatch(loadMaticPolygonBalance(wallet.polygon_address));
+      dispatch(loadPraediumBalance(wallet.polygon_address));
+      dispatch(loadUriBalance(wallet.polygon_address));
+    }
+  }, []);
+
   return (
     <ul className="ml-1 flex space-x-4">
       <MenuDropdown />

@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-export default async function ListPolygonTokenBalances(tokens) {
-  // const controller = new AbortController();
-  // const abortSignal = controller.signal;
-
+export default async function ListPolygonTokenBalances(tokens, polygonAddress) {
   try {
     const access = localStorage.getItem('access');
     const config = {
@@ -16,6 +13,7 @@ export default async function ListPolygonTokenBalances(tokens) {
 
     const body = JSON.stringify({
       tokens,
+      polygon_address: polygonAddress,
     });
 
     const res = await axios.post(
@@ -23,7 +21,6 @@ export default async function ListPolygonTokenBalances(tokens) {
       body,
       {
         ...config,
-        // signal: abortSignal,
       },
     );
 

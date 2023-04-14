@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import BecomeInstructor from '@/api/BecomeInstructor';
+import Image from 'next/image';
 import Link from 'next/link';
-// import { become_instructor } from "../../../redux/actions/user/user";
+import { useDispatch } from 'react-redux';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import Button from '@/components/Button';
-import Image from 'next/image';
+import { becomeSeller } from '@/redux/actions/teach/teach';
 
 export default function Header({ isAuthenticated, myUser }) {
   const [loading, setLoading] = useState(false);
-  const [effectClick, setEffectClick] = useState(false);
+  const dispatch = useDispatch();
 
   const handleBecomeInstructor = async () => {
     setLoading(true);
-    await BecomeInstructor(myUser.id);
+    dispatch(becomeSeller(myUser.id));
     setLoading(false);
   };
 

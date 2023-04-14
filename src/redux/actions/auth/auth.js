@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Web3 from 'web3';
-import { ToastError } from '../../../components/ToastError';
+import { ToastError } from '../../../components/toast/ToastError';
 import { ToastSuccess } from '../../../components/ToastSuccess';
 import {
   SIGNUP_SUCCESS,
@@ -44,6 +44,7 @@ import {
   LOGOUT_FAIL,
   RESET_REGISTER_SUCCESS,
 } from './types';
+import Cookies from 'js-cookie';
 
 import PraediumToken from '@/contracts/PraediumToken.sol/PraediumToken.json';
 import GalacticReserveToken from '@/contracts/GalacticReserveToken.sol/GalacticReserveToken.json';
@@ -267,93 +268,83 @@ export const loadUserWallet = () => async (dispatch) => {
   }
 };
 
-export const loadGalrBalance = (address) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    try {
-      // create instances of the ERC20 contracts
-      const galacticReserveContract = new web3.eth.Contract(
-        GalacticReserveToken.abi,
-        process.env.NEXT_APP_GALR_TOKEN_ADDRESS,
-      );
-      // get the token balances
-      const galacticReserveBalance = await galacticReserveContract.methods
-        .balanceOf(address)
-        .call();
+export const loadUriBalance = (address) => async (dispatch) => {
+  try {
+    // create instances of the ERC20 contracts
+    const galacticReserveContract = new web3.eth.Contract(
+      GalacticReserveToken.abi,
+      process.env.NEXT_PUBLIC_APP_GALR_TOKEN_ADDRESS,
+    );
+    // get the token balances
+    const galacticReserveBalance = await galacticReserveContract.methods.balanceOf(address).call();
 
-      dispatch({
-        type: GET_GALR_BALANCE_SUCCESS,
-        payload: web3.utils.fromWei(galacticReserveBalance, 'ether'),
-      });
-    } catch (err) {
-      dispatch({
-        type: GET_GALR_BALANCE_FAIL,
-      });
-    }
+    dispatch({
+      type: GET_GALR_BALANCE_SUCCESS,
+      payload: web3.utils.fromWei(galacticReserveBalance, 'ether'),
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_GALR_BALANCE_FAIL,
+    });
   }
 };
 
 export const loadPraediumBalance = (address) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    try {
-      const praediumContract = new web3.eth.Contract(
-        PraediumToken.abi,
-        process.env.NEXT_APP_PDM_TOKEN_ADDRESS,
-      );
-      const praediumBalance = await praediumContract.methods.balanceOf(address).call();
+  try {
+    const praediumContract = new web3.eth.Contract(
+      PraediumToken.abi,
+      process.env.NEXT_PUBLIC_APP_PDM_TOKEN_ADDRESS,
+    );
+    const praediumBalance = await praediumContract.methods.balanceOf(address).call();
 
-      dispatch({
-        type: GET_PRAEDIUM_BALANCE_SUCCESS,
-        payload: web3.utils.fromWei(praediumBalance, 'ether'),
-      });
-    } catch (err) {
-      dispatch({
-        type: GET_PRAEDIUM_BALANCE_FAIL,
-      });
-    }
+    dispatch({
+      type: GET_PRAEDIUM_BALANCE_SUCCESS,
+      payload: web3.utils.fromWei(praediumBalance, 'ether'),
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_PRAEDIUM_BALANCE_FAIL,
+    });
   }
 };
 
 export const loadEthereumBalance = (address) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    try {
-      web3.eth.getBalance(address, (err, balance) => {
-        if (err) {
-          // eslint-disable-next-line
-          console.error(err);
-        } else {
-          dispatch({
-            type: USER_WALLET_BALANCE_LOADED_SUCCESS,
-            payload: web3.utils.fromWei(balance, 'ether'),
-          });
-        }
-      });
-    } catch (err) {
-      dispatch({
-        type: USER_WALLET_BALANCE_LOADED_FAIL,
-      });
-    }
+  try {
+    web3.eth.getBalance(address, (err, balance) => {
+      if (err) {
+        // eslint-disable-next-line
+        console.error(err);
+      } else {
+        dispatch({
+          type: USER_WALLET_BALANCE_LOADED_SUCCESS,
+          payload: web3.utils.fromWei(balance, 'ether'),
+        });
+      }
+    });
+  } catch (err) {
+    dispatch({
+      type: USER_WALLET_BALANCE_LOADED_FAIL,
+    });
   }
 };
 
 export const loadMaticPolygonBalance = (address) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    try {
-      polygonWeb3.eth.getBalance(address, (err, balance) => {
-        if (err) {
-          // eslint-disable-next-line
-          console.error(err);
-        } else {
-          dispatch({
-            type: GET_MATIC_BALANCE_SUCCESS,
-            payload: polygonWeb3.utils.fromWei(balance, 'ether'),
-          });
-        }
-      });
-    } catch (err) {
-      dispatch({
-        type: GET_MATIC_BALANCE_FAIL,
-      });
-    }
+  try {
+    polygonWeb3.eth.getBalance(address, (err, balance) => {
+      if (err) {
+        // eslint-disable-next-line
+        console.error(err);
+      } else {
+        dispatch({
+          type: GET_MATIC_BALANCE_SUCCESS,
+          payload: polygonWeb3.utils.fromWei(balance, 'ether'),
+        });
+      }
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_MATIC_BALANCE_FAIL,
+    });
   }
 };
 

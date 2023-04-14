@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ToastError } from '../../../components/ToastError';
+import { ToastError } from '../../../components/toast/ToastError';
 import { ToastSuccess } from '../../../components/ToastSuccess';
 
 import { GET_COUPON_SUCCESS, GET_COUPON_FAIL, UPDATE_COUPON_PRICE } from './types';

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import BecomeInstructor from '@/api/BecomeInstructor';
+import Link from 'next/link';
+import { useDispatch } from 'react-redux';
 // import { useDispatch } from "react-redux";
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import Link from 'next/link';
 import Button from '@/components/Button';
+import { becomeSeller } from '@/redux/actions/teach/teach';
 // import { become_instructor } from "../../../redux/actions/user/user";
 
 export default function CTA({ isAuthenticated, myUser }) {
   const [loading, setLoading] = useState(false);
-  const [effectClick, setEffectClick] = useState(false);
+  const dispatch = useDispatch();
 
   const handleBecomeInstructor = async () => {
     setLoading(true);
-    await BecomeInstructor(myUser.id);
-    // window.location.reload();
+    dispatch(becomeSeller(myUser.id));
     setLoading(false);
   };
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ToastError } from '../../../components/ToastError';
+import { ToastError } from '../../../components/toast/ToastError';
 import { ToastSuccess } from '../../../components/ToastSuccess';
 
 import {

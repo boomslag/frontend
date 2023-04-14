@@ -26,6 +26,10 @@ const register = async (req, res) => {
 
       if (apiRes.status === 201) {
         return res.status(201).json(data);
+      } else {
+        return res.status(apiRes.status).json({
+          error: 'User or email already exist.',
+        });
       }
     } catch (err) {
       return res.status(500).json({

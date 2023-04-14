@@ -446,20 +446,24 @@ export const register =
         dispatch({
           type: SIGNUP_SUCCESS,
         });
-        dispatch(
-          ToastSuccess('We have sent you an email, please click the link to verify your account.'),
-        );
+        ToastSuccess('We have sent you an email, please click the link to verify your account.');
       } else {
         dispatch({
           type: SIGNUP_FAIL,
         });
-        ToastError('Error con el servidor');
+        ToastError('Username or email already exist.');
+        dispatch({
+          type: REMOVE_AUTH_LOADING,
+        });
       }
     } catch (err) {
       dispatch({
         type: SIGNUP_FAIL,
       });
       ToastError(err.request.response);
+      dispatch({
+        type: REMOVE_AUTH_LOADING,
+      });
     }
 
     dispatch({

@@ -31,7 +31,7 @@ const user = async (req, res) => {
         });
       }
     } catch (err) {
-      return res.status(apiRes.status).json({
+      return res.status(500).json({
         error: 'Something went wrong',
       });
     }

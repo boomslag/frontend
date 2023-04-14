@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   EnvelopeIcon,
@@ -9,7 +9,7 @@ import {
 import CircleLoader from 'react-spinners/CircleLoader';
 import slugify from 'react-slugify';
 import { useSelector, useDispatch } from 'react-redux';
-import { register } from '../../../redux/actions/auth/auth';
+import { register, resetRegisterSuccess } from '../../../redux/actions/auth/auth';
 import Head from 'next/head';
 import Layout from '@/hocs/Layout';
 
@@ -50,6 +50,11 @@ export default function Signup() {
   };
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(resetRegisterSuccess());
+  }, [dispatch]);
+
   const loading = useSelector((state) => state.auth.loading);
 
   const [formData, setFormData] = useState({

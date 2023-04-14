@@ -11,6 +11,109 @@ export default function UserDropDownMenu({ logoutHandler }) {
   const myProfile = useSelector((state) => state.auth.profile);
   const myUser = useSelector((state) => state.auth.user);
 
+  const dispatch = useDispatch();
+  // Friends inbox websocket
+  // const [inboxes, setInboxes] = useState([]);
+  const [start, setStart] = useState(0);
+  // eslint-disable-next-line
+  const [count, setCount] = useState(20);
+  // eslint-disable-next-line
+  const [error, setError] = useState(null);
+  // eslint-disable-next-line
+  const [connected, setConnected] = useState(false);
+  // eslint-disable-next-line
+  const [roomGroupName, setRoomGroupName] = useState(myUser && myUser.id);
+
+  const userId = myUser && myUser.id;
+  useEffect(() => {
+    let client = null;
+    if (userId !== null) {
+      const handleOpen = () => {
+        console.log('UserDropDown Inbox Websocket Connected');
+        setConnected(true);
+        client.send(
+          JSON.stringify({
+            type: 'get_inboxes',
+            user_id: myUser && myUser.id,
+          }),
+        );
+      };
+
+      const handleMessage = (event) => {
+        const message = JSON.parse(event.data);
+        // console.log('Got this Message from Inbox Channels Consumer', message);
+        switch (message.type) {
+          case 'user_inboxes':
+            dispatch(setInboxList(message.data));
+            dispatch(setInboxCount(message.total_count));
+            // setInboxes(message.data);
+            break;
+          case 'user_inboxes_from_view':
+            dispatch(setInboxList(message.data.data));
+            dispatch(setInboxCount(message.total_count));
+            // setInboxes(message.data);
+            break;
+          default:
+            console.log('Unhandled message type:', message.type);
+        }
+      };
+
+      const handleError = (e) => {
+        // console.error('WebSocket error:', e);
+        setError(e);
+        setConnected(false);
+      };
+
+      const connectWebSocket = () => {
+        try {
+          const protocol = process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'wss' : 'ws';
+          const path = `${protocol}://${
+            process.env.NEXT_PUBLIC_APP_CHAT_API_WS
+          }/ws/inbox/${roomGroupName}/?token=${encodeURIComponent(userId)}`;
+          client = new W3CWebSocket(path);
+          client.onopen = handleOpen;
+          client.onmessage = handleMessage;
+          // client.onclose = handleClose;
+          client.onerror = handleError;
+        } catch (e) {
+          handleError(e);
+        }
+      };
+
+      const disconnectWebSocket = () => {
+        if (client && client.readyState === WebSocket.OPEN) {
+          client.close();
+          setConnected(false);
+        }
+      };
+
+      if (!client) {
+        connectWebSocket();
+      }
+
+      return () => {
+        disconnectWebSocket();
+      };
+    }
+    // eslint-disable-next-line
+  }, [roomGroupName]);
+
+  // When user clicks "Load More" button, fetch next set of notifications
+  // eslint-disable-next-line
+  function loadMoreInboxes() {
+    setStart(start + count); // increment start by count
+    // Send message to server to fetch next set of notifications
+    // eslint-disable-next-line
+    socket.send(
+      JSON.stringify({
+        type: 'get_inboxes',
+        user_id: myUser && myUser.id,
+        start,
+        count,
+      }),
+    );
+  }
+
   return (
     <Tippy
       animation

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import CircleLoader from 'react-spinners/CircleLoader';
 import Head from 'next/head';
 import Layout from '@/hocs/Layout';
-import { activate } from '../../../redux/actions/auth/auth';
+import { activate, resetRegisterSuccess } from '../../../redux/actions/auth/auth';
 
 const faqs = [
   {
@@ -73,6 +73,10 @@ export default function Activation() {
   const [effectRegister, setEffectRegister] = useState(false);
   const [activated, setActivated] = useState(false);
   const loading = useSelector((state) => state.auth.loading);
+
+  useEffect(() => {
+    dispatch(resetRegisterSuccess());
+  }, [dispatch]);
 
   const activateAccount = () => {
     const uid = filterData[0];

@@ -1,39 +1,27 @@
-import axios from 'axios';
-
-export default async function FetchInstructorSections(courseUUID) {
-  const controller = new AbortController();
-  const abortSignal = controller.signal;
-
+async function FetchInstructorSections(courseUUID) {
   try {
-    const access = localStorage.getItem('access');
-    const config = {
+    const res = await fetch('/api/sell/courses/getSections', {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
-    };
-
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/sections/get/${courseUUID}`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+      body: JSON.stringify({
+        courseUUID,
+      }),
+    });
 
     if (res.status === 200) {
-      return res.data.results;
+      const sectionsData = await res.json();
+      return sectionsData;
+    } else {
+      console.error('Error fetching instructor sections:', res.status);
+      return null;
     }
   } catch (err) {
-    if (axios.isCancel(err)) {
-      // eslint-disable-next-line
-      console.log('Request canceled', err.message);
-    } else {
-      // eslint-disable-next-line
-      console.log(err);
-    }
-  } finally {
-    controller.abort();
+    console.error('Error fetching instructor sections:', err);
+    return null;
   }
 }
+
+export default FetchInstructorSections;

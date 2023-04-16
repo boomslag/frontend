@@ -1,23 +1,16 @@
 import axios from 'axios';
 
-export default async function GetDeployNFTPrice() {
+export default async function GetDeployNFTPrice(userAddress, userPolygonAddress) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_CRYPTO_URL}/api/courses/nft_deploy_price/`,
+      `/api/sell/courses/deploy-price?userAddress=${userAddress}&userPolygonAddress=${userPolygonAddress}`,
       {
-        ...config,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         signal: abortSignal,
       },
     );

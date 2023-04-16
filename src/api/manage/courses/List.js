@@ -1,48 +1,24 @@
-import axios from 'axios';
-
-export default async function ListSellerCourses(
+const ListSellerCourses = async (
   page,
   pageSize,
   maxPageSize,
   filterBy,
   orderBy,
-  author,
-  category,
-  businessActivity,
-  type,
-  search,
-) {
-  const controller = new AbortController();
-  const abortSignal = controller.signal;
-
+  filterByAuthor,
+  filterByCategory,
+  filterByBusinessActivity,
+  filterByType,
+  searchBy,
+) => {
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/list/?filter=date_created&p=${page}&page_size=${pageSize}&max_page_size=${maxPageSize}&filter=${filterBy}&order=${orderBy}&category=${category}&author=${author}&business_activity=${businessActivity}&type=${type}&search=${search}`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
+    const res = await fetch(
+      `/api/sell/courses/list?page=${page}&pageSize=${pageSize}&maxPageSize=${maxPageSize}&filterBy=${filterBy}&orderBy=${orderBy}&author=${filterByAuthor}&category=${filterByCategory}&businessActivity=${filterByBusinessActivity}&type=${filterByType}&search=${searchBy}`,
     );
-
-    if (res.status === 200) {
-      return res;
-    }
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      // eslint-disable-next-line
-      console.log('Request canceled', err.message);
-    } else {
-      // eslint-disable-next-line
-      console.log(err);
-    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching seller courses:', error);
   }
-}
+};
+
+export default ListSellerCourses;

@@ -25,14 +25,14 @@ const login = async (req, res) => {
           cookie.serialize('access', data.access, {
             httpOnly: true,
             secure: process.env.NEXT_PUBLIC_APP_ENV !== 'development',
-            maxAge: 900, // 15 minutes in seconds
+            maxAge: 60 * 60 * 24 * 90, // 90 days in seconds
             sameSite: 'strict',
             path: '/',
           }),
           cookie.serialize('refresh', data.refresh, {
             httpOnly: true,
             secure: process.env.NEXT_PUBLIC_APP_ENV !== 'development',
-            maxAge: 604800, // 7 days in seconds
+            maxAge: 60 * 60 * 24 * 180, // 180 days in seconds
             sameSite: 'strict',
             path: '/',
           }),

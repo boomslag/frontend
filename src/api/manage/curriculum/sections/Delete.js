@@ -5,27 +5,9 @@ export default async function DeleteSection(sectionUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      sectionUUID,
+    const res = await axios.delete(`/api/sell/courses/sections/delete?sectionUUID=${sectionUUID}`, {
+      signal: abortSignal,
     });
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/sections/delete/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
 
     if (res.status === 200) {
       return res.data.results;

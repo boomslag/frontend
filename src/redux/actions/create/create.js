@@ -135,17 +135,9 @@ export const newCourseUUID = (courseUUID) => async (dispatch) => {
 };
 
 export const createCourse =
-  (type, title, category, subCategory, topic, dedication, user) => async (dispatch) => {
+  (type, title, category, subCategory, topic, dedication, user, ethAddress, polygonAddress) =>
+  async (dispatch) => {
     try {
-      const access = localStorage.getItem('access');
-      const config = {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `JWT ${access}`,
-        },
-      };
-
       const body = JSON.stringify({
         type,
         title,
@@ -154,18 +146,23 @@ export const createCourse =
         topic,
         dedication,
         user,
+        ethAddress,
+        polygonAddress,
       });
 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/create`,
+      const res = await fetch('/api/sell/courses/create', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
         body,
-        config,
-      );
-
-      if (res.status === 201) {
+      });
+      const data = await res.json();
+      if (data.status === 201) {
         await dispatch({
           type: CREATE_COURSE_SUCCESS,
-          payload: res.data.results,
+          payload: data.results[0],
         });
       }
     } catch (err) {

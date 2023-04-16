@@ -5,27 +5,9 @@ export default async function DeleteEpisode(episodeUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      episodeUUID,
+    const res = await axios.delete(`/api/sell/courses/episodes/delete?episodeUUID=${episodeUUID}`, {
+      signal: abortSignal,
     });
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/episodes/delete/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
 
     if (res.status === 200) {
       return res.data.results;

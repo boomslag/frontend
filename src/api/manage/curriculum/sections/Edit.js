@@ -5,27 +5,15 @@ export default async function EditSection(title, learningObjective, number, sect
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      title,
-      learningObjective,
-      number,
-      sectionUUID,
-    });
-
     const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/sections/edit/`,
-      body,
+      '/api/sell/courses/sections/edit',
       {
-        ...config,
+        title,
+        learningObjective,
+        number,
+        sectionUUID,
+      },
+      {
         signal: abortSignal,
       },
     );

@@ -379,12 +379,12 @@ export const login = (email, password) => async (dispatch) => {
     });
 
     if (res.status === 200) {
-      await dispatch({
-        type: LOGIN_SUCCESS,
-      });
       await dispatch(loadUser());
       await dispatch(loadUserProfile());
       await dispatch(loadUserWallet());
+      await dispatch({
+        type: LOGIN_SUCCESS,
+      });
       // await dispatch(load_ethereum_balance());
       // await dispatch(get_user_delivery());
       // await dispatch(get_notifications());
@@ -475,9 +475,9 @@ export const checkAuthStatus = () => async (dispatch) => {
       dispatch({
         type: AUTHENTICATED_SUCCESS,
       });
-      dispatch(loadUser());
-      // dispatch(load_user_profile());
-      // dispatch(load_user_wallet());
+      await dispatch(loadUser());
+      await dispatch(loadUserProfile());
+      await dispatch(loadUserWallet());
       // dispatch(load_ethereum_balance());
       // dispatch(get_user_delivery());
       // dispatch(get_notifications());
@@ -506,10 +506,10 @@ export const refreshJWTToken = () => async (dispatch) => {
     });
 
     if (res.status === 200) {
+      await dispatch(checkAuthStatus());
       dispatch({
         type: REFRESH_SUCCESS,
       });
-      dispatch(checkAuthStatus());
     } else {
       dispatch({
         type: REFRESH_FAIL,

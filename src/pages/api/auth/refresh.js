@@ -5,6 +5,8 @@ export default async function handler(req, res) {
     const cookies = cookie.parse(req.headers.cookie ?? '');
     const refresh = cookies.refresh ?? false;
 
+    console.log(refresh);
+
     if (refresh === false) {
       return res.status(401).json({
         error: 'User unauthorized to make this request',
@@ -26,6 +28,7 @@ export default async function handler(req, res) {
       });
 
       const data = await apiRes.json();
+      console.log('Dataa response after fetch: ', data);
 
       if (apiRes.status === 200) {
         res.setHeader('Set-Cookie', [
@@ -36,7 +39,7 @@ export default async function handler(req, res) {
             sameSite: 'strict',
             path: '/',
           }),
-          cookie.serialize('refresh', data.refresh, {
+          cookie.serialize('refresh', refresh, {
             httpOnly: true,
             secure: process.env.NEXT_PUBLIC_APP_ENV !== 'development',
             maxAge: 604800, // 7 days in seconds

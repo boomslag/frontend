@@ -5,19 +5,9 @@ export default async function ListCouponsPaginated(page, pageSize, maxPagesize, 
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COUPONS_API_URL}/api/coupons/list/?type=${type}&object=${objectUUID}&p=${page}&page_size=${pageSize}&max_page_size=${maxPagesize}`,
+      `/api/sell/promotions/list?type=${type}&object=${objectUUID}&p=${page}&page_size=${pageSize}&max_page_size=${maxPagesize}`,
       {
-        ...config,
         signal: abortSignal,
       },
     );

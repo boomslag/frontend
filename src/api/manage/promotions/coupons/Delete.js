@@ -5,26 +5,12 @@ export default async function DeleteCoupon(couponUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
+    const res = await axios.delete(`/api/sell/promotions/delete?couponUUID=${couponUUID}`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
-    };
-
-    const body = JSON.stringify({
-      couponUUID,
+      signal: abortSignal,
     });
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COUPONS_API_URL}/api/coupons/delete/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
 
     if (res.status === 200) {
       return res.data.results;

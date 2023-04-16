@@ -5,24 +5,10 @@ export default async function DeleteEpisodeVideo(episodeUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      episodeUUID,
-    });
-
     const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/episodes/delete/video/`,
-      body,
+      '/api/sell/courses/episodes/deleteVideo',
+      { episodeUUID },
       {
-        ...config,
         signal: abortSignal,
       },
     );

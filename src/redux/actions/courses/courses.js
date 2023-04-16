@@ -39,25 +39,16 @@ import {
   DEPLOY_COURSE_SUCCESS,
   DEPLOY_COURSE_FAIL,
 } from './types';
+import fetchCourse from '@/api/manage/courses/fetchCourse';
 
 export const getCourse = (courseUUID) => async (dispatch) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
-    },
-  };
-
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/get/${courseUUID}/`,
-      config,
-    );
+    const res = await fetchCourse(courseUUID);
 
-    if (res.status === 200) {
+    if (res && !res.error) {
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: res.results,
       });
     } else {
       dispatch({
@@ -100,31 +91,29 @@ export const onchangeCourseWhatlearnt = (whatlearntList) => async (dispatch) => 
 
 export const updateCourseWhatlearnt = (courseUUID, whatlearntList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       whatlearntList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/whatlearnt/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/courses/updateWhatlearnt', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -133,34 +122,29 @@ export const updateCourseWhatlearnt = (courseUUID, whatlearntList) => async (dis
 
 export const deleteCourseWhatlearnt = (courseUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/whatlearnt/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_COURSE_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/courses/deleteWhatlearnt', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -190,31 +174,29 @@ export const onchangeCourseRequisite = (requisitesList) => async (dispatch) => {
 
 export const updateCourseRequisite = (courseUUID, requisitesList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       requisitesList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/requisites/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/courses/updateRequisites', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -223,34 +205,29 @@ export const updateCourseRequisite = (courseUUID, requisitesList) => async (disp
 
 export const deleteCourseRequisite = (courseUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/requisites/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_COURSE_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/courses/deleteRequisite', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -280,68 +257,60 @@ export const onchangeCourseWhoIsFor = (whoIsForList) => async (dispatch) => {
 
 export const updateCourseWhoIsFor = (courseUUID, whoIsForList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       whoIsForList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/who_is_for/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/courses/updateWhoisfor', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
-    // eslint-disable-next-line
-    ToastError(`Error: ${err.response.statusText}`);
+    console.error(`Error: ${err.message}`);
   }
 };
 
 export const deleteCourseWhoIsFor = (courseUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/who_is_for/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_COURSE_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/courses/deleteWhoisfor', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_COURSE_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -399,25 +368,11 @@ export const onchangeCourseCategory = (category) => async (dispatch) => {
 
 export const updateCourse = (courseUUID, courseBody) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       courseUUID,
       courseBody,
-    });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/update/`,
-      body,
-      config,
-    );
+    };
+    const res = await axios.put('/api/sell/courses/updateCourse', body);
 
     if (res.status === 200) {
       dispatch({
@@ -460,25 +415,16 @@ export const onchangeCourseImage = (imagesList) => async (dispatch) => {
 
 export const updateCourseImage = (courseUUID, imagesList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      courseUUID,
-      imagesList,
+    const formData = new FormData();
+    formData.append('courseUUID', courseUUID);
+    imagesList.forEach((image, index) => {
+      formData.append(`imagesList[${index}].id`, image.id);
+      formData.append(`imagesList[${index}].position_id`, image.position_id);
+      formData.append(`imagesList[${index}].title`, image.title);
+      formData.append(`imagesList[${index}].file`, image.file);
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/images/create/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/courses/images/create', formData);
 
     if (res.status === 200) {
       dispatch({
@@ -493,34 +439,18 @@ export const updateCourseImage = (courseUUID, imagesList) => async (dispatch) =>
 
 export const deleteCourseImage = (courseUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/images/delete/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/courses/images/delete', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_COURSE_DETAILS_SUCCESS,
-      // });
-      // dispatch({
-      //   type: REMOVE_IMAGE,
-      //   payload: id,
-      // });
       dispatch({
         type: GET_COURSE_SUCCESS,
         payload: res.data.results,
@@ -561,26 +491,18 @@ export const onchangeCourseVideo = (videosList) => async (dispatch) => {
 
 export const updateCourseVideo = (courseUUID, videosList, onUploadProgress) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const body = JSON.stringify({
-      courseUUID,
-      videosList,
+    const formData = new FormData();
+    formData.append('courseUUID', courseUUID);
+    videosList.forEach((video, index) => {
+      formData.append(`videosList[${index}].id`, video.id);
+      formData.append(`videosList[${index}].position_id`, video.position_id);
+      formData.append(`videosList[${index}].title`, video.title);
+      formData.append(`videosList[${index}].file`, video.file);
     });
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
+    const res = await axios.post('/api/sell/courses/videos/create', formData, {
       onUploadProgress,
-    };
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/videos/create/`,
-      body,
-      config,
-    );
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -595,30 +517,18 @@ export const updateCourseVideo = (courseUUID, videosList, onUploadProgress) => a
 
 export const deleteCourseVideo = (courseUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/videos/delete/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/courses/videos/delete', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_COURSE_DETAILS_SUCCESS,
-      // });
       dispatch({
         type: GET_COURSE_SUCCESS,
         payload: res.data.results,
@@ -650,26 +560,15 @@ export const onchangeCourseDiscountUntil = (discount) => async (dispatch) => {
 
 export const updateCoursePricing = (courseUUID, courseBody) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       courseUUID,
       courseBody,
+    };
+    const res = await axios.put('/api/sell/courses/updatePricing', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/update/pricing/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -713,25 +612,16 @@ export const resetCreateVariables = () => async (dispatch) => {
 
 export const updateCourseWelcomeMessage = (courseUUID, message) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       message,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/update/welcome_message/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put(`/api/sell/courses/updateWelcomeMessage`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -746,25 +636,16 @@ export const updateCourseWelcomeMessage = (courseUUID, message) => async (dispat
 
 export const updateCourseCongratsMessage = (courseUUID, message) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       message,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/update/congrats_message/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put(`/api/sell/courses/updateCongratsMessage`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -779,25 +660,16 @@ export const updateCourseCongratsMessage = (courseUUID, message) => async (dispa
 
 export const updateCourseStatus = (courseUUID, bool) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       courseUUID,
       bool,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/publish/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put('/api/sell/courses/updateStatus', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -851,25 +723,10 @@ export const resetCourseNFT = () => async (dispatch) => {
 
 export const updateCourseKeywords = (courseUUID, keywords) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/courses/updateKeywords', {
       courseUUID,
       keywords,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/edit/keywords/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -879,31 +736,16 @@ export const updateCourseKeywords = (courseUUID, keywords) => async (dispatch) =
       ToastSuccess(`Keywords saved`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    ToastError(`Error: ${err.response.data.error}`);
   }
 };
 
 export const updateCourseStock = (courseUUID, stock) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/courses/updateStock', {
       courseUUID,
       stock,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/edit/stock/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -913,31 +755,16 @@ export const updateCourseStock = (courseUUID, stock) => async (dispatch) => {
       ToastSuccess(`Stock saved`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    ToastError(`Error: ${err.response.data.error}`);
   }
 };
 
 export const updateCourseSlug = (courseUUID, slug) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/courses/updateSlug', {
       courseUUID,
       slug,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/edit/slug/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -947,7 +774,6 @@ export const updateCourseSlug = (courseUUID, slug) => async (dispatch) => {
       ToastSuccess(`Slug saved`);
     }
   } catch (err) {
-    // eslint-disable-next-line
     ToastError(`Error: ${err.response.data.error}`);
   }
 };

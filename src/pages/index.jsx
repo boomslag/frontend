@@ -5,6 +5,9 @@ import Badges from './components/Badges';
 import AffiliatesInfo from './components/AffiliatesInfo';
 import Teach from './components/Teach';
 import TeachCTA from './components/TeachCTA';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { refreshJWTToken } from '@/redux/actions/auth/auth';
 
 const SeoList = {
   title: 'Boomslag - The Ultimate NFT Marketplace for Courses & Products',

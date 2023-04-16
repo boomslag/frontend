@@ -20,14 +20,11 @@ export default async function CreateExternalResource(title, url, episodeUUID) {
       episodeUUID,
     });
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/episodes/resources/edit/external/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    // Change the URL to the new API route created in the Next.js project
+    const res = await axios.put(`/api/sell/courses/episodes/addExternalResource`, body, {
+      ...config,
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res.data.results;

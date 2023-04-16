@@ -5,24 +5,10 @@ export default async function DeleteResource(resourceUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      resourceUUID,
-    });
-
     const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/episodes/resources/delete/`,
-      body,
+      '/api/sell/courses/episodes/deleteResource',
+      { resourceUUID },
       {
-        ...config,
         signal: abortSignal,
       },
     );

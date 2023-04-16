@@ -5,25 +5,10 @@ export default async function EditEpisodeContent(episodeUUID, content) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      episodeUUID,
-      content,
-    });
-
     const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/teacher/episodes/edit/content/`,
-      body,
+      '/api/sell/courses/episodes/editEpisodeContent',
+      { episodeUUID, content },
       {
-        ...config,
         signal: abortSignal,
       },
     );

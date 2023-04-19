@@ -1,4 +1,4 @@
-import OrderContentItem from './OrderContentItem';
+import OrderContentItem from '@/components/OrderContentItem';
 
 export default function OrderContentList({ order, orderItems }) {
   return (

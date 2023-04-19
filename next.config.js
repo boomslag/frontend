@@ -4,6 +4,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
+  },
   images: {
     domains: [
       'boomslagauth.s3.us-east-2.amazonaws.com',

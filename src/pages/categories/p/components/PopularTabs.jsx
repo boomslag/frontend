@@ -2,8 +2,7 @@ import React from 'react';
 import { Tab } from '@headlessui/react';
 // eslint-disable-next-line
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import ProductCard from '@/components/ProductCard';
-import ProductCardHorizontal from '@/pages/components/products/ProductCardHorizontal';
+import ProductCardHorizontal from '@/components/ProductCardHorizontal';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

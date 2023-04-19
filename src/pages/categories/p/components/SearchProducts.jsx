@@ -7,7 +7,7 @@ import LoadingMoon from '@/components/loaders/LoadingMoon';
 import RatingsFilter from './RatingsFilter';
 import CategoriesFilter from './CategoriesFilter';
 import FetchSearchProducts from '@/api/products/SearchProducts';
-import ProductCardHorizontal from '@/pages/components/products/ProductCardHorizontal';
+import ProductCardHorizontal from '@/components/ProductCardHorizontal';
 
 const sortOptions = [
   { name: 'Most Sold', filterBy: 'sold', order: 'desc' },

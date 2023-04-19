@@ -11,7 +11,7 @@ import CategoriesFilter from './CategoriesFilter';
 import LevelFilter from './LevelFilter';
 import PriceFilter from './PriceFilter';
 import FetchSearchCourses from '@/api/courses/SearchCourses';
-import CourseCardHorizontal from '@/pages/components/courses/CourseCardHorizontal';
+import CourseCardHorizontal from '@/components/CourseCardHorizontal';
 
 const sortOptions = [
   { name: 'Most Sold', filterBy: 'sold', order: 'desc' },

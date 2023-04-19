@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 
-import CourseCardHorizontal from './CourseCardHorizontal';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
+import CourseCardHorizontal from '@/components/CourseCardHorizontal';
 
 export default function CategoryCourses({
   category,

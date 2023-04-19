@@ -1,7 +1,7 @@
 import React from 'react';
 // eslint-disable-next-line
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import CourseCardHorizontal from '../CourseCardHorizontal';
+import CourseCardHorizontal from '@/components/CourseCardHorizontal';
 
 export default function FeaturedCourses({ data }) {
   return (

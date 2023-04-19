@@ -368,9 +368,13 @@ export default function EpisodeItem({
     setLectureTitle('');
   };
 
-  const tempDiv = document && document.createElement('div');
-  tempDiv.innerHTML = DOMPurify.sanitize(episode.description);
-  const sanitizedDescription = tempDiv.textContent;
+  const [sanitizedDescription, setSanitizedDescription] = useState('');
+
+  useEffect(() => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = DOMPurify.sanitize(episode.description);
+    setSanitizedDescription(tempDiv.textContent);
+  }, [episode]);
 
   return (
     <div className="">

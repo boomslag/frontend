@@ -35,7 +35,7 @@ export default function ChatInbox({ chat, user }) {
       setOtherParticipants([]); // Reset the otherParticipants array
 
       details.forEach((participant) => {
-        if (participant.id === user.id) {
+        if (participant.id === user && user.id) {
           setMyParticipant(participant);
         } else {
           setOtherParticipants((prevParticipants) => [...prevParticipants, participant]);
@@ -43,7 +43,7 @@ export default function ChatInbox({ chat, user }) {
       });
     };
     fetchParticipantDetails();
-  }, [chat, user.id]);
+  }, [chat, user]);
 
   const [messages, setMessages] = useState([]);
   const [count, setCount] = useState([]);
@@ -387,7 +387,7 @@ export default function ChatInbox({ chat, user }) {
 
         // Send an offer to all other users in the call
         usersInCall.forEach(async (otherUserId) => {
-          if (otherUserId !== user.id) {
+          if (otherUserId !== user && user.id) {
             // Create a peer connection if it doesn't exist
             if (!peerConnections.current[otherUserId]) {
               const peerConnection = createPeerConnection(otherUserId);
@@ -410,7 +410,7 @@ export default function ChatInbox({ chat, user }) {
                 JSON.stringify({
                   type: 'offer',
                   offer: offer,
-                  from_user_id: user.id,
+                  from_user_id: user && user.id,
                 }),
               );
             }
@@ -837,44 +837,45 @@ export default function ChatInbox({ chat, user }) {
                           />
                         </a>
                       )}
-                      {otherParticipants.map((participant) => {
-                        const isOnline = onlineParticipants.some(
-                          (onlineParticipant) =>
-                            onlineParticipant.uuid === participant.id &&
-                            onlineParticipant.is_online,
-                        );
-                        const isInCall = onlineParticipants.some(
-                          (onlineParticipant) =>
-                            onlineParticipant.uuid === participant.id &&
-                            onlineParticipant.is_in_call,
-                        );
-                        return (
-                          <a
-                            href={`/@${participant.username}`}
-                            className="relative inline-block"
-                            key={participant.id}
-                          >
-                            <img
-                              className={`h-6 w-6 rounded-full ${
-                                isInCall
-                                  ? 'ring-2 ring-blue-300'
-                                  : isOnline
-                                  ? 'ring-2 ring-forest-green-300'
-                                  : 'ring-2 ring-gray-300'
-                              }`}
-                              src={participant.profile}
-                              alt=""
-                            />
-                            <span
-                              className={`${
-                                participant.is_online === true
-                                  ? 'bg-forest-green-300 ring-forest-green-100'
-                                  : 'bg-gray-300 ring-white'
-                              } absolute -top-1 -left-1 block h-2 w-2 translate-x-1/2 translate-y-1/2 transform rounded-full`}
-                            />
-                          </a>
-                        );
-                      })}
+                      {otherParticipants &&
+                        otherParticipants.map((participant) => {
+                          const isOnline = onlineParticipants.some(
+                            (onlineParticipant) =>
+                              onlineParticipant.uuid === participant.id &&
+                              onlineParticipant.is_online,
+                          );
+                          const isInCall = onlineParticipants.some(
+                            (onlineParticipant) =>
+                              onlineParticipant.uuid === participant.id &&
+                              onlineParticipant.is_in_call,
+                          );
+                          return (
+                            <a
+                              href={`/@${participant.username}`}
+                              className="relative inline-block"
+                              key={participant.id}
+                            >
+                              <img
+                                className={`h-6 w-6 rounded-full ${
+                                  isInCall
+                                    ? 'ring-2 ring-blue-300'
+                                    : isOnline
+                                    ? 'ring-2 ring-forest-green-300'
+                                    : 'ring-2 ring-gray-300'
+                                }`}
+                                src={participant.profile}
+                                alt=""
+                              />
+                              <span
+                                className={`${
+                                  participant.is_online === true
+                                    ? 'bg-forest-green-300 ring-forest-green-100'
+                                    : 'bg-gray-300 ring-white'
+                                } absolute -top-1 -left-1 block h-2 w-2 translate-x-1/2 translate-y-1/2 transform rounded-full`}
+                              />
+                            </a>
+                          );
+                        })}
                     </div>
                   </div>
                   <div className="ml-4  flex-shrink-0">
@@ -889,7 +890,7 @@ export default function ChatInbox({ chat, user }) {
               </div>
 
               {/* Your content */}
-              {(loading && connected) || otherParticipants.length > 0 ? (
+              {(loading && connected) || (otherParticipants && otherParticipants.length > 0) ? (
                 <>
                   {messages.length >= 19 && (
                     <button

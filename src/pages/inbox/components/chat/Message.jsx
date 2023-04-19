@@ -147,7 +147,6 @@ export default function Message({ message, chat, user, myParticipant, otherParti
             <HashtagIcon className=" inline-block h-4 w-auto cursor-pointer text-gray-500 hover:text-gray-700" />
           </div>
         )}
-
         {message && message.content && message.content.length > 0 && (
           <>
             {message.encryption === 'none' ? (
@@ -170,6 +169,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
             <div />
           </>
         )}
+        message &&
         {message.gif && (
           <Image
             width={256}
@@ -207,7 +207,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
               ))}
           </div>
         )}
-        {message.files && message.files.length > 0 && (
+        {message && message.files && message.files.length > 0 && (
           <div className="mt-2 flex flex-wrap justify-center">
             {message.files
               .filter((file) => allowedFileTypes.includes(file.mime_type))
@@ -241,7 +241,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
               ))}
           </div>
         )}
-        {message.files && message.files.length > 0 && (
+        {message && message.files && message.files.length > 0 && (
           <div className="mt-2 flex flex-wrap justify-center">
             {message.files
               .filter(
@@ -298,7 +298,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
             </span>
           )}
           <div className="text-sm text-gray-600 dark:text-dark-txt">
-            {moment(message.timestamp).fromNow()}
+            {moment(message && message.timestamp).fromNow()}
           </div>
         </div>
       </div>

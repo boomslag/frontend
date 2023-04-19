@@ -7,7 +7,7 @@ export default function InboxListItem({ inbox, user, setChat }) {
   const [isSelected, setIsSelected] = useState(false);
 
   const fetchUser = useCallback(async () => {
-    if (inbox && inbox.participants) {
+    if (inbox && inbox.participants && user) {
       const participant = inbox.participants.find((u) => u.uuid !== user.id);
       if (participant) {
         const res = await GetUserInfo(participant.uuid);
@@ -33,7 +33,7 @@ export default function InboxListItem({ inbox, user, setChat }) {
     <button
       type="button"
       onClick={loadConversationHandler}
-      key={inbox.id}
+      key={inbox && inbox.id}
       className={`flex w-full cursor-pointer py-4 px-3 ${
         isSelected ? 'bg-white' : 'bg-gray-100'
       } hover:bg-white`}

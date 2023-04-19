@@ -232,7 +232,7 @@ export default function SendPolygon({ wallet, txInfo }) {
                 <div className="relative mt-1">
                   <Listbox.Button className="focus-visible:border-indigo-500 focus-visible:ring-offset-orange-300 sm:text-md relative w-full cursor-default border border-gray-900 dark:bg-dark-bg dark:shadow-none dark:border-dark-border bg-white py-3 pl-3 pr-10 text-left shadow-neubrutalism-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2">
                     <span className="block truncate">
-                      {selected.name} ({selected.symbol})
+                      {selected && selected.name} ({selected.symbol})
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -265,7 +265,7 @@ export default function SendPolygon({ wallet, txInfo }) {
                                     selected ? 'font-bold' : 'font-normal'
                                   }`}
                                 >
-                                  {token.name} ({token.symbol})
+                                  {token && token.name} ({token.symbol})
                                 </span>
                                 {selected ? (
                                   <span className="text-amber-600 absolute inset-y-0 left-0 flex items-center pl-3">

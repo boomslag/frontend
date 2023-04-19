@@ -16,7 +16,7 @@ function classNames(...classes) {
 
 export default function OrderContentItem({ item, order, index }) {
   const [review, setReview] = useState(null);
-  const product_id = item.product;
+  const product_id = item && item.product;
 
   const fetchReview = useCallback(async () => {
     const res = await FetchProductReview(product_id);

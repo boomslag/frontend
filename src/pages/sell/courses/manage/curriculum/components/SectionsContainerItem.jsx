@@ -54,7 +54,7 @@ export default function SectionsContainerItem({
 
     const body = JSON.stringify({
       title: episodeTitle,
-      number: section && section.episodes.length + 1,
+      number: section && section.episodes && section.episodes.length + 1,
       sectionUUID: section && section.id,
       courseUUID: courseid,
     });
@@ -218,7 +218,7 @@ export default function SectionsContainerItem({
                     }}
                     className="h-5 w-5 cursor-pointer dark:text-dark-txt"
                   />
-                  {sections.length === 1 ? (
+                  {sections && sections.length === 1 ? (
                     <div />
                   ) : (
                     <TrashIcon
@@ -389,7 +389,7 @@ export default function SectionsContainerItem({
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                   <span className="text-gray-500 sm:text-sm" id="price-currency">
-                    {episodeTitle.length} of 60
+                    {episodeTitle && episodeTitle.length} of 60
                   </span>
                 </div>
               </div>
@@ -450,7 +450,7 @@ export default function SectionsContainerItem({
                 <RichTextEditor data={setContent} />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                   <span className="text-gray-500 sm:text-sm" id="price-currency">
-                    {content.length} of 600
+                    {content && content.length} of 600
                   </span>
                 </div>
               </div>

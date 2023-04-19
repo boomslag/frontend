@@ -1,5 +1,5 @@
 import { StarIcon } from '@heroicons/react/20/solid';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import React from 'react';
 import slugify from 'react-slugify';
 import Tippy from '@tippyjs/react';
@@ -13,6 +13,9 @@ function classNames(...classes) {
 }
 
 export default function CourseCardHorizontalSearch({ data }) {
+  if (!data) {
+    return null; // Or return a loading spinner or an error message, as appropriate
+  }
   const handleImageShowShadow = () => {
     const imageShadow = document.getElementById(`img-shadow${data && data.id}`);
     imageShadow.classList.add('bg-gray-350');
@@ -37,7 +40,7 @@ export default function CourseCardHorizontalSearch({ data }) {
           <ul className="list-disc space-y-1 py-1 px-4 text-base text-gray-700">
             {data &&
               data.get_whatlearnt.map((whatlearnt) => (
-                <li key={whatlearnt.id}>{whatlearnt.title}</li>
+                <li key={whatlearnt.title}>{whatlearnt.title}</li>
               ))}
           </ul>
           {/* Cart */}

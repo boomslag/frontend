@@ -1,7 +1,7 @@
 import React from 'react';
 import { CircleLoader } from 'react-spinners';
 import StandardPagination from '@/components/pagination/StandardPagination';
-import AnswerItem from './AnswerItem';
+import AnswerItem from '@/components/AnswerItem';
 
 export default function AnswersList({
   answers,

@@ -3,7 +3,6 @@ import slugify from 'react-slugify';
 
 import Link from 'next/link';
 import Image from 'next/image';
-// import UpdateCourseClicks from '@/api/courses/UpdateClicks';
 
 export default function CourseCard({ data }) {
   const [hover, setHover] = useState(false);
@@ -14,10 +13,6 @@ export default function CourseCard({ data }) {
   const handleMouseLeave = () => {
     setHover(false);
   };
-
-  // const handleUpdateClicks = () => {
-  //   UpdateCourseClicks(data && data.id);
-  // };
 
   function calculateDiscountPercentage(originalPrice, discountedPrice) {
     if (originalPrice === 0) return 0;
@@ -34,9 +29,6 @@ export default function CourseCard({ data }) {
         {/* Image */}
         <Link
           href={`/course/${data && data.slug}`}
-          // onClick={() => {
-          //   handleUpdateClicks();
-          // }}
           className="relative grid w-full place-items-center "
         >
           <Image
@@ -84,9 +76,6 @@ export default function CourseCard({ data }) {
           {/* Description */}
           <Link
             href={`/course/${data && data.slug}`}
-            // onClick={() => {
-            //   handleUpdateClicks();
-            // }}
             className={`text-md justify-start text-left font-bold  ${
               hover ? 'text-iris-500 dark:text-dark-primary' : 'text-gray-800 dark:text-dark-txt'
             }`}

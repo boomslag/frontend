@@ -25,7 +25,7 @@ import axios from 'axios';
 import CategoriesFilter from '../categories/c/components/CategoriesFilter';
 import CourseCardHorizontal from '../components/courses/CourseCardHorizontal';
 import FetchSearchProducts from '@/api/products/SearchProducts';
-import ProductCard from '../components/products/ProductCard';
+import ProductCard from '../../components/ProductCard';
 import ProductCardHorizontal from '../components/products/ProductCardHorizontal';
 
 const sortOptions = [

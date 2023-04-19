@@ -2,7 +2,7 @@ import React from 'react';
 import { Tab } from '@headlessui/react';
 // eslint-disable-next-line
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import CourseCard from '../../../components/courses/CourseCard';
+import CourseCard from '../../../../components/CourseCard';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

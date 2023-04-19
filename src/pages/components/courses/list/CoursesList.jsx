@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CourseCard from '../CourseCard';
+import CourseCard from '../../../../components/CourseCard';
 
 export default function CoursesList({ courses }) {
   return (

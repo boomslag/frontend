@@ -60,7 +60,7 @@ import GetCourseReview from '@/api/courses/GetReview';
 import UpdateReview from '@/api/courses/UpdateReview';
 
 import WatchList from './components/WatchList';
-import AboutCourseSec from './components/AboutCourseSec';
+import AboutCourseSec from '@/components/AboutCourseSec';
 import QuestionsSec from './components/QuestionsSec';
 import ReviewsSec from './components/ReviewsSec';
 import { useSelector } from 'react-redux';

@@ -1,7 +1,7 @@
 import { Tab } from '@headlessui/react';
 import React from 'react';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import CourseCard from '../CourseCard';
+import CourseCard from '../../../../components/CourseCard';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

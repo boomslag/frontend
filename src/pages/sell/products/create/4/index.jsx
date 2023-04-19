@@ -22,6 +22,7 @@ export default function CreateProduct4() {
     dispatch(setProductStep4(plan.name));
   };
 
+  const wallet = useSelector((state) => state.auth.wallet);
   const myUser = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
@@ -203,10 +204,17 @@ export default function CreateProduct4() {
               <button
                 type="button"
                 onClick={() => {
-                  const fetchData = async () => {
-                    await dispatch(createProduct(title, category, businessActivity, type, myUser));
-                  };
-                  fetchData();
+                  dispatch(
+                    createProduct(
+                      title,
+                      category,
+                      businessActivity,
+                      type,
+                      myUser,
+                      wallet.address,
+                      wallet.polygon_address,
+                    ),
+                  );
                 }}
                 className={classNames(
                   'text-md inline-flex items-center px-4 py-3 font-black',

@@ -2,6 +2,7 @@ import Head from 'next/head';
 import FriendsLayout from '@/hocs/FriendsLayout';
 import FriendsSec from './components/FriendsSec';
 import Layout from '@/hocs/Layout';
+import { useSelector } from 'react-redux';
 
 const SeoList = {
   title: 'Manage Friends - Boomslag',
@@ -18,7 +19,8 @@ const SeoList = {
   twitterHandle: '@BoomSlag',
 };
 
-export default function Friends({ friendList }) {
+export default function Friends() {
+  const friendList = useSelector((state) => state.friends.friends);
   return (
     <FriendsLayout>
       <Head>

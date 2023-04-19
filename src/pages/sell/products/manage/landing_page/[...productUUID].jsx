@@ -45,6 +45,16 @@ export default function Goals() {
   const images = useSelector((state) => state.products.images);
   const videos = useSelector((state) => state.products.videos);
 
+  const productImages = product && product.images;
+  const [imagesList, setImagesList] = useState(
+    productImages && productImages.length !== 0 ? productImages : [],
+  );
+
+  const productVideos = product && product.videos;
+  const [videosList, setVideosList] = useState(
+    productVideos && productVideos.length !== 0 ? productVideos : [],
+  );
+
   const [loading, setLoading] = useState(false);
   const [hasChangesTitle, setHasChangesTitle] = useState(false);
   const [hasChangesSubTitle, setHasChangesSubTitle] = useState(false);
@@ -95,8 +105,9 @@ export default function Goals() {
 
   const handleSubmit = async () => {
     setLoading(true);
-
-    await SetProductHandle(productUUID[0], true, 'landingPage');
+    if (productUUID && product && product.details && product.details.landing_page_bool === false) {
+      await SetProductHandle(productUUID[0], true, 'landingPage');
+    }
 
     const productBody = JSON.stringify({
       title,
@@ -123,10 +134,10 @@ export default function Goals() {
     }
 
     if (hasChangesVideos) {
-      promises.push(dispatch(updateProductVideo(productUUID[0], videos, onUploadProgress)));
+      promises.push(dispatch(updateProductVideo(productUUID[0], videosList, onUploadProgress)));
     }
     if (hasChangesImages) {
-      promises.push(dispatch(updateProductImage(productUUID[0], images)));
+      promises.push(dispatch(updateProductImage(productUUID[0], imagesList)));
     }
 
     await Promise.all(promises);
@@ -160,6 +171,8 @@ export default function Goals() {
     if (hasChangesImages) {
       setHasChangesImages(false);
     }
+
+    setPercentage(0);
   };
 
   return (
@@ -216,39 +229,51 @@ export default function Goals() {
 
         <div className="space-y-6 pb-6">
           {/* Product title */}
-          <TitleSec setHasChangesTitle={setHasChangesTitle} />
+          {product ? (
+            <>
+              <TitleSec setHasChangesTitle={setHasChangesTitle} />
 
-          {/* Product subtitle */}
-          <SubTitleSec setHasChangesSubTitle={setHasChangesSubTitle} />
+              {/* Product subtitle */}
+              <SubTitleSec setHasChangesSubTitle={setHasChangesSubTitle} />
 
-          {/* Product description */}
-          <DescriptionSec setHasChangesDescription={setHasChangesDescription} />
+              {/* Product description */}
+              <DescriptionSec setHasChangesDescription={setHasChangesDescription} />
 
-          {/* Basic info */}
-          <BasicInfoSec
-            setHasChangesLanguage={setHasChangesLanguage}
-            setHasChangesLevel={setHasChangesLevel}
-            setHasChangesCategory={setHasChangesCategory}
-          />
+              {/* Basic info */}
+              <BasicInfoSec
+                setHasChangesLanguage={setHasChangesLanguage}
+                setHasChangesLevel={setHasChangesLevel}
+                setHasChangesCategory={setHasChangesCategory}
+              />
 
-          {/* Stock */}
-          <StockSec setHasChangesStock={setHasChangesStock} />
+              {/* Stock */}
+              <StockSec setHasChangesStock={setHasChangesStock} />
 
-          {/* thumbnail */}
-          <ImageGallery
-            product={product}
-            setHasChangesImages={setHasChangesImages}
-            productUUID={productUUID}
-          />
+              {/* thumbnail */}
+              <ImageGallery
+                product={product}
+                setHasChangesImages={setHasChangesImages}
+                productUUID={productUUID}
+                productImages={productImages}
+                imagesList={imagesList}
+                setImagesList={setImagesList}
+              />
 
-          {/* video */}
-          <VideoGallery
-            product={product}
-            setHasChangesVideos={setHasChangesVideos}
-            productUUID={productUUID}
-            fetchProduct={fetchProduct}
-            percentage={percentage}
-          />
+              {/* video */}
+              <VideoGallery
+                product={product}
+                setHasChangesVideos={setHasChangesVideos}
+                productUUID={productUUID}
+                fetchProduct={fetchProduct}
+                percentage={percentage}
+                productVideos={productVideos}
+                videosList={videosList}
+                setVideosList={setVideosList}
+              />
+            </>
+          ) : (
+            <div>Loading...</div>
+          )}
 
           {/* instructor profile */}
           <div className="pb-8">
@@ -296,12 +321,12 @@ export default function Goals() {
                 <p className="mt-1 font-bold dark:text-dark-primary text-purple-600">
                   {myUser && myUser.username}
                 </p>
-                <a
-                  href={`/@${myUser && myUser.username}`}
+                <Link
+                  href={`/@/${myUser && myUser.username}`}
                   className="mt-1 text-purple-600 dark:text-dark-accent underline underline-offset-2"
                 >
                   View instructor profile
-                </a>
+                </Link>
               </div>
             </div>
           </div>

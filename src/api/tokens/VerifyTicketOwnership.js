@@ -1,19 +1,19 @@
 import axios from 'axios';
 
-export default async function VerifyTokenOwnership(address, ticketId) {
+export default async function VerifyTokenOwnership(polygonAddress, address, ticketId) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
     const config = {
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
     };
 
     const body = JSON.stringify({
+      polygon_address: polygonAddress,
       nft_address: address,
       ticket_id: ticketId,
     });

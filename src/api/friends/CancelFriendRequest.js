@@ -5,26 +5,20 @@ export default async function CancelFriendRequest(email) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
     };
 
-    const body = JSON.stringify({
+    const body = {
       email,
-    });
+    };
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_USER_API_URL}/api/friends/cancel_friend_request/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.put(`/api/friends/cancel-request`, body, {
+      ...config,
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

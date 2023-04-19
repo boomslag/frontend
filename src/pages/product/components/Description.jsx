@@ -6,7 +6,7 @@ import {
   CheckBadgeIcon,
   InformationCircleIcon,
 } from '@heroicons/react/24/solid';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import Link from 'next/link';

@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Navbar from './components/Navbar';
 import ManageProductLayout from '@/pages/sell/products/manage/components/ManageProductLayout';
 import SetProductHandle from '@/api/manage/products/SetProductHandle';
@@ -17,6 +17,7 @@ import DeleteCoupon from '@/api/manage/promotions/coupons/Delete';
 import StandardPagination from '@/components/pagination/StandardPagination';
 import ListCouponsPaginated from '@/api/manage/promotions/coupons/ListPage';
 import Button from '@/components/Button';
+import { getProduct } from '@/redux/actions/products/products';
 
 const couponTypes = [
   {
@@ -39,6 +40,7 @@ function classNames(...classes) {
 
 export default function Promotions() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { productUUID } = router.query;
 
   const myUser = useSelector((state) => state.auth.user);
@@ -71,9 +73,19 @@ export default function Promotions() {
   );
 
   useEffect(() => {
-    SetProductHandle(productUUID[0], true, 'promotions');
     fetchCouponsCallback(currentPage);
   }, [fetchCouponsCallback, productUUID, currentPage]);
+
+  const fetchProduct = useCallback(async () => {
+    await SetProductHandle(productUUID[0], true, 'promotions');
+    dispatch(getProduct(productUUID));
+  }, [dispatch, productUUID]);
+
+  useEffect(() => {
+    if (productUUID && product && product.details && product.details.promotions_bool === false) {
+      fetchProduct(productUUID[0]);
+    }
+  }, [fetchProduct, productUUID, product]);
 
   const [openDiscount, setOpenDiscount] = useState(false);
 

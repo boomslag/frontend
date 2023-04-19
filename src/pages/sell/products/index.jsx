@@ -12,6 +12,20 @@ import ListSellerProducts from '@/api/manage/products/List';
 import { resetCreateVariables } from '@/redux/actions/courses/courses';
 import ProductsList from './components/ProductsList';
 import Link from 'next/link';
+import {
+  resetProductCategory,
+  resetProductColors,
+  resetProductDescription,
+  resetProductDetails,
+  resetProductImage,
+  resetProductLanguage,
+  resetProductLevel,
+  resetProductSizes,
+  resetProductStock,
+  resetProductSubTitle,
+  resetProductTitle,
+  resetProductVideo,
+} from '@/redux/actions/products/products';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -38,6 +52,18 @@ export default function Products() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(resetCreateVariables());
+    dispatch(resetProductDescription());
+    dispatch(resetProductTitle());
+    dispatch(resetProductSubTitle());
+    dispatch(resetProductLanguage());
+    dispatch(resetProductLevel());
+    dispatch(resetProductCategory());
+    dispatch(resetProductStock());
+    dispatch(resetProductImage());
+    dispatch(resetProductVideo());
+    dispatch(resetProductDetails());
+    dispatch(resetProductColors());
+    dispatch(resetProductSizes());
     // eslint-disable-next-line
   }, []);
 
@@ -140,20 +166,20 @@ export default function Products() {
         </Link>
       </div>
       <div className="px-8  pb-5 sm:flex sm:items-center sm:justify-between">
-        <div className="mt-1 flex gap-x-4">
-          <div className="w-full ">
+        <div className="mt-1 md:flex gap-4">
+          <div className="w-full block">
             <form
               onSubmit={(e) => onSubmit(e)}
-              className=" border-b-300 dark:border-dark-border flex border"
+              className="border-b-300 dark:border-dark-border flex border"
             >
-              <div className=" flex flex-grow items-stretch ">
+              <div className="flex flex-grow items-stretch">
                 <input
                   type="text"
                   value={searchBy}
                   onChange={(e) => {
                     setSearchBy(e.target.value);
                   }}
-                  className="text-md duration block w-full border focus:ring-none focus:outline-none dark:border-dark-border border-dark py-2.5 pl-4 font-medium  transition ease-in-out dark:bg-dark-second dark:text-dark-txt"
+                  className="text-md duration block w-full border focus:ring-none focus:outline-none dark:border-dark-border border-dark py-2.5 pl-4 font-medium transition ease-in-out dark:bg-dark-second dark:text-dark-txt"
                   placeholder="Search your products"
                 />
               </div>

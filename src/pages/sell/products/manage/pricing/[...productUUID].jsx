@@ -3,13 +3,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
-import { getProduct } from '@/redux/actions/products/products';
+import { getProduct, updateProductPricing } from '@/redux/actions/products/products';
 import ManageProductLayout from '@/pages/sell/products/manage/components/ManageProductLayout';
 import SetProductHandle from '@/api/manage/products/SetProductHandle';
-import UpdateProductPricing from '@/api/manage/products/UpdatePricing';
 import PriceSec from './components/PriceSec';
 import ComparePriceSec from './components/ComparePriceSec';
 import DiscountUntilSec from './components/DiscountUntilSec';
+import { ToastSuccess } from '@/components/ToastSuccess';
+import { ToastError } from '@/components/ToastError';
 
 export default function Goals() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function Goals() {
   const comparePrice = useSelector((state) => state.products.compare_price);
   const discountUntil = useSelector((state) => state.products.discount_until);
   const discount = useSelector((state) => state.products.discount);
+  const nftAddress = product && product.details && product.details.nft_address;
 
   const [loading, setLoading] = useState(false);
   const [hasChangesPrice, setHasChangesPrice] = useState(false);
@@ -41,7 +43,9 @@ export default function Goals() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    await SetProductHandle(productUUID[0], true, 'pricing');
+    if (productUUID && product && product.details && product.details.pricing_bool === false) {
+      await SetProductHandle(productUUID[0], true, 'pricing');
+    }
 
     const productBody = JSON.stringify({
       price,
@@ -52,7 +56,26 @@ export default function Goals() {
 
     const promises = [];
 
-    promises.push(UpdateProductPricing(productUUID[0], productBody));
+    if (hasChangesPrice || hasChangesComparePrice || hasChangesDiscountUntil) {
+      promises.push(dispatch(updateProductPricing(productUUID[0], productBody)));
+
+      Promise.all(promises)
+        .then((responses) => {
+          // Check if all responses have a status of 200
+          const allSuccessful = responses.every((res) => res && res.status === 200);
+
+          if (allSuccessful && (nftAddress !== 0 || nftAddress !== '0')) {
+            ToastSuccess('Successfully Updated NFT Price');
+          } else {
+            // Handle the case when not all responses are successful
+          }
+        })
+        .catch((error) => {
+          // Handle errors
+          console.log(error);
+          ToastError('Failed to Update NFT Price');
+        });
+    }
 
     await Promise.all(promises);
 

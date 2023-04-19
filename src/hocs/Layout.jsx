@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
 import ScrollToTop from './components/ScrollToTop';
 import Footer from '@/features/footer';
 import Navbar from '@/features/navbar';
-import useTokenRefresh from '@/hooks/useTokenRefresh';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { getCartTotal, getItems } from '@/redux/actions/cart/cart';
 import {
   loadEthereumBalance,
   loadMaticPolygonBalance,
   loadPraediumBalance,
-  loadUriBalance,
 } from '@/redux/actions/auth/auth';
 
 export default function Layout({ children }) {
@@ -33,6 +33,32 @@ export default function Layout({ children }) {
   };
 
   // useTokenRefresh();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const wallet = useSelector((state) => state.auth.wallet);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(loadEthereumBalance(wallet && wallet.address));
+      dispatch(loadPraediumBalance(wallet && wallet.polygon_address));
+      // dispatch(loadGalrBalance(wallet && wallet.polygon_address));
+      dispatch(loadMaticPolygonBalance(wallet && wallet.polygon_address));
+    }
+  }, [dispatch, isAuthenticated]);
+
+  // Fetch cart items when the page is reloaded or when isAuthenticated value changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getItems());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  // Fetch cart total when the cartItems value changes
+  useEffect(() => {
+    dispatch(getCartTotal(cartItems));
+  }, [dispatch, cartItems]);
 
   return (
     <>

@@ -6,27 +6,19 @@ export default async function CheckFriend(email) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
     const config = {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
+      signal: abortSignal,
     };
 
-    const body = JSON.stringify({
+    const body = {
       email,
-    });
+    };
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_USER_API_URL}/api/friends/check-users-are-friends/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.post(`/api/friends/check-friend`, body, config);
 
     if (res.status === 200) {
       return res;

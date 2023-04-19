@@ -35,7 +35,7 @@ export default function SubTitleSec({ setHasChangesSubTitle }) {
       <div className="relative mt-1 rounded-md shadow-sm">
         <input
           type="text"
-          value={subTitle || (details && details.short_description)}
+          value={subTitle || (details && details.short_description) || ''}
           maxLength={120}
           onChange={(e) => {
             setSubTitle(e.target.value);
@@ -44,6 +44,7 @@ export default function SubTitleSec({ setHasChangesSubTitle }) {
           className="ring-none w-full border dark:placeholder-dark-txt-secondary dark:border-dark-border border-gray-400 py-3 outline-none dark:bg-dark-second pl-4  focus:border-gray-500 focus:outline-transparent focus:ring-transparent"
           placeholder={(details && details.sub_title) || 'Insert your Product subtitle.'}
         />
+
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <span
             className="text-gray-500 dark:text-dark-txt-secondary sm:text-sm"

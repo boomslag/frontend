@@ -6,29 +6,16 @@ export default async function CreateProductReview(userID, productUUID, rating, c
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      user_id: userID,
+    const body = {
+      userID,
       productUUID,
       rating,
       content,
-    });
+    };
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/reviews/create/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.post('/api/products/reviews/create', body, {
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

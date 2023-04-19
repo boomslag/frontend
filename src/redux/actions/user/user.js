@@ -36,12 +36,9 @@ import {
 // import {load_user_profile, load_user} from '../auth/auth'
 
 export const editUsername = (username) => async (dispatch) => {
-  const access = localStorage.getItem('access');
-
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `JWT ${access}`,
     },
   };
 
@@ -50,39 +47,22 @@ export const editUsername = (username) => async (dispatch) => {
   });
 
   try {
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/username`, {
-    //   method: 'PUT',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'application/json',
-    //     Authorization: `JWT ${access}`,
-    //   },
-    //   body,
-    // });
-
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/username`,
-      body,
-      config,
-    );
+    const res = await axios.put('/api/profiles/edit-username', body, config);
 
     if (res.status === 200) {
       dispatch({
         type: EDIT_USERNAME_SUCCESS,
       });
       dispatch(loadUser());
-      // dispatch(setAlert("Username edited", "success"))
     } else {
       dispatch({
         type: EDIT_USERNAME_FAIL,
       });
-      // dispatch(setAlert('Username already exists', 'error'));
     }
   } catch (err) {
     dispatch({
       type: EDIT_USERNAME_FAIL,
     });
-    // dispatch(setAlert(err.request.response, 'error'));
   }
 };
 
@@ -159,13 +139,10 @@ export const editBanner = (banner) => async (dispatch) => {
 };
 
 export const editFirstName = (firstName) => async (dispatch) => {
-  const access = localStorage.getItem('access');
-
   const config = {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: `JWT ${access}`,
     },
   };
 
@@ -174,11 +151,7 @@ export const editFirstName = (firstName) => async (dispatch) => {
   });
 
   try {
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/first_name`,
-      body,
-      config,
-    );
+    const res = await axios.put(`/api/profiles/edit-first-name`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -201,13 +174,10 @@ export const editFirstName = (firstName) => async (dispatch) => {
 };
 
 export const editLastName = (lastName) => async (dispatch) => {
-  const access = localStorage.getItem('access');
-
   const config = {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: `JWT ${access}`,
     },
   };
 
@@ -216,11 +186,7 @@ export const editLastName = (lastName) => async (dispatch) => {
   });
 
   try {
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/last_name`,
-      body,
-      config,
-    );
+    const res = await axios.put(`/api/profiles/edit-last-name`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -243,22 +209,19 @@ export const editLastName = (lastName) => async (dispatch) => {
 };
 
 export const editLocation = (location) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
 
   const body = JSON.stringify({
     location,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/location`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-location`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -281,22 +244,19 @@ export const editLocation = (location) => async (dispatch) => {
 };
 
 export const editUrl = (url) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
 
   const body = JSON.stringify({
     url,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/url`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-url`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -319,21 +279,19 @@ export const editUrl = (url) => async (dispatch) => {
 };
 
 export const editBirthday = (birthday) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
+
   const body = JSON.stringify({
     birthday,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/birthday`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-birthday`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -356,21 +314,18 @@ export const editBirthday = (birthday) => async (dispatch) => {
 };
 
 export const editBio = (profileInfo) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     profile_info: profileInfo,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/bio`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-bio`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -393,21 +348,18 @@ export const editBio = (profileInfo) => async (dispatch) => {
 };
 
 export const editFacebook = (facebook) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     facebook,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/facebook`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-facebook`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -430,21 +382,18 @@ export const editFacebook = (facebook) => async (dispatch) => {
 };
 
 export const editInstagram = (instagram) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     instagram,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/instagram`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-instagram`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -467,21 +416,18 @@ export const editInstagram = (instagram) => async (dispatch) => {
 };
 
 export const editTwitter = (twitter) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     twitter,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/twitter`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-twitter`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -504,21 +450,18 @@ export const editTwitter = (twitter) => async (dispatch) => {
 };
 
 export const editYoutube = (youtube) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     youtube,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/youtube`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-youtube`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -541,21 +484,18 @@ export const editYoutube = (youtube) => async (dispatch) => {
 };
 
 export const editLinkedin = (linkedin) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     linkedin,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/linkedin`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-linkedin`, body, config);
 
     if (res.status === 200) {
       dispatch({
@@ -578,21 +518,18 @@ export const editLinkedin = (linkedin) => async (dispatch) => {
 };
 
 export const editGithub = (github) => async (dispatch) => {
-  const access = localStorage.getItem('access');
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
   const body = JSON.stringify({
     github,
   });
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/profiles/edit/github`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      body,
-    });
+    const res = await axios.put(`/api/profiles/edit-github`, body, config);
 
     if (res.status === 200) {
       dispatch({

@@ -26,7 +26,7 @@ export default function StockSec({ setHasChangesStock }) {
   }, [productWeights]);
   useEffect(() => {
     const fetchData = async () => {
-      if (nftAddress) {
+      if (nftAddress !== '0') {
         const res = await GetNFTStock(nftAddress, ticketId);
         if (res && res.status === 200) {
           setStock(res.data.results);

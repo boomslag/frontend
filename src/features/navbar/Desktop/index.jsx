@@ -64,9 +64,9 @@ export default function DesktopNavbar() {
             </Link>
           </NavbarLink>
           <AnimatedTippy
-            offsetY={23}
+            offsetY={15}
             content={
-              <div className="w-72 dark:bg-dark-second shadow bg-white space-y-2 justify-center  py-2 text-center text-lg font-medium leading-6 ">
+              <div className="w-72   space-y-2 justify-center  py-2 text-center text-lg font-medium leading-6 ">
                 <div className="flex flex-wrap justify-center gap-2 px-4">
                   <div className="my-2 cursor-default select-none">Categories:</div>
                   Category 1

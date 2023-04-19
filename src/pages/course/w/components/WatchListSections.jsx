@@ -25,6 +25,7 @@ export default function WatchListSections({
   id,
   setId,
   viewedEpisodes,
+  fetchViewedEpisodes,
 }) {
   return (
     <div>
@@ -54,6 +55,7 @@ export default function WatchListSections({
             resourceHidden={resourceHidden}
             setResourceHidden={setResourceHidden}
             viewedEpisodes={viewedEpisodes}
+            fetchViewedEpisodes={fetchViewedEpisodes}
           />
         ))
       ) : (

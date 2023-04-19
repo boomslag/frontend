@@ -3,9 +3,15 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ShoppingCartIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import {
+  emptyCart,
+  emptyCartAnonymous,
+  emptyCartAuthenticated,
+  getCartTotal,
+  getItems,
+} from '@/redux/actions/cart/cart';
 import CartItem from './CartItem';
 import CourseCartItem from './CourseCartItem';
-import { emptyCart, getCartTotal, getItems } from '@/redux/actions/cart/cart';
 import Button from '@/components/Button';
 
 export default function CartComponent() {
@@ -13,6 +19,7 @@ export default function CartComponent() {
 
   const dispatch = useDispatch();
 
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const cartItems = useSelector((state) => state.cart.items);
   const finalPrice = useSelector((state) => state.cart.finalPrice);
   const courses = useSelector((state) => state.cart.courses);
@@ -27,25 +34,21 @@ export default function CartComponent() {
   return (
     <>
       {/* Cart */}
-      <li className="relative">
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(true);
-          }}
-          className="relative mt-1 ring-none items-center justify-center rounded-full border-none text-gray-400 md:text-dark-gray dark:text-dark-txt-secondary hover:text-iris-400 dark:hover:text-dark-primary md:inline-flex p-1"
-        >
-          <ShoppingCartIcon
-            className="h-6 w-6 transition duration-300 ease-in-out"
-            aria-hidden="true"
-          />
-          {cartItems && cartItems.length > 0 && (
-            <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-iris-600 text-center text-xs font-semibold dark:bg-dark-primary text-white h-5 w-5 flex items-center justify-center">
-              {cartItems.length}
-            </span>
-          )}
-        </button>
-      </li>
+      <button
+        type="button"
+        className="ring-none relative items-center justify-center rounded-full border-none text-dark-gray hover:text-iris-400 dark:text-dark-txt-secondary  dark:hover:text-dark-primary md:inline-flex "
+      >
+        <ShoppingCartIcon
+          className=" h-6 w-6 
+transition duration-300 ease-in-out  "
+          aria-hidden="true"
+        />
+        {cartItems && cartItems.length > 0 && (
+          <span className="absolute top-0 ml-4 rounded-full bg-iris-600 px-2 text-center text-xs font-semibold text-white md:ml-4">
+            {cartItems.length}
+          </span>
+        )}
+      </button>
 
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -74,7 +77,11 @@ export default function CartComponent() {
                                 type="button"
                                 onClick={() => {
                                   if (window.confirm('Are you sure you want to clear your cart?')) {
-                                    dispatch(emptyCart());
+                                    if (isAuthenticated) {
+                                      dispatch(emptyCartAuthenticated());
+                                    } else {
+                                      dispatch(emptyCartAnonymous());
+                                    }
                                     dispatch(getItems()).then(dispatch(getCartTotal(cartItems)));
                                   }
                                 }}

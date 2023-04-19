@@ -7,7 +7,7 @@ import cookie from 'cookie';
 import parse from 'html-react-parser';
 import { useDispatch, useSelector } from 'react-redux';
 import { Fragment, useCallback, useEffect, useState } from 'react';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import {
   BookOpenIcon,
   CheckBadgeIcon,
@@ -42,7 +42,7 @@ import Layout from '@/hocs/Layout';
 import UpdateProductViews from '@/api/products/UpdateViews';
 import { checkCoupon, removeCoupon } from '@/redux/actions/coupons/coupons';
 import UpdateAnalytics from '@/api/products/UpdateAnalytics';
-import { addItem } from '@/redux/actions/cart/cart';
+import { addItem, addItemAnonymous, addItemAuthenticated } from '@/redux/actions/cart/cart';
 import { ToastSuccess } from '@/components/ToastSuccess';
 import Description from './components/Description';
 import Clock from '@/components/CountDownTimer/Clock';
@@ -56,6 +56,7 @@ import GetNFTStock from '@/api/tokens/GetNFTStock';
 import VerifyAffiliate from '@/api/tokens/VerifyAffiliate';
 import BecomeAffiliate from '@/api/tokens/BecomeAffiliate';
 import Image from 'next/image';
+import { MoonLoader } from 'react-spinners';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -131,11 +132,11 @@ export default function Product({
   const [selectedSize, setSelectedSize] = useState(null);
   const details = product && product.details;
 
-  useEffect(() => {
-    if (product) {
-      UpdateProductViews(product.details.id);
-    }
-  }, [productUUID, product]);
+  // useEffect(() => {
+  //   if (product) {
+  //     UpdateProductViews(product.details.id);
+  //   }
+  // }, [productUUID, product]);
 
   useEffect(() => {
     dispatch(removeCoupon());
@@ -144,21 +145,18 @@ export default function Product({
   const shareUrl = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}product/${product.details.slug}`;
   const shareUrlAffiliate = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}/product/${product.details.slug}?referrer=${polygonAddress}`;
 
-  const sanitizedDescription = DOMPurify.sanitize(product && product.details.description);
-  const parsedDescription = parse(sanitizedDescription);
+  // useEffect(() => {
+  //   const startTime = new Date();
+  //   const startTimeInSeconds = startTime.getSeconds();
 
-  useEffect(() => {
-    const startTime = new Date();
-    const startTimeInSeconds = startTime.getSeconds();
-
-    return () => {
-      const endTime = new Date();
-      const endTimeInSeconds = endTime.getSeconds();
-      const duration = endTimeInSeconds - startTimeInSeconds;
-      UpdateAnalytics(product.details.id, duration);
-    };
-    // eslint-disable-next-line
-  }, []);
+  //   return () => {
+  //     const endTime = new Date();
+  //     const endTimeInSeconds = endTime.getSeconds();
+  //     const duration = endTimeInSeconds - startTimeInSeconds;
+  //     UpdateAnalytics(product.details.id, duration);
+  //   };
+  //   // eslint-disable-next-line
+  // }, []);
 
   function scrollFunction() {
     if (document.getElementById('navbar')) {
@@ -207,16 +205,34 @@ export default function Product({
     cartItems && cartItems.some((u) => u.product && u.product.includes(product.details.id));
 
   async function handleAddToCart() {
-    // e.preventDefault();
     if (productExistsInCart) {
       router.push('/cart');
-    } else if (coupon) {
-      if (selectedShipping !== null) {
+    }
+
+    if (isAuthenticated) {
+      if (coupon) {
+        if (selectedShipping !== null) {
+          dispatch(
+            addItemAuthenticated(
+              product.details.id,
+              'Product',
+              coupon,
+              selectedShipping,
+              quantity,
+              selectedSize,
+              selectedColor,
+              selectedWeight,
+              selectedMaterial,
+              referrer,
+            ),
+          );
+        }
+      } else if (selectedShipping !== null) {
         dispatch(
-          addItem(
+          addItemAuthenticated(
             product.details.id,
             'Product',
-            coupon,
+            null,
             selectedShipping,
             quantity,
             selectedSize,
@@ -226,24 +242,47 @@ export default function Product({
             referrer,
           ),
         );
+      } else {
+        ToastSuccess('Select Shipping Option');
       }
-    } else if (selectedShipping !== null) {
-      dispatch(
-        addItem(
-          product.details.id,
-          'Product',
-          null,
-          selectedShipping,
-          quantity,
-          selectedSize,
-          selectedColor,
-          selectedWeight,
-          selectedMaterial,
-          referrer,
-        ),
-      );
-    } else {
-      ToastSuccess('Select Shipping Option');
+    }
+
+    if (!isAuthenticated) {
+      if (coupon) {
+        if (selectedShipping !== null) {
+          dispatch(
+            addItemAnonymous(
+              product.details.id,
+              'Product',
+              coupon,
+              selectedShipping,
+              quantity,
+              selectedSize,
+              selectedColor,
+              selectedWeight,
+              selectedMaterial,
+              referrer,
+            ),
+          );
+        }
+      } else if (selectedShipping !== null) {
+        dispatch(
+          addItemAnonymous(
+            product.details.id,
+            'Product',
+            null,
+            selectedShipping,
+            quantity,
+            selectedSize,
+            selectedColor,
+            selectedWeight,
+            selectedMaterial,
+            referrer,
+          ),
+        );
+      } else {
+        ToastSuccess('Select Shipping Option');
+      }
     }
   }
 
@@ -444,10 +483,23 @@ export default function Product({
                   </p>
                 </div>
                 <div className="block  grid-cols-3 gap-3 text-lg font-bold sm:grid-cols-6">
-                  {stock && stock >= 10 ? (
-                    <div className="text-green-500">{stock && stock}</div>
+                  {stock !== false ? (
+                    stock === -1 ? (
+                      <i className="bx bx-infinite text-xl" />
+                    ) : (
+                      <>
+                        {stock && stock >= 10 ? (
+                          <div className="text-green-500">{stock && stock}</div>
+                        ) : (
+                          <div className="text-red-500">{stock && stock}</div>
+                        )}
+                      </>
+                    )
                   ) : (
-                    <div className="text-red-500">{stock && stock}</div>
+                    <>
+                      <MoonLoader loading size={15} className="mr-1" color="#1c1d1f" />
+                      <span>Loading</span>
+                    </>
                   )}
                 </div>
               </div>
@@ -1243,7 +1295,7 @@ export default function Product({
     if (isAuthenticated) {
       const fetchData = async () => {
         if (nftAddress) {
-          const res = await VerifyTokenOwnership(nftAddress, ticketId);
+          const res = await VerifyTokenOwnership(polygonAddress, nftAddress, ticketId);
           if (res && res.status === 200) {
             setOwnsTicket(res.data.results);
           }
@@ -1270,9 +1322,9 @@ export default function Product({
   const [isAffiliate, setIsAffiliate] = useState(initialIsAffiliate);
   const handleBecomeAffiliate = async () => {
     setLoadingAffiliate(true);
-    const res = await BecomeAffiliate(nftAddress, ticketId);
+    const res = await BecomeAffiliate(wallet.address, polygonAddress, ticketId);
     if (res.status === 200) {
-      const response = await VerifyAffiliate(ticketId);
+      const response = await VerifyAffiliate(polygonAddress, ticketId);
       if (response.status === 200) {
         setIsAffiliate(res.data.results);
       }
@@ -1283,7 +1335,7 @@ export default function Product({
     if (isAuthenticated) {
       const fetchData = async () => {
         if (nftAddress) {
-          const res = await VerifyAffiliate(ticketId);
+          const res = await VerifyAffiliate(polygonAddress, ticketId);
           if (res && res.status === 200) {
             setIsAffiliate(res.data.results);
           }
@@ -1933,7 +1985,7 @@ Product.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>;
 };
 
-const fetchVerifyTokenOwnership = async (nftAddress, ticketId, access) => {
+const fetchVerifyTokenOwnership = async (polygonAddress, nftAddress, ticketId, access) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/verify_ticket_ownership/`,
@@ -1961,7 +2013,7 @@ export async function getServerSideProps(context) {
 
   const cookies = cookie.parse(context.req.headers.cookie || '');
   // Read the JWT token from the cookie
-  const access = cookies.access;
+  const { access, polygonAddress } = cookies;
 
   // Check if username is defined
   if (!productUUID || productUUID.length === 0) {
@@ -1995,7 +2047,12 @@ export async function getServerSideProps(context) {
       const nftAddress = productRes.data.results.details.nft_address;
       const ticketId = productRes.data.results.details.token_id;
 
-      initialOwnsTicket = await fetchVerifyTokenOwnership(nftAddress, ticketId, access);
+      const isTokenOwner = await fetchVerifyTokenOwnership(
+        polygonAddress,
+        nftAddress,
+        ticketId,
+        access,
+      );
     }
 
     return {

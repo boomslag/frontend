@@ -6,21 +6,9 @@ export default async function FetchSectionsPaid(courseUUID, page, pageSize, maxP
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/list/sections/${courseUUID}/?p=${page}&page_size=${pageSize}&max_page_size=${maxPageSize}`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
+      `/api/courses/sections/paid/list?courseUUID=${courseUUID}&page=${page}&pageSize=${pageSize}&maxPageSize=${maxPageSize}`,
+      { signal: abortSignal },
     );
 
     if (res.status === 200) {

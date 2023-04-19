@@ -4,7 +4,8 @@ import cookie from 'cookie';
 import Head from 'next/head';
 import { useState, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import DOMPurify from 'dompurify';
+import sanitizeHtml from 'sanitize-html';
+
 import parse from 'html-react-parser';
 import FetchSectionsUnpaid from '@/api/courses/sections/unpaid/List';
 import { useCallback } from 'react';
@@ -12,7 +13,12 @@ import { useEffect } from 'react';
 import { ToastError } from '@/components/toast/ToastError';
 import FetchCourseReviews from '@/api/courses/ListReviews';
 import UpdateAnalytics from '@/api/courses/UpdateAnalytics';
-import { addItem, getItems } from '@/redux/actions/cart/cart';
+import {
+  addItem,
+  addItemAnonymous,
+  addItemAuthenticated,
+  getItems,
+} from '@/redux/actions/cart/cart';
 import AddOrRemoveWishlist from '@/api/courses/AddOrRemoveWishlist';
 import CheckWishlist from '@/api/courses/CheckWishlist';
 import VerifyTokenOwnership from '@/api/tokens/VerifyTicketOwnership';
@@ -89,21 +95,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Courses({
-  course,
-  authorProfile,
-  author,
-  courseUUID,
-  referrer,
-  initialSections,
-  nextPage,
-  totalCount,
-  initialReviews,
-  initialNextPageReviews,
-  initialTotalCountReviews,
-  initialOwnsTicket,
-  initialIsAffiliate,
-}) {
+export default function Courses({ course, author, courseUUID, referrer, authorProfile }) {
   const SeoList = {
     title: course.details.title
       ? `${course.details.title} - ${course.details.short_description}`
@@ -129,14 +121,12 @@ export default function Courses({
   };
 
   const dispatch = useDispatch();
-
   const router = useRouter();
 
-  const user = useSelector((state) => state.auth.user);
   const wallet = useSelector((state) => state.auth.wallet);
+  const user = useSelector((state) => state.auth.user);
   const polygonAddress = wallet && wallet.polygon_address;
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
   const cartItems = useSelector((state) => state.cart.items);
   const coupon = useSelector((state) => state.coupons.coupon);
   const couponType = useSelector((state) => state.coupons.type);
@@ -151,62 +141,54 @@ export default function Courses({
   const [effectCart, setEffectCart] = useState(false);
   const [effectFullOverview, setEffectFullOverview] = useState(false);
   const [relatedCourses, setRelatedCourses] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState('');
 
-  const details = course && course.details;
-  const sanitizedShortDescription =
-    details &&
-    DOMPurify.sanitize(details.short_description, {
-      ALLOWED_TAGS: ['p'],
-    });
-
-  const sanitizedDescription = DOMPurify.sanitize(details && details.description);
-  const parsedDescription = parse(sanitizedDescription);
-
-  const shareUrl = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}/courses/${courseUUID}`;
-  const shareUrlAffiliate = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}/courses/${
-    details && details.slug
-  }?referrer=${polygonAddress}`;
-
-  const [sections, setSections] = useState(initialSections);
-  const [sectionsCount, setSectionsCount] = useState(totalCount);
+  const [loading, setLoading] = useState(false);
+  const [sections, setSections] = useState(false);
+  const [sectionsCount, setSectionsCount] = useState(false);
   const [sectionsPage, setSectionsPage] = useState(1);
   const [sectionsPageSize, setSectionsPageSize] = useState(6);
   const [sectionsMaxPageSize, setSectionsMaxPageSize] = useState(100);
-  const [sectionsNext, setSectionsNext] = useState(nextPage);
+  const [sectionsNext, setSectionsNext] = useState(null);
   const [sectionsPrevious, setSectionsPrevious] = useState(null);
 
-  const handleViewMoreSections = async () => {
-    if (!sectionsNext) {
-      ToastError('No more sections to load');
-      return;
-    }
-
+  const fetchSections = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await axios.get(sectionsNext);
-      const data = res.data;
+      const res = await FetchSectionsUnpaid(
+        courseUUID[0],
+        sectionsPage,
+        sectionsPageSize,
+        sectionsMaxPageSize,
+      );
 
-      setSections([...sections, ...data.results]);
-      setSectionsNext(data.next);
-      setSectionsPrevious(data.previous);
-      setSectionsCount(data.count);
+      setSections(res.data.results);
+      setSectionsNext(res.data.next);
+      setSectionsPrevious(res.data.previous);
+      setSectionsCount(res.data.count);
     } catch (err) {
       ToastError('Error loading sections');
     } finally {
       setLoading(false);
     }
+  }, [courseUUID, sectionsPage, sectionsPageSize, sectionsMaxPageSize]);
+
+  useEffect(() => {
+    fetchSections();
+    // eslint-disable-next-line
+  }, [courseUUID]);
+
+  const handleViewMoreSections = () => {
+    setSectionsPageSize(sectionsPageSize + 6);
   };
 
-  const [reviews, setReviews] = useState(initialReviews);
-  const [reviewsCount, setReviewsCount] = useState(initialNextPageReviews);
+  const [reviews, setReviews] = useState(false);
+  const [reviewsCount, setReviewsCount] = useState(false);
   const [reviewsPage, setReviewsPage] = useState(1);
   const [reviewsPageSize, setReviewsPageSize] = useState(6);
   const [reviewsMaxPageSize, setReviewsMaxPageSize] = useState(100);
-  const [reviewsNext, setReviewsNext] = useState(initialTotalCountReviews);
+  const [reviewsNext, setReviewsNext] = useState(null);
   const [reviewsPrevious, setReviewsPrevious] = useState(null);
-
   const fetchReviews = useCallback(async () => {
     setLoading(true);
     try {
@@ -230,24 +212,72 @@ export default function Courses({
   }, [courseUUID, reviewsPage, reviewsPageSize, reviewsMaxPageSize]);
 
   useEffect(() => {
-    if (course && course.details && course.details.id) {
-      const startTime = new Date();
-      const startTimeInSeconds = startTime.getSeconds();
-
-      return () => {
-        const endTime = new Date();
-        const endTimeInSeconds = endTime.getSeconds();
-        const duration = endTimeInSeconds - startTimeInSeconds;
-        UpdateAnalytics(course.details.id, duration);
-      };
-    }
-  }, []);
+    fetchReviews();
+    // eslint-disable-next-line
+  }, [courseUUID]);
 
   const handleViewMoreReviews = () => {
     setReviewsPageSize(reviewsPageSize + 6);
   };
 
+  const details = course && course.details;
   const courseId = details && details.id;
+
+  const allowedTags = [
+    'p',
+    'h1',
+    'h2',
+    'ul',
+    'ol',
+    'li',
+    'sub',
+    'sup',
+    'blockquote',
+    'pre',
+    'a',
+    'img',
+    'video',
+    'span',
+    'strong',
+    'em',
+    'u',
+    's',
+    'br',
+  ];
+
+  const allowedAttributes = {
+    a: ['href', 'target', 'rel'],
+    img: ['src', 'alt', 'title'],
+    video: ['src', 'controls'],
+    span: ['style'],
+    p: ['style'],
+    h1: ['style'],
+    h2: ['style'],
+  };
+
+  const sanitizeConfig = {
+    allowedTags,
+    allowedAttributes,
+    allowedStyles: {
+      '*': {
+        'text-align': [/^left$/, /^right$/, /^center$/, /^justify$/],
+        'font-size': [/^\d+(?:px|em|%)$/],
+        'background-color': [/^#[0-9A-Fa-f]+$/],
+        color: [/^#[0-9A-Fa-f]+$/],
+        'font-family': [/^[-\w\s,"']+$/],
+      },
+    },
+  };
+
+  const sanitizedShortDescription =
+    details && sanitizeHtml(details.short_description, sanitizeConfig);
+
+  const sanitizedDescription = sanitizeHtml(details && details.description, sanitizeConfig);
+
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}/course/${details && details.slug}`;
+  const shareUrlAffiliate = `${process.env.NEXT_PUBLIC_APP_PUBLIC_URL}/course/${
+    details && details.slug
+  }?referrer=${polygonAddress}`;
 
   const [openVideo, setOpenVideo] = useState(false);
   const [open, setOpen] = useState(false);
@@ -257,13 +287,64 @@ export default function Courses({
   async function handleAddToCart(e) {
     e.preventDefault();
     if (courseExistsInCart) {
-      history.location.href = '/cart';
+      router.push('/cart');
     }
 
-    if (coupon) {
-      dispatch(addItem(courseId, 'Course', coupon, null, null, null, null, null, null, referrer));
-    } else {
-      dispatch(addItem(courseId, 'Course', null, null, null, null, null, null, null, referrer));
+    if (isAuthenticated) {
+      if (coupon) {
+        dispatch(
+          addItemAuthenticated(
+            courseId,
+            'Course',
+            coupon,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            referrer,
+          ),
+        );
+      } else {
+        dispatch(
+          addItemAuthenticated(
+            courseId,
+            'Course',
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            referrer,
+          ),
+        );
+      }
+    }
+
+    if (!isAuthenticated) {
+      if (coupon) {
+        dispatch(
+          addItemAnonymous(
+            courseId,
+            'Course',
+            coupon,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            referrer,
+          ),
+        );
+      } else {
+        dispatch(
+          addItemAnonymous(courseId, 'Course', null, null, null, null, null, null, null, referrer),
+        );
+      }
     }
   }
 
@@ -284,7 +365,7 @@ export default function Courses({
   }
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && courseUUID) {
       const apiRes = async () => {
         const res = await CheckWishlist(courseId);
         if (res.status === 200) {
@@ -370,12 +451,12 @@ export default function Courses({
   const nftAddress = course && course.details.nft_address;
   const ticketId = course && course.details.token_id;
 
-  const [ownsTicket, setOwnsTicket] = useState(initialOwnsTicket);
+  const [ownsTicket, setOwnsTicket] = useState(false);
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
         if (nftAddress) {
-          const res = await VerifyTokenOwnership(nftAddress, ticketId);
+          const res = await VerifyTokenOwnership(polygonAddress, nftAddress, ticketId);
           if (res && res.status === 200) {
             setOwnsTicket(res.data.results);
           }
@@ -399,23 +480,25 @@ export default function Courses({
   }, [nftAddress, ticketId]);
 
   const [loadingAffiliate, setLoadingAffiliate] = useState(false);
-  const [isAffiliate, setIsAffiliate] = useState(initialIsAffiliate);
+  const [isAffiliate, setIsAffiliate] = useState(false);
+
   const handleBecomeAffiliate = async () => {
     setLoadingAffiliate(true);
-    const res = await BecomeAffiliate(nftAddress, ticketId);
+    const res = await BecomeAffiliate(wallet.address, polygonAddress, ticketId);
     if (res.status === 200) {
-      const response = await VerifyAffiliate(ticketId);
+      const response = await VerifyAffiliate(polygonAddress, ticketId);
       if (response.status === 200) {
         setIsAffiliate(res.data.results);
       }
     }
     setLoadingAffiliate(false);
   };
+
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
         if (nftAddress) {
-          const res = await VerifyAffiliate(ticketId);
+          const res = await VerifyAffiliate(polygonAddress, ticketId);
           if (res && res.status === 200) {
             setIsAffiliate(res.data.results);
           }
@@ -433,7 +516,11 @@ export default function Courses({
         const buyNowResponse = await BuyNow(course && course.details.id, coupon, referrer);
 
         if (buyNowResponse.status === 200 && nftAddress) {
-          const tokenOwnershipResponse = await VerifyTokenOwnership(nftAddress, ticketId);
+          const tokenOwnershipResponse = await VerifyTokenOwnership(
+            polygonAddress,
+            nftAddress,
+            ticketId,
+          );
 
           if (tokenOwnershipResponse && tokenOwnershipResponse.status === 200) {
             setOwnsTicket(tokenOwnershipResponse.data.results);
@@ -441,7 +528,7 @@ export default function Courses({
             console.error('Failed to verify token ownership.');
           }
 
-          const affiliateResponse = await VerifyAffiliate(ticketId);
+          const affiliateResponse = await VerifyAffiliate(polygonAddress, ticketId);
 
           if (affiliateResponse && affiliateResponse.status === 200) {
             setIsAffiliate(affiliateResponse.data.results);
@@ -475,6 +562,21 @@ export default function Courses({
       setNFTPrice(0);
     }
   };
+
+  // ====== ANALYTICS // ============
+  useEffect(() => {
+    if (course && course.details && course.details.id) {
+      const startTime = new Date();
+      const startTimeInSeconds = startTime.getSeconds();
+
+      return () => {
+        const endTime = new Date();
+        const endTimeInSeconds = endTime.getSeconds();
+        const duration = endTimeInSeconds - startTimeInSeconds;
+        UpdateAnalytics(course.details.id, duration);
+      };
+    }
+  }, []);
 
   const addToCartCTA = () => {
     return (
@@ -986,7 +1088,7 @@ export default function Courses({
     return (
       <div
         id="navbar"
-        className="fixed top-0 z-40 hidden w-full dark:bg-dark-main bg-dark py-1.5 shadow-neubrutalism-sm "
+        className="fixed top-0 z-40 hidden w-full dark:bg-dark-main bg-black bg-cover bg-center py-1.5 shadow-neubrutalism-sm "
       >
         <div>
           <div className="py-3">
@@ -1051,7 +1153,6 @@ export default function Courses({
         <meta name="author" content={SeoList.author} />
         <meta name="publisher" content={SeoList.publisher} />
 
-        {/* Social Media Tags */}
         <meta property="og:title" content={SeoList.title} />
         <meta property="og:description" content={SeoList.description} />
         <meta property="og:url" content={SeoList.url} />
@@ -1069,18 +1170,11 @@ export default function Courses({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {/* =============================================== ABOVE FOLD ============================================ */}
       {topBar()}
       {/* =============================================== ABOVE FOLD ============================================ */}
       <div className="relative z-0 h-auto w-full bg-cover bg-center py-6">
-        <div
-          className="absolute inset-0 bg-black dark:bg-dark-main bg-opacity-90"
-          style={{
-            backgroundImage:
-              'radial-gradient(rgba(10, 10, 10, 0.2) 2px, transparent 2px), radial-gradient(rgba(10, 10, 10, 0.2) 2px, transparent 2px)',
-            backgroundSize: '40px 40px',
-            backgroundPosition: '0 0, 20px 20px',
-          }}
-        />
+        <div className="absolute inset-0 bg-black dark:bg-dark-main bg-opacity-90" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 xl:px-8">
           {/* We've used 3xl here, but feel free to try other max-widths based on your needs */}
           <div className="mx-auto max-w-7xl">
@@ -1126,9 +1220,12 @@ export default function Courses({
                   {details.title}
                 </p>
                 {/* Description */}
-                <p className="text-md font-regular mt-2 text-dark-txt dark:text-dark-txt lg:text-lg">
-                  {sanitizedShortDescription}
-                </p>
+                <div
+                  className="text-md font-regular mt-2 text-dark-txt dark:text-dark-txt lg:text-lg"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizedShortDescription,
+                  }}
+                />
                 {/* Ratings */}
                 <div className="mb-2 mt-4">
                   {
@@ -1408,9 +1505,12 @@ export default function Courses({
                                   />
                                 </Disclosure.Button>
                                 <Disclosure.Panel className="px-4 py-2 text-sm text-gray-500">
-                                  <div className="text-md font-regular my-2 text-gray-900 dark:text-dark-txt">
-                                    {parsedDescription}
-                                  </div>
+                                  <div
+                                    className="text-md font-regular my-2 text-gray-900 dark:text-dark-txt"
+                                    dangerouslySetInnerHTML={{
+                                      __html: sanitizedDescription,
+                                    }}
+                                  />
                                 </Disclosure.Panel>
                               </>
                             )}
@@ -1570,7 +1670,7 @@ export default function Courses({
                       {/* <video src={test_video} controls className="w-full h-96"/> */}
                       <CustomVideo
                         className=" h-96 w-full object-contain "
-                        url={course && course.videos[0]}
+                        url={course && course.videos[0].file}
                       />
                       <div className="h-full w-full bg-white" />
                     </div>
@@ -1974,38 +2074,13 @@ Courses.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>;
 };
 
-const fetchVerifyTokenOwnership = async (nftAddress, ticketId, access) => {
-  try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/verify_ticket_ownership/`,
-      {
-        nft_address: nftAddress,
-        ticket_id: ticketId,
-      },
-      {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `JWT ${access}`,
-        },
-      },
-    );
-    return response.data.results;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
 export async function getServerSideProps(context) {
-  const courseUUID = context.query.courseUUID;
-  const referrer = context.query.referrer;
+  const { courseUUID } = context.query;
+  const { referrer } = context.query;
 
   const cookies = cookie.parse(context.req.headers.cookie || '');
-  // Read the JWT token from the cookie
-  const access = cookies.access;
+  const { access } = cookies;
 
-  // Check if username is defined
   if (!courseUUID || courseUUID.length === 0) {
     return {
       notFound: true,
@@ -2014,18 +2089,6 @@ export async function getServerSideProps(context) {
 
   const courseRes = await axios.get(
     `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/get/${courseUUID}/`,
-  );
-
-  const sectionsRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_COURSES_URL
-    }/api/courses/list/sections/unpaid/${courseUUID}/?p=${1}&page_size=${12}&max_page_size=${100}`,
-  );
-
-  const reviewsRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_COURSES_URL
-    }/api/reviews/list/${courseUUID}/?filter=date_created&p=${1}&page_size=${12}&max_page_size=${100}`,
   );
 
   const authorId = courseRes.data.results.details.author;
@@ -2038,16 +2101,6 @@ export async function getServerSideProps(context) {
     `${process.env.NEXT_PUBLIC_APP_API_URL}/api/users/get/${authorId}/`,
   );
 
-  let initialOwnsTicket = false;
-  let initialIsAffiliate = false;
-
-  if (access) {
-    const nftAddress = courseRes.data.results.details.nft_address;
-    const ticketId = courseRes.data.results.details.token_id;
-
-    initialOwnsTicket = await fetchVerifyTokenOwnership(nftAddress, ticketId, access);
-  }
-
   return {
     props: {
       courseUUID: courseUUID,
@@ -2055,14 +2108,6 @@ export async function getServerSideProps(context) {
       course: courseRes.data.results,
       authorProfile: authorProfileRes.data.results,
       author: authorRes.data.results,
-      initialSections: sectionsRes.data.results,
-      nextPage: sectionsRes.data.next,
-      totalCount: sectionsRes.data.count,
-      initialReviews: reviewsRes.data.results,
-      initialNextPageReviews: reviewsRes.data.next,
-      initialTotalCountReviews: reviewsRes.data.count,
-      initialOwnsTicket: initialOwnsTicket,
-      initialIsAffiliate: initialIsAffiliate,
     },
   };
 }

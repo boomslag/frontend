@@ -109,18 +109,8 @@ import {
 } from './types';
 
 export const getProduct = (productUUID) => async (dispatch) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
-    },
-  };
-
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/seller/get/${productUUID}/`,
-      config,
-    );
+    const res = await axios.get(`/api/sell/products/get?productUUID=${productUUID}`);
 
     if (res.status === 200) {
       dispatch({
@@ -239,36 +229,24 @@ export const createProductRequisites = (productUUID, requisites) => async (dispa
 };
 
 export const createProduct =
-  (title, category, businessActivity, type, user) => async (dispatch) => {
+  (title, category, businessActivity, type, user, address, polygonAddress) => async (dispatch) => {
     const controller = new AbortController();
     const abortSignal = controller.signal;
 
     try {
-      const access = localStorage.getItem('access');
-      const config = {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `JWT ${access}`,
-        },
-      };
-
-      const body = JSON.stringify({
+      const body = {
         title,
         category,
         businessActivity,
         type,
         user,
-      });
+        address,
+        polygonAddress,
+      };
 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/create/`,
-        body,
-        {
-          ...config,
-          signal: abortSignal,
-        },
-      );
+      const res = await axios.post('/api/sell/products/create', body, {
+        signal: abortSignal,
+      });
 
       if (res.status === 201) {
         dispatch({
@@ -278,13 +256,11 @@ export const createProduct =
       }
     } catch (err) {
       if (axios.isCancel(err)) {
-        // eslint-disable-next-line
         console.log('Request canceled', err.message);
         dispatch({
           type: CREATE_PRODUCT_FAIL,
         });
       } else {
-        // eslint-disable-next-line
         console.log(err);
         ToastError(err.response.data.error);
         dispatch({
@@ -614,25 +590,10 @@ export const onchangeProductDetails = (details) => async (dispatch) => {
 
 export const updateProductStock = (productUUID, stock) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/products/updateStock', {
       productUUID,
       stock,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/edit/stock/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -642,31 +603,18 @@ export const updateProductStock = (productUUID, stock) => async (dispatch) => {
       ToastSuccess(`Stock saved`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    ToastError(`Error: ${err.response.data.error}`);
   }
 };
 
 export const updateProductDetails = (productUUID, details) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       details,
-    });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/details/create/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.post('/api/sell/products/updateDetails', body);
 
     if (res.status === 200) {
       dispatch({
@@ -720,25 +668,12 @@ export const deleteProductDetail = (productUUID, detailID) => async (dispatch) =
 
 export const updateProductSizes = (productUUID, sizes) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       sizes,
-    });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/sizes/create/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.post('/api/sell/products/updateSizes', body);
 
     if (res.status === 200) {
       dispatch({
@@ -755,7 +690,6 @@ export const updateProductSizes = (productUUID, sizes) => async (dispatch) => {
     });
   }
 };
-
 export const deleteProductSize = (productUUID, id) => async (dispatch) => {
   try {
     const access = localStorage.getItem('access');
@@ -794,25 +728,12 @@ export const deleteProductSize = (productUUID, id) => async (dispatch) => {
 
 export const updateProductColors = (productUUID, colors) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       colors,
-    });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/colors/create/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.post('/api/sell/products/updateColors', body);
 
     if (res.status === 200) {
       dispatch({
@@ -896,31 +817,29 @@ export const onchangeProductWhatLearnt = (detailsList) => async (dispatch) => {
 
 export const updateProductWhatLearnt = (productUUID, whatlearntList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       whatlearntList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/whatlearnt/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/products/updateWhatlearnt', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -929,34 +848,29 @@ export const updateProductWhatLearnt = (productUUID, whatlearntList) => async (d
 
 export const deleteProductWhatLearnt = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/whatlearnt/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/products/deleteWhatlearnt', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -993,67 +907,60 @@ export const onchangeProductWhoIsFor = (whoIsForList) => async (dispatch) => {
 
 export const updateProductWhoIsFor = (productUUID, whoIsForList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       whoIsForList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/who_is_for/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/products/updateWhoisfor', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    console.error(`Error: ${err.message}`);
   }
 };
 
 export const deleteProductWhoIsFor = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/who_is_for/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/products/deleteWhoisfor', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -1090,31 +997,29 @@ export const onchangeProductRequisite = (requisitesList) => async (dispatch) => 
 
 export const updateProductRequisite = (productUUID, requisitesList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       requisitesList,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/requisites/create/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
+    const res = await fetch('/api/sell/products/updateRequisites', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -1123,34 +1028,29 @@ export const updateProductRequisite = (productUUID, requisitesList) => async (di
 
 export const deleteProductRequisite = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/requisites/delete/`,
-      body,
-      config,
-    );
 
-    if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
+    const res = await fetch('/api/sell/products/deleteRequisite', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
       dispatch({
         type: GET_PRODUCT_SUCCESS,
-        payload: res.data.results,
+        payload: data.data,
       });
+    } else {
+      const error = await res.json();
+      console.error(`Error: ${error.error}`);
     }
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
@@ -1187,25 +1087,12 @@ export const onchangeProductWeight = (weightsList) => async (dispatch) => {
 
 export const updateProductWeight = (productUUID, weightsList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       weightsList,
-    });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/weights/create/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.post('/api/sell/products/updateWeights', body);
 
     if (res.status === 200) {
       dispatch({
@@ -1284,25 +1171,12 @@ export const onchangeProductMaterial = (materialsList) => async (dispatch) => {
 
 export const updateProductMaterial = (productUUID, materialsList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       materialsList,
-    });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/materials/create/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.post('/api/sell/products/updateMaterials', body);
 
     if (res.status === 200) {
       dispatch({
@@ -1381,25 +1255,16 @@ export const onchangeProductImage = (imagesList) => async (dispatch) => {
 
 export const updateProductImage = (productUUID, imagesList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      productUUID,
-      imagesList,
+    const formData = new FormData();
+    formData.append('productUUID', productUUID);
+    imagesList.forEach((image, index) => {
+      formData.append(`imagesList[${index}].id`, image.id);
+      formData.append(`imagesList[${index}].position_id`, image.position_id);
+      formData.append(`imagesList[${index}].title`, image.title);
+      formData.append(`imagesList[${index}].file`, image.file);
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/images/create/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/products/images/create', formData);
 
     if (res.status === 200) {
       dispatch({
@@ -1414,34 +1279,18 @@ export const updateProductImage = (productUUID, imagesList) => async (dispatch) 
 
 export const deleteProductImage = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/images/delete/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/products/images/delete', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
-      // dispatch({
-      //   type: REMOVE_IMAGE,
-      //   payload: id,
-      // });
       dispatch({
         type: GET_PRODUCT_SUCCESS,
         payload: res.data.results,
@@ -1483,26 +1332,18 @@ export const onchangeProductVideo = (videosList) => async (dispatch) => {
 export const updateProductVideo =
   (productUUID, videosList, onUploadProgress) => async (dispatch) => {
     try {
-      const access = localStorage.getItem('access');
-
-      const body = JSON.stringify({
-        productUUID,
-        videosList,
+      const formData = new FormData();
+      formData.append('productUUID', productUUID);
+      videosList.forEach((video, index) => {
+        formData.append(`videosList[${index}].id`, video.id);
+        formData.append(`videosList[${index}].position_id`, video.position_id);
+        formData.append(`videosList[${index}].title`, video.title);
+        formData.append(`videosList[${index}].file`, video.file);
       });
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `JWT ${access}`,
-        },
+      const res = await axios.post('/api/sell/products/videos/create', formData, {
         onUploadProgress,
-      };
-
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/videos/create/`,
-        body,
-        config,
-      );
+      });
 
       if (res.status === 200) {
         dispatch({
@@ -1511,38 +1352,24 @@ export const updateProductVideo =
         });
       }
     } catch (err) {
-      dispatch({
-        type: EDIT_PRODUCT_DETAILS_FAIL,
-      });
+      ToastError(`Error: ${err.response.statusText}`);
     }
   };
 
 export const deleteProductVideo = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/videos/delete/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/products/videos/delete', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
       dispatch({
         type: GET_PRODUCT_SUCCESS,
         payload: res.data.results,
@@ -1583,25 +1410,16 @@ export const onchangeProductShipping = (shippingList) => async (dispatch) => {
 
 export const updateProductShipping = (productUUID, shippingList) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       shippingList,
+    };
+
+    const res = await axios.post(`/api/sell/products/shipping/update`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/shipping/create/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -1616,30 +1434,18 @@ export const updateProductShipping = (productUUID, shippingList) => async (dispa
 
 export const deleteProductShipping = (productUUID, id) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       id,
     });
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/shipping/delete/`,
-      body,
-      config,
-    );
+
+    const res = await axios.post('/api/sell/products/shipping/delete', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
-      // dispatch({
-      //   type: EDIT_PRODUCT_DETAILS_SUCCESS,
-      // });
       dispatch({
         type: GET_PRODUCT_SUCCESS,
         payload: res.data.results,
@@ -1852,25 +1658,12 @@ export const resetCreateVariables = () => async (dispatch) => {
 
 export const updateProduct = (productUUID, productBody) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       productBody,
-    });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/update/`,
-      body,
-      config,
-    );
+    };
+
+    const res = await axios.put('/api/sell/products/update', body);
 
     if (res.status === 200) {
       dispatch({
@@ -1904,25 +1697,15 @@ export const onchangeProductDiscountUntil = (discount) => async (dispatch) => {
 
 export const updateProductPricing = (productUUID, productBody) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
       productUUID,
       productBody,
+    };
+    const res = await axios.put('/api/sell/products/updatePricing', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/update/pricing/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -1930,32 +1713,25 @@ export const updateProductPricing = (productUUID, productBody) => async (dispatc
         payload: res.data.results,
       });
     }
+    return res;
   } catch (err) {
     ToastError(`Error: ${err.response.statusText}`);
+    return null;
   }
 };
 
 export const updateProductWelcomeMessage = (productUUID, message) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       message,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/update/welcome_message/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put(`/api/sell/products/updateWelcomeMessage`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -1970,25 +1746,16 @@ export const updateProductWelcomeMessage = (productUUID, message) => async (disp
 
 export const updateProductCongratsMessage = (productUUID, message) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       message,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/update/congrats_message/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put(`/api/sell/products/updateCongratsMessage`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -2003,25 +1770,16 @@ export const updateProductCongratsMessage = (productUUID, message) => async (dis
 
 export const updateProductStatus = (productUUID, bool) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       productUUID,
       bool,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/publish/`,
-      body,
-      config,
-    );
+
+    const res = await axios.put('/api/sell/products/updateStatus', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.status === 200) {
       dispatch({
@@ -2036,25 +1794,10 @@ export const updateProductStatus = (productUUID, bool) => async (dispatch) => {
 
 export const updateProductKeywords = (productUUID, keywords) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/products/updateKeywords', {
       productUUID,
       keywords,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/edit/keywords/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -2064,31 +1807,16 @@ export const updateProductKeywords = (productUUID, keywords) => async (dispatch)
       ToastSuccess(`Keywords saved`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    ToastError(`Error: ${err.response.data.error}`);
   }
 };
 
 export const updateProductSlug = (productUUID, slug) => async (dispatch) => {
   try {
-    const access = localStorage.getItem('access');
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const res = await axios.put('/api/sell/products/updateSlug', {
       productUUID,
       slug,
     });
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/edit/slug/`,
-      body,
-      config,
-    );
 
     if (res.status === 200) {
       dispatch({
@@ -2098,6 +1826,6 @@ export const updateProductSlug = (productUUID, slug) => async (dispatch) => {
       ToastSuccess(`Slug saved`);
     }
   } catch (err) {
-    ToastError(`Error: ${err.response.statusText}`);
+    ToastError(`Error: ${err.response.data.error}`);
   }
 };

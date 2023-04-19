@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default async function VerifyAffiliate(ticketId) {
+export default async function VerifyAffiliate(polygonAddress, ticketId) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
@@ -14,8 +14,8 @@ export default async function VerifyAffiliate(ticketId) {
     };
 
     const body = JSON.stringify({
-      //   address,
-      ticketId,
+      polygon_address: polygonAddress,
+      ticket_id: ticketId,
     });
 
     const res = await axios.post(

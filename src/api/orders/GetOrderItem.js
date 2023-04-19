@@ -6,19 +6,9 @@ export default async function FetchOrderItem(id) {
   const abortSignal = controller.signal;
 
   try {
-    const config = {
-      headers: {
-        Accept: 'application/json',
-      },
-    };
-
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_ORDERS_URL}/api/orders/get_item/${id}/`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.get(`/api/orders/get-order-item?id=${id}`, {
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

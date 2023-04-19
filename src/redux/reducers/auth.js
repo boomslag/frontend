@@ -75,6 +75,14 @@ function removeAccessTokenCookie() {
   document.cookie = 'access=; path=/; max-age=0;';
 }
 
+function setWalletCookie(payload, expireTime = 86400) {
+  document.cookie = `wallet=${payload}; path=/; max-age=${expireTime};`;
+}
+
+function removeWalletCookie() {
+  document.cookie = 'wallet=; path=/; max-age=0;';
+}
+
 const authReducer = (state = initialState, action) => {
   const { type, payload } = action;
 

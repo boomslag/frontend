@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ToastError } from '../../components/toast/ToastError';
 
-export default async function FetchProductPopularCourseCategories() {
+export default async function FetchProductPopularCategories() {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 

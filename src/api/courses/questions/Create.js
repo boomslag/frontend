@@ -19,14 +19,11 @@ export default async function CreateEpisodeQuestion(episodeUUID, title, content)
       content,
     });
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/questions/create/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    // Replace this line with the new Next.js API route
+    const res = await axios.post('/api/courses/episodes/questions/create', body, {
+      ...config,
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

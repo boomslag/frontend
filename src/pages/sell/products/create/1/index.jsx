@@ -14,6 +14,7 @@ const mailingLists = [
     description: 'Sell products that have a stock and require delivery.',
     users: '621 users',
     icon: 'bx bx-store-alt text-3xl',
+    disabled: false,
   },
   {
     id: 2,
@@ -21,6 +22,7 @@ const mailingLists = [
     description: 'Sell products that come from another seller.',
     users: '1200 users',
     icon: 'bx bx-package text-3xl',
+    disabled: false,
   },
   {
     id: 3,
@@ -28,6 +30,7 @@ const mailingLists = [
     description: 'Sell your brand stamped on a vast variety of Products.',
     users: '2740 users',
     icon: 'bx bxs-t-shirt text-3xl',
+    disabled: true,
   },
 ];
 
@@ -79,6 +82,7 @@ export default function CreateProduct1() {
                 <RadioGroup.Option
                   key={mailingList.id}
                   value={mailingList}
+                  disabled={mailingList.disabled}
                   onClick={() => {
                     dispatch(setProductStep1(mailingList));
                   }}
@@ -90,6 +94,7 @@ export default function CreateProduct1() {
                       mailingList.id === type && type.id
                         ? 'border-gray-900 ring-2 ring-gray-900'
                         : '',
+
                       'relative flex h-64 cursor-pointer rounded-lg border dark:border-dark-second p-4 shadow-sm focus:outline-none',
                       'bg-white dark:bg-dark-main',
                       'hover:bg-gray-50 dark:hover:bg-dark-bg',

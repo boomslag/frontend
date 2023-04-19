@@ -6,26 +6,14 @@ export default async function UpdateTrackingNumber(orderItemId, trackingNumber) 
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
+    const body = {
+      orderItemId,
+      trackingNumber,
     };
 
-    const body = JSON.stringify({
-      trackingNumber,
+    const res = await axios.put('/api/orders/update-tracking-number', body, {
+      signal: abortSignal,
     });
-
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_ORDERS_URL}/api/orders/edit/tracking_number/${orderItemId}/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
 
     if (res.status === 200) {
       return res;

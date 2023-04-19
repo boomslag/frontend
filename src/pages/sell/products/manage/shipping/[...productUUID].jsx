@@ -23,17 +23,21 @@ export default function Shipping() {
 
   const dispatch = useDispatch();
 
-  const fetchProduct = useCallback(() => {
+  const fetchProduct = useCallback(async () => {
     dispatch(getProduct(productUUID));
   }, [dispatch, productUUID]);
 
   useEffect(() => {
-    fetchProduct(productUUID);
+    if (productUUID) {
+      fetchProduct(productUUID[0]);
+    }
   }, [fetchProduct, productUUID]);
 
   const handleSubmit = async () => {
     setLoading(true);
-    await SetProductHandle(productUUID[0], true, 'shipping');
+    if (productUUID && product && product.details && product.details.shipping_bool === false) {
+      await SetProductHandle(productUUID[0], true, 'shipping');
+    }
 
     const promises = [];
 

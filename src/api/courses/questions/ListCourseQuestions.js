@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { ToastError } from '../../../components/toast/ToastError';
 
 export default async function FetchCourseQuestions(
   courseUUID,
@@ -15,21 +14,9 @@ export default async function FetchCourseQuestions(
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/questions/list/?id=${courseUUID}&sort_by=${sortBy}&filter_by=${filterBy}&p=${page}&page_size=${pageSize}&max_page_size=${maxPageSize}&user_id=${userId}&search=${search}`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
+      `/api/courses/questions/list?courseUUID=${courseUUID}&page=${page}&pageSize=${pageSize}&maxPageSize=${maxPageSize}&sortBy=${sortBy}&filterBy=${filterBy}&userId=${userId}&search=${search}`,
+      { signal: abortSignal },
     );
 
     if (res.status === 200) {

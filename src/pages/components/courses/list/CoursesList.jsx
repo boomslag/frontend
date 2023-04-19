@@ -9,7 +9,7 @@ export default function CoursesList({ courses }) {
         <div className="relative -mb-24 w-full overflow-x-auto ">
           <ul className="inline-flex space-x-8 ">
             {courses ? (
-              courses.map((course) => <CourseCard key={course.id} data={course} />)
+              courses.map((course, index) => <CourseCard key={index} data={course} />)
             ) : (
               <div>loading</div>
             )}

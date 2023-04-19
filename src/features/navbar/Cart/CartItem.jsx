@@ -2,16 +2,25 @@ import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Web3 from 'web3';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import { ToastError } from '@/components/toast/ToastError';
-import { getItems, removeCartItem, updateCartItem } from '@/redux/actions/cart/cart';
+import {
+  getItems,
+  removeCartItem,
+  removeCartItemAnonymous,
+  removeCartItemAuthenticated,
+  updateCartItem,
+} from '@/redux/actions/cart/cart';
 import GetContractABIPolygon from '@/api/tokens/GetContractABIPolygon';
 
 export default function CartItem({ data }) {
   const web3 = new Web3(process.env.NEXT_PUBLIC_APP_RPC_POLYGON_PROVIDER);
   const [contractABI, setContractABI] = useState('');
+
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const nftAddress = data && data.product_nft_address;
   const ticketId = data && data.product_token_id;
@@ -71,8 +80,6 @@ export default function CartItem({ data }) {
   const [val, setVal] = useState(data.count || '');
   const [prevVal, setPrevVal] = useState(val);
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     const list = [];
     for (let i = 0; i < stock; i += 1) {
@@ -82,33 +89,36 @@ export default function CartItem({ data }) {
     }
   }, [data, stock]);
 
-  // useEffect(() => {
-  //   if (stock) {
-  //     setPrevVal(val);
-  //     setLoading(true);
-  //     const fetchData = async () => {
-  //       try {
-  //         // Wait for stock to be fetched
-  //         if (stock !== false) {
-  //           if (stock >= val) {
-  //             dispatch(updateCartItem(data.product_id, val));
-  //             dispatch(getItems());
-  //           } else {
-  //             ToastError('Not enough in stock');
-  //           }
-  //         } else {
-  //           // Handle case when stock is not fetched yet
-  //           console.warn('Stock not fetched yet');
-  //         }
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //       setLoading(false);
-  //     };
-  //     fetchData();
-  //   }
-  //   // eslint-disable-next-line
-  // }, [dispatch, val, stock]);
+  const [unlimitedStock, setUnlimitedStock] = useState(false);
+
+  useEffect(() => {
+    if (stock) {
+      setPrevVal(val);
+      setLoading(true);
+      const fetchData = async () => {
+        try {
+          // Wait for stock to be fetched
+          if (stock !== false) {
+            if (stock >= val) {
+              // dispatch(updateCartItem(data.product_id, val));
+              // dispatch(getItems());
+            }
+            if (stock === -1) {
+              setUnlimitedStock(true);
+            }
+          } else {
+            // Handle case when stock is not fetched yet
+            console.warn('Stock not fetched yet');
+          }
+        } catch (err) {
+          console.log(err);
+        }
+        setLoading(false);
+      };
+      fetchData();
+    }
+    // eslint-disable-next-line
+  }, [dispatch, val, stock]);
 
   const handleQtyChange = async (newVal) => {
     setVal(newVal);
@@ -133,7 +143,11 @@ export default function CartItem({ data }) {
 
   async function handleRemoveCartItem() {
     setLoading(true);
-    dispatch(removeCartItem(data.product_id, 'Product'));
+    if (isAuthenticated) {
+      dispatch(removeCartItemAuthenticated(data.product_id, 'Product'));
+    } else {
+      dispatch(removeCartItemAnonymous(data.product_id, 'Product'));
+    }
     // await dispatch(getCartTotal(cartItems));
     setLoading(false);
   }
@@ -186,6 +200,12 @@ export default function CartItem({ data }) {
                     ) : (
                       <div className=" mt-1 text-sm font-medium text-rose-500">{stock}</div>
                     )}
+                  </span>
+                </div>
+              ) : unlimitedStock === true ? (
+                <div className="flex">
+                  <span className="dark:text-dark-txt-secondary mt-0.5 mx-1 text-sm">
+                    Unlimited stock
                   </span>
                 </div>
               ) : (
@@ -270,17 +290,19 @@ export default function CartItem({ data }) {
               )}
             </div>
             <div className="absolute right-7 flex">
-              <select
-                onChange={(e) => {
-                  handleQtyChange(e.target.value);
-                }}
-                value={val}
-                className="w-16 max-w-full border border-gray-900 py-0.5 text-left text-base rounded-2xl px-2 mt-1 mr-1 cursor-pointer font-medium leading-5 text-gray-700 dark:shadow-none shadow-neubrutalism-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 sm:text-sm"
-              >
-                {qtyList.map((item) => (
-                  <option key={item}>{item}</option>
-                ))}
-              </select>
+              {unlimitedStock === false && (
+                <select
+                  onChange={(e) => {
+                    handleQtyChange(e.target.value);
+                  }}
+                  value={val}
+                  className="w-16 max-w-full border border-gray-900 py-0.5 text-left text-base rounded-2xl px-2 mt-1 mr-1 cursor-pointer font-medium leading-5 text-gray-700 dark:shadow-none shadow-neubrutalism-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 sm:text-sm"
+                >
+                  {qtyList.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
+                </select>
+              )}
             </div>
             <button
               type="button"

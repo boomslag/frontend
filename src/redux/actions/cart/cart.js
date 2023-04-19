@@ -25,17 +25,8 @@ import {
 } from './types';
 
 export const getItems = () => async (dispatch) => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
-    },
-  };
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_CART_URL}/api/cart/cart-items/`,
-      config,
-    );
+    const res = await axios.get('/api/cart/get-items');
     if (res.status === 200) {
       dispatch({
         type: GET_ITEMS_SUCCESS,
@@ -190,6 +181,105 @@ export const addItem =
     }
   };
 
+export const addItemAnonymous =
+  (itemID, type, coupon, shipping, quantity, size, color, weight, material, referrer) =>
+  (dispatch) => {
+    let cart = [];
+
+    if (localStorage.getItem('cart')) {
+      cart = JSON.parse(localStorage.getItem('cart'));
+    }
+
+    let shouldAddItem = true;
+
+    cart.map((item) => {
+      if (itemID.toString() === item.course || itemID.toString() === item.product) {
+        shouldAddItem = false;
+      }
+    });
+
+    if (type === 'Course') {
+      const orderItem = {
+        course: itemID,
+        coupon,
+        referrer,
+      };
+
+      if (shouldAddItem) {
+        cart.push(orderItem);
+      }
+    }
+    if (type === 'Product') {
+      const orderItem = {
+        product: itemID,
+        type,
+        shipping: (shipping && shipping.id) || '',
+        color: (color && color.id) || '',
+        size: (size && size.id) || '',
+        weight: (weight && weight.id) || '',
+        material: (material && material.id) || '',
+        quantity,
+        coupon,
+        referrer,
+      };
+
+      if (shouldAddItem) {
+        cart.push(orderItem);
+      }
+    }
+
+    dispatch({
+      type: ADD_ITEM,
+      payload: cart,
+    });
+  };
+
+export const addItemAuthenticated =
+  (itemID, type, coupon, shipping, quantity, size, color, weight, material, referrer) =>
+  async (dispatch) => {
+    const body = JSON.stringify({
+      itemID,
+      type,
+      shipping: shipping || '',
+      color: color || '',
+      size: size || '',
+      weight: weight || '',
+      material: material || '',
+      quantity,
+      coupon,
+      referrer,
+    });
+
+    console.log(body);
+
+    try {
+      const res = await fetch('/api/cart/add-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      });
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        dispatch({
+          type: ADD_ITEM_SUCCESS,
+          payload: data.results,
+        });
+      } else {
+        ToastError('Error Adding item to cart');
+        dispatch({
+          type: ADD_ITEM_FAIL,
+        });
+      }
+    } catch (err) {
+      ToastError(err.response.data.error);
+      dispatch({
+        type: ADD_ITEM_FAIL,
+      });
+    }
+  };
+
 export const removeCartItem = (itemID, type) => async (dispatch) => {
   if (localStorage.getItem('access')) {
     const config = {
@@ -256,46 +346,97 @@ export const removeCartItem = (itemID, type) => async (dispatch) => {
   }
 };
 
-export const updateCartItem = (itemID, value) => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `JWT ${localStorage.getItem('access')}`,
-      },
-    };
+// For authenticated users, using Next.js API route
+export const removeCartItemAuthenticated = (itemID, type) => async (dispatch) => {
+  const body = JSON.stringify({ itemID, type });
 
-    const body = JSON.stringify({
-      itemID,
-      value,
+  try {
+    const res = await fetch('/api/cart/remove-item', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body,
     });
 
-    try {
-      const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_APP_CART_URL}/api/cart/update-item/`,
-        body,
-        config,
-      );
-      if (res.status === 200) {
-        dispatch({
-          type: UPDATE_ITEM_SUCCESS,
-          payload: res.data.results,
-        });
-      } else {
-        ToastError('Error Adding item to cart');
-        dispatch({
-          type: UPDATE_ITEM_FAIL,
-        });
+    const data = await res.json();
+
+    if (res.status === 200) {
+      dispatch({
+        type: REMOVE_ITEM_SUCCESS,
+        payload: data.results,
+      });
+    } else {
+      ToastError('Error Removing item from cart');
+      dispatch({
+        type: REMOVE_ITEM_FAIL,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    dispatch({
+      type: REMOVE_ITEM_FAIL,
+    });
+  }
+};
+
+// For anonymous users, using localStorage
+export const removeCartItemAnonymous = (itemID, type) => (dispatch) => {
+  let cart = [];
+
+  if (localStorage.getItem('cart')) {
+    cart = JSON.parse(localStorage.getItem('cart'));
+
+    const new_cart = cart.filter((cart_item) => {
+      if (type === 'Course') {
+        return !('course' in cart_item && cart_item.course.toString() === itemID.toString());
+      } else if (type === 'Product') {
+        return !('product' in cart_item && cart_item.product.toString() === itemID.toString());
       }
-    } catch (err) {
-      // ToastError(err.response.data.error);
-      // eslint-disable-next-line
-      console.log(err);
+      return true;
+    });
+
+    localStorage.setItem('cart', JSON.stringify(new_cart));
+
+    dispatch({
+      type: REMOVE_ITEM,
+      payload: new_cart,
+    });
+    dispatch(getCartTotal(new_cart));
+  }
+};
+
+export const updateCartItem = (itemID, value) => async (dispatch) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  };
+
+  const body = JSON.stringify({
+    itemID,
+    value,
+  });
+
+  try {
+    const res = await axios.put(`/api/cart/update-cart-item`, body, config);
+    if (res.status === 200) {
+      dispatch({
+        type: UPDATE_ITEM_SUCCESS,
+        payload: res.data.results,
+      });
+    } else {
+      ToastError('Error Adding item to cart');
       dispatch({
         type: UPDATE_ITEM_FAIL,
       });
     }
+  } catch (err) {
+    // ToastError(err.response.data.error);
+    // eslint-disable-next-line
+    console.log(err);
+    dispatch({
+      type: UPDATE_ITEM_FAIL,
+    });
   }
 };
 
@@ -303,7 +444,6 @@ export const getCoursesFromCart = (body) => async (dispatch) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
     },
   };
   try {
@@ -333,7 +473,6 @@ export const getProductsFromCart = (body) => async (dispatch) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
     },
   };
   try {
@@ -395,6 +534,35 @@ export const emptyCart = () => async (dispatch) => {
   }
 };
 
+// For authenticated users, using Next.js API route
+export const emptyCartAuthenticated = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/cart/clear-cart', { method: 'GET' });
+
+    if (res.status === 200) {
+      dispatch({
+        type: EMPTY_CART_SUCCESS,
+      });
+    } else {
+      dispatch({
+        type: EMPTY_CART_FAIL,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: EMPTY_CART_FAIL,
+    });
+  }
+};
+
+// For anonymous users, using localStorage
+export const emptyCartAnonymous = () => (dispatch) => {
+  localStorage.removeItem('cart');
+  dispatch({
+    type: EMPTY_CART,
+  });
+};
+
 export const synchCart = () => async (dispatch) => {
   const config = {
     headers: {
@@ -432,6 +600,54 @@ export const synchCart = () => async (dispatch) => {
       body,
       config,
     );
+
+    if (res.status === 201) {
+      dispatch({
+        type: SYNCH_CART_SUCCESS,
+      });
+    } else {
+      dispatch({
+        type: SYNCH_CART_FAIL,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: SYNCH_CART_FAIL,
+    });
+  }
+};
+
+export const synchCartAuthenticated = () => async (dispatch) => {
+  let cart_items = [];
+
+  if (localStorage.getItem('cart')) {
+    let cart = JSON.parse(localStorage.getItem('cart'));
+
+    cart.map((cart_item) => {
+      const item = {};
+      if (cart_item.product) {
+        item.product_id = cart_item.product;
+        item.type = 'Product';
+      } else if (cart_item.course) {
+        item.course_id = cart_item.course;
+        item.type = 'Course';
+      }
+      item.coupon = cart_item.coupon;
+      item.referrer = cart_item.referrer;
+      cart_items.push(item);
+    });
+  }
+
+  const body = JSON.stringify({ cart_items });
+
+  try {
+    const res = await fetch('/api/cart/synch-cart', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
 
     if (res.status === 201) {
       dispatch({

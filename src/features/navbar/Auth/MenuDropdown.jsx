@@ -77,6 +77,11 @@ export default function MenuDropdown() {
         setConnected(false);
       };
 
+      const handleClose = () => {
+        setConnected(false);
+        setTimeout(connectWebSocket, 5000); // Attempt to reconnect every 5 seconds
+      };
+
       const connectWebSocket = () => {
         try {
           const protocol = process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'wss' : 'ws';
@@ -86,7 +91,7 @@ export default function MenuDropdown() {
           client = new W3CWebSocket(path);
           client.onopen = handleOpen;
           client.onmessage = handleMessage;
-          // client.onclose = handleClose;
+          client.onclose = handleClose;
           client.onerror = handleError;
         } catch (e) {
           handleError(e);
@@ -112,9 +117,9 @@ export default function MenuDropdown() {
 
   return (
     <AnimatedTippy
-      offsetY={28}
+      offsetY={20}
       content={
-        <div className="w-96 dark:bg-dark-main bg-white cursor-default rounded-lg  shadow-lg">
+        <div className="w-96  cursor-default ">
           <div className="-mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="-mb-4 p-4">
               <p className="text-xl font-extrabold leading-6 dark:text-dark-txt text-gray-900">

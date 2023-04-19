@@ -1,26 +1,8 @@
 import axios from 'axios';
-// import { ToastError } from '../../../../components/ToastError';
-// import { ToastSuccess } from '../../../../components/ToastSuccess';
 
 export default async function DeleteAnswer(answerId) {
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
-      answerId,
-    });
-
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/answers/delete/`,
-      body,
-      config,
-    );
+    const res = await axios.post('/api/courses/episodes/questions/answers/delete', { answerId });
 
     if (res.status === 200) {
       // ToastSuccess('Answer deleted successfully.');

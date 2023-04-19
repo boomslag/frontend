@@ -16,7 +16,11 @@ export default function DiscountUntilSec({ setHasChangesDiscountUntil }) {
   const [originalDiscountUntil, setoriginalDiscountUntil] = useState('');
   useEffect(() => {
     setDiscountUntil(
-      details && details.discount_until ? details.discount_until : reduxDiscountUntil,
+      details && details.discount_until
+        ? moment(details.discount_until).format('YYYY-MM-DD')
+        : reduxDiscountUntil
+        ? moment(reduxDiscountUntil).format('YYYY-MM-DD')
+        : '',
     );
     setoriginalDiscountUntil(JSON.parse(JSON.stringify(discountUntil)));
     // eslint-disable-next-line

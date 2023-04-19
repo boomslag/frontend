@@ -202,7 +202,7 @@ export default function Layout({ children }) {
             <ul className="flex space-x-6">
               <Link
                 href="/"
-                className="mt-3 md:mt-5 dark:hover:text-dark-accent dark:text-dark-txt hover:text-gray-900"
+                className="mt-3 md:mt-5 hover:text-iris-500 dark:hover:text-dark-accent dark:text-dark-txt "
               >
                 Return to Customer
               </Link>
@@ -355,7 +355,7 @@ export default function Layout({ children }) {
                 </li>
               </AnimatedTippy> */}
 
-              <li className="overflow:hidden relative inline-flex">
+              {/* <li className="overflow:hidden relative inline-flex">
                 {userLoading ? (
                   <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
                     <svg
@@ -371,7 +371,7 @@ export default function Layout({ children }) {
                     <UserDropDownMenu myProfile={myProfile} myUser={myUser} />
                   </div>
                 )}
-              </li>
+              </li> */}
               <div className="mt-2">
                 <DarkModeButton />
               </div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import moment from 'moment';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { ArrowUpCircleIcon } from '@heroicons/react/24/outline';
@@ -17,10 +18,9 @@ import FetchQuestionAnswers from '@/api/courses/questions/answers/ListQuestionAn
 import SimpleEditor from '@/components/SimpleEditor';
 import AnswersSec from './AnswersSec';
 import CreateQuestionAnswer from '@/api/courses/questions/answers/Create';
-import AddQuestionLike from '@/api/courses/questions/AddLike';
 import DeleteQuestion from '@/api/courses/questions/Delete';
 import UpdateQuestion from '@/api/courses/questions/Update';
-import Link from 'next/link';
+import AddQuestionLike from '@/api/courses/questions/AddLike';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -534,17 +534,17 @@ export default function QuestionListItem({
               </label>
               <div className="flex ">
                 <div className="mr-4  flex-shrink-0">
-                  <img
+                  {/* <img
                     className="inline-block h-14 w-14 rounded-full"
                     src={question.correct_answer.user.picture}
                     alt=""
-                  />
+                  /> */}
                 </div>
                 <div className="w-full">
                   <div className="-ml-4 -mt-2  flex flex-wrap items-center justify-between sm:flex-nowrap">
                     <div className="ml-4 mt-2 ">
                       <div className=" text-md font-bold text-purple-700 underline underline-offset-2">
-                        {question.correct_answer.user.username}
+                        {question.correct_answer.user}
                       </div>
                     </div>
                   </div>

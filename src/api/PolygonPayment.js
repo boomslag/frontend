@@ -1,35 +1,31 @@
 import axios from 'axios';
 import { ToastError } from '../components/toast/ToastError';
 
-export default async function PolygonPayment(userID, address, cartItems, deliveryAddress, agreed) {
+export default async function PolygonPayment(
+  userID,
+  address,
+  polygonAddress,
+  cartItems,
+  deliveryAddress,
+  agreed,
+) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       userID,
       address,
+      polygonAddress,
       cartItems,
       deliveryAddress,
       agreed,
     });
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/pay/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.post('/api/checkout/polygon-payment', body, {
+      headers: { 'Content-Type': 'application/json' },
+      signal: abortSignal,
+    });
 
     return res;
   } catch (err) {

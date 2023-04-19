@@ -1,31 +1,19 @@
 import axios from 'axios';
 
-export default async function StartConversation(toUser, username) {
+export default async function StartConversation(fromUserUsername, toUser, username) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const body = JSON.stringify({
+    const body = {
+      from_user_username: fromUserUsername,
       to_user: toUser,
       to_user_username: username,
-    });
+    };
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_CHAT_API_URL}/api/chat/start_conversation/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.post('/api/chat/start_conversation', body, {
+      signal: abortSignal,
+    });
 
     return res;
   } catch (err) {

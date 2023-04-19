@@ -7,7 +7,7 @@ const QuillNoSSRWrapper = dynamic(() => import('react-quill'), {
 });
 
 const modules = {
-  toolbar: [['bold'], ['italic'], [{ list: 'ordered' }, { list: 'bullet' }]],
+  toolbar: [['bold'], ['italic'], [{ list: 'ordered' }, { list: 'bullet' }], ['code-block']],
   clipboard: {
     matchVisual: false,
   },

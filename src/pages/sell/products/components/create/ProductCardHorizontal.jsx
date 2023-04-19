@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import { StarIcon } from '@heroicons/react/20/solid';
+import Image from 'next/image';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -30,19 +31,23 @@ export default function ProductCardHorizontal({ data, index }) {
           titleRef.current.classList.remove('dark:text-dark-primary');
         }
       }}
-      className="w-full max-w-full border dark:bg-dark-main dark:border-dark-border bg-white transition  duration-300 ease-in-out hover:shadow lg:flex"
+      className="w-full max-w-full border dark:bg-dark-main dark:border-dark-second bg-white transition  duration-300 ease-in-out hover:shadow lg:flex"
     >
       {data.images.length !== 0 ? (
-        <img
-          src={data.images[0]}
+        <Image
+          width={512}
+          height={512}
+          src={data.images[0].file}
           alt="img"
-          className="h-auto w-full flex-none bg-cover object-cover lg:w-40"
+          className="h-40 w-full flex-none bg-cover object-cover lg:w-40"
         />
       ) : (
-        <img
+        <Image
+          width={512}
+          height={512}
           src="/assets/img/placeholder/course.jpg"
           alt="img"
-          className="h-auto w-full flex-none bg-cover object-cover lg:w-40"
+          className="h-40 w-full flex-none bg-cover object-cover lg:w-40"
         />
       )}
       <div className="flex h-full w-full flex-col justify-between p-4 text-left leading-normal">

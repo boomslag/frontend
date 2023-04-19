@@ -54,7 +54,8 @@ export default function ManageProductLayout({
   const [maticBalance, setMaticBalance] = useState(0);
 
   const wallet = useSelector((state) => state.auth.wallet);
-  const userAddress = wallet && wallet.polygon_address;
+  const userPolygonAddress = wallet && wallet.polygon_address;
+  const userAddress = wallet && wallet.address;
 
   const dispatch = useDispatch();
 
@@ -72,15 +73,17 @@ export default function ManageProductLayout({
   };
 
   useEffect(() => {
-    web3.eth.getBalance(userAddress, (err, balance) => {
-      if (err) {
-        // eslint-disable-next-line
-        console.error(err);
-      } else {
-        setMaticBalance(web3.utils.fromWei(balance, 'ether'));
-      }
-    });
-  }, [userAddress]);
+    if (userPolygonAddress) {
+      web3.eth.getBalance(userPolygonAddress, (err, balance) => {
+        if (err) {
+          // eslint-disable-next-line
+          console.error(err);
+        } else {
+          setMaticBalance(web3.utils.fromWei(balance, 'ether'));
+        }
+      });
+    }
+  }, [userPolygonAddress]);
 
   useEffect(() => {
     if (details) {
@@ -179,20 +182,22 @@ export default function ManageProductLayout({
       onClick={async () => {
         if ((details && details.nft_address === '0') || details.nft_address === null) {
           setOpen(!open);
-          try {
-            const res = await GetDeployNFTPrice();
-            setDeploymentCost(res.data.results);
-          } catch (e) {
-            if (e) {
-              const res = await GetDeployNFTPrice();
+          if (userAddress && userPolygonAddress) {
+            try {
+              const res = await GetDeployNFTPrice(userAddress, userPolygonAddress);
               setDeploymentCost(res.data.results);
-            } else {
-              // handle other error types
+            } catch (e) {
+              if (e) {
+                const res = await GetDeployNFTPrice(userAddress, userPolygonAddress);
+                setDeploymentCost(res.data.results);
+              } else {
+                // handle other error types
+              }
             }
           }
         } else {
-          dispatch(updateProductStatus(productUUID[0], true));
-          dispatch(getProduct(productUUID[0]));
+          await dispatch(updateProductStatus(productUUID[0], true));
+          // await dispatch(getProduct(productUUID[0]));
         }
       }}
       type="button"
@@ -237,7 +242,7 @@ export default function ManageProductLayout({
 
   const [teamMembers, setTeamMembers] = useState([
     {
-      polygonAddress: userAddress,
+      polygonAddress: userPolygonAddress,
       percent: 100,
     },
   ]);
@@ -267,6 +272,8 @@ export default function ManageProductLayout({
         stock,
         teamMembers,
         'products',
+        userAddress,
+        userPolygonAddress,
       );
       if (res.status === 200) {
         ToastSuccess('NFT Deployed');
@@ -362,7 +369,7 @@ export default function ManageProductLayout({
   const roomName = details && details.token_id;
   const [connected, setConnected] = useState(false);
   const handleOpen = async () => {
-    // console.log('Connected to Deploy NFT Websocket');
+    console.log('Connected to Deploy NFT Websocket');
     setConnected(true);
   };
   const handleMessage = (event) => {
@@ -385,32 +392,46 @@ export default function ManageProductLayout({
     // console.error('WebSocket error:', e);
   };
 
-  const handleClose = () => {
-    // console.log('WebSocket closed');
-    setConnected(false);
-  };
-
   useEffect(() => {
     let client = null;
+    if (!(details && details.token_id)) {
+      return;
+    }
 
     const connectWebSocket = () => {
-      if (roomName) {
-        try {
-          const token = localStorage.getItem('access');
-          const wsProtocol = process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'wss' : 'ws';
-          const path = `${wsProtocol}://${
-            process.env.NEXT_PUBLIC_APP_CRYPTO_API_WS
-          }/ws/deploy_nft/${roomName}/?token=${encodeURIComponent(token)}`;
-          client = new W3CWebSocket(path);
-          client.onopen = handleOpen;
-          client.onmessage = handleMessage;
-          client.onerror = handleError;
-          client.onclose = handleClose;
-          webSocketRef.current = client;
-        } catch (e) {
-          handleError(e);
-        }
+      if (connected) {
+        console.log('WebSocket already connected');
+        return;
       }
+
+      try {
+        const wsProtocol = process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'wss' : 'ws';
+        const path = `${wsProtocol}://${process.env.NEXT_PUBLIC_APP_CRYPTO_API_WS}/ws/deploy_nft/${roomName}/`;
+        client = new W3CWebSocket(path);
+        client.onopen = handleOpen;
+        client.onmessage = handleMessage;
+        client.onerror = handleError;
+        client.onclose = handleClose;
+        webSocketRef.current = client;
+      } catch (e) {
+        handleError(e);
+      }
+    };
+
+    const handleClose = () => {
+      console.log('WebSocket closed');
+      setConnected(false);
+      // Reconnect after a delay
+      reconnectWebSocket();
+    };
+
+    const reconnectWebSocket = () => {
+      setTimeout(() => {
+        if (!connected) {
+          console.log('Reconnecting WebSocket...');
+          connectWebSocket();
+        }
+      }, 5000); // Reconnect delay (in milliseconds)
     };
 
     const disconnectWebSocket = () => {
@@ -419,16 +440,12 @@ export default function ManageProductLayout({
         setConnected(false);
       }
     };
-
-    if (!connected) {
-      connectWebSocket();
-    }
     return () => {
       disconnectWebSocket();
     };
-  }, []);
+  }, [roomName]);
 
-  if (!isAuthenticated && myUser.role !== 'seller' && myUser.id !== product.details.id) {
+  if (!isAuthenticated && myUser && myUser.role !== 'seller' && myUser.id !== product.details.id) {
     router.push('/sell');
   }
 
@@ -776,7 +793,7 @@ export default function ManageProductLayout({
                                   </div>
                                 </div>
                                 <div className="flex-shrink-0">
-                                  {member.polygonAddress !== userAddress && (
+                                  {member.polygonAddress !== userPolygonAddress && (
                                     <button
                                       type="button"
                                       onClick={() => onRemoveTeamMember(index)}
@@ -810,10 +827,10 @@ export default function ManageProductLayout({
                     </div>
                     <div className="flex text-sm font-bold">
                       Deployer:{' '}
-                      <CopyToClipboard text={userAddress}>
+                      <CopyToClipboard text={userPolygonAddress}>
                         <span className="font-regular ml-1 cursor-pointer text-gray-700 dark:text-dark-txt dark:hover:text-dark-accent hover:text-gray-600 focus:text-gray-800">
                           {' '}
-                          {userAddress}
+                          {userPolygonAddress}
                         </span>
                       </CopyToClipboard>
                     </div>

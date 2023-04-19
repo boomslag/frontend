@@ -31,7 +31,7 @@ function AnimatedTippy({ children, content, offsetX, offsetY }) {
       offset={[offsetX, offsetY]}
       render={(attrs) => (
         <motion.div
-          className="w-auto bg-white  leading-6 shadow-lg rounded-lg"
+          className="w-auto dark:bg-dark-second bg-white leading-6 shadow-lg rounded-lg"
           style={{ scale, opacity }}
           {...attrs}
         >

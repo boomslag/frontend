@@ -5,27 +5,19 @@ export default async function CreateQuestionAnswer(questionUUID, content) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
       questionUUID,
       content,
     });
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/answers/create/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
+    console.log(body);
+
+    const res = await axios.post('/api/courses/episodes/questions/answers/create', body, {
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

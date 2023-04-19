@@ -6,22 +6,9 @@ export default async function FetchProductReview(productUUID) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/reviews/get/${productUUID}/`,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.get(`/api/products/reviews/get?productUUID=${productUUID}`, {
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

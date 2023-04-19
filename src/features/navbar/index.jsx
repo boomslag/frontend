@@ -1,11 +1,69 @@
-import DarkModeButton from '@/components/DarkModeButton.jsx';
-import GlobeButton from '@/components/GlobeButton';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
+import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import DesktopNavbar from './Desktop';
 import MobileNavbar from './Mobile';
+import { getCoursesFromCart, getProductsFromCart } from '@/redux/actions/cart/cart';
 
 export default function Navbar() {
+  const cartItems = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
+
+  const courseUUIDs = useMemo(() => {
+    const uuids = [];
+    if (Array.isArray(cartItems)) {
+      cartItems.forEach((item) => {
+        if (item.course) {
+          uuids.push({
+            course: item.course,
+            coupon: item.coupon,
+          });
+        }
+      });
+    }
+    return uuids;
+  }, [cartItems]);
+
+  const productUUIDs = useMemo(() => {
+    const uuids = [];
+    if (Array.isArray(cartItems)) {
+      cartItems.forEach((item) => {
+        if (item.product) {
+          uuids.push({
+            product: item.product,
+            count: item.count,
+            color: item.color,
+            size: item.size,
+            material: item.material,
+            shipping: item.shipping,
+            weight: item.weight,
+            coupon: item.coupon,
+          });
+        }
+      });
+    }
+    return uuids;
+  }, [cartItems]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchPromises = [];
+
+      if (productUUIDs.length > 0) {
+        fetchPromises.push(dispatch(getProductsFromCart(productUUIDs)));
+      }
+
+      if (courseUUIDs.length > 0) {
+        fetchPromises.push(dispatch(getCoursesFromCart(courseUUIDs)));
+      }
+
+      await Promise.all(fetchPromises);
+    };
+
+    fetchData();
+  }, [dispatch, productUUIDs, courseUUIDs]);
+
   return (
     <header className="bg-white shadow-navbar border-b w-full z-30 lg:overflow-y-visible dark:border-dark-second dark:bg-dark-main">
       <div className="relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 py-2.5 px-6 sm:px-3.5 sm:before:flex-1">

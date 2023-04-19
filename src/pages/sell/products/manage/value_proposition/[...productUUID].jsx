@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
@@ -17,15 +17,21 @@ export default function ValueProposition() {
 
   const dispatch = useDispatch();
 
+  const fetchProduct = useCallback(async () => {
+    await SetProductHandle(productUUID[0], true, 'proposition');
+    dispatch(getProduct(productUUID));
+  }, [dispatch, productUUID]);
+
   useEffect(() => {
-    if (productUUID) {
-      const fetchData = async () => {
-        await SetProductHandle(productUUID[0], true, 'proposition');
-        dispatch(getProduct(productUUID));
-      };
-      fetchData();
+    if (
+      productUUID &&
+      product &&
+      product.details &&
+      product.details.value_proposition_bool === false
+    ) {
+      fetchProduct(productUUID[0]);
     }
-  }, [productUUID, dispatch]);
+  }, [fetchProduct, productUUID, product]);
 
   return (
     <div>

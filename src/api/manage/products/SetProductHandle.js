@@ -1,44 +1,24 @@
-import axios from 'axios';
-
-export default async function SetProductHandle(productUUID, bool, url) {
-  const controller = new AbortController();
-  const abortSignal = controller.signal;
-
+const setProductHandle = async (productUUID, bool, url) => {
   try {
-    const access = localStorage.getItem('access');
-    const config = {
+    const response = await fetch('/api/sell/products/setHandle', {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
-    };
-
-    const body = JSON.stringify({
-      productUUID,
-      bool,
+      body: JSON.stringify({ productUUID, bool, url }),
     });
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/products/edit/handle/${url}/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
-
-    if (res.status === 200) {
-      return res.data.results;
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const error = await response.json();
+      return { success: false, error };
     }
   } catch (err) {
-    if (axios.isCancel(err)) {
-      // eslint-disable-next-line
-      console.log('Request canceled', err.message);
-    } else {
-      // eslint-disable-next-line
-      console.log(err);
-    }
-  } finally {
-    controller.abort();
+    console.error(err);
+    return { success: false, error: 'Something went wrong' };
   }
-}
+};
+
+export default setProductHandle;

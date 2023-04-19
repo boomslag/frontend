@@ -1,21 +1,3 @@
-import Head from 'next/head';
-import cookie from 'cookie';
-import jwtDecode from 'jwt-decode';
-import Layout from '@/hocs/checkout';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { Disclosure, RadioGroup, Switch } from '@headlessui/react';
-import Confetti from 'react-confetti';
-import { useRouter } from 'next/router';
-import PolygonPayment from '@/api/PolygonPayment';
-import PaymentMethod from './components/PaymentMethod';
-import CourseCartItem from '@/features/navbar/Cart/CourseCartItem';
-import CartItem from '@/features/navbar/Cart/CartItem';
-import { ToastError } from '@/components/toast/ToastError';
-import { ToastSuccess } from '@/components/ToastSuccess';
-import ClearCart from '@/api/ClearCart';
-import Link from 'next/link';
-import { countries } from '@/helpers/fixedCountries';
 import {
   ChevronUpIcon,
   GlobeAltIcon,
@@ -25,8 +7,26 @@ import {
 } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import { useWindowSize } from 'react-use';
+import { Disclosure, RadioGroup, Switch } from '@headlessui/react';
+import Confetti from 'react-confetti';
+import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import Head from 'next/head';
+import cookie from 'cookie';
+import jwtDecode from 'jwt-decode';
+import Layout from '@/hocs/checkout';
+import PolygonPayment from '@/api/PolygonPayment';
+import PaymentMethod from './components/PaymentMethod';
+import CourseCartItem from '@/features/navbar/Cart/CourseCartItem';
+import CartItem from '@/features/navbar/Cart/CartItem';
+import { ToastError } from '@/components/toast/ToastError';
+import { ToastSuccess } from '@/components/ToastSuccess';
+import { countries } from '@/helpers/fixedCountries';
 import { getUserDelivery } from '@/redux/actions/auth/auth';
+import { emptyCartAuthenticated, getItems } from '@/redux/actions/cart/cart';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -45,7 +45,7 @@ const SeoList = {
   publisher: 'BoomSlag',
   image:
     'https://bafybeiaor24mrcurzyzccxl7xw46zdqpor4sfuhddl6tzblujoiukchxnq.ipfs.w3s.link/teach.png',
-  twitterHandle: '@BoomSlag',
+  twitterHandle: '@boomslag_',
 };
 
 export default function Checkout() {
@@ -56,14 +56,15 @@ export default function Checkout() {
   const router = useRouter();
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   useEffect(() => {
     dispatch(getUserDelivery());
   }, [isAuthenticated]);
+
   const user = useSelector((state) => state.auth.user);
   const wallet = useSelector((state) => state.auth.wallet);
   const deliveryAddressRedux = useSelector((state) => state.auth.delivery_address);
   const cartItems = useSelector((state) => state.cart.items);
-  const totalItems = useSelector((state) => state.cart.total_items);
   const amountBeforeDiscounts = useSelector((state) => state.cart.amount);
   const totalAmount = useSelector((state) => state.cart.compare_amount);
   const finalPrice = useSelector((state) => state.cart.finalPrice);
@@ -72,8 +73,6 @@ export default function Checkout() {
   const taxEstimate = useSelector((state) => state.cart.tax_estimate);
   const shippingEstimate = useSelector((state) => state.cart.shipping_estimate);
   // const checkoutLoading = useSelector((state) => state.cart.checkout_loading);
-  const paymentSuccess = useSelector((state) => state.crypto.payment_success);
-  const orderCreated = useSelector((state) => state.orders.create_order_success);
 
   const courses = useSelector((state) => state.cart.courses);
   const products = useSelector((state) => state.cart.products);
@@ -83,96 +82,17 @@ export default function Checkout() {
   const ethereumWallet = useSelector((state) => state.auth.wallet);
 
   const [agreed, setAgreed] = useState(false);
-  const [agreedCard, setAgreedCard] = useState(false);
-  const [newCreditCard, setNewCreditCard] = useState(true);
   const [deliveryAddress, setDeliveryAddress] = useState(0);
   useEffect(() => {
-    if (deliveryAddressRedux.address.length !== 0) {
+    if (
+      deliveryAddressRedux &&
+      deliveryAddressRedux.address &&
+      deliveryAddressRedux.address.length !== 0
+    ) {
       setDeliveryAddress(deliveryAddressRedux.address[0]);
     }
   }, []);
   const [newAddress, setNewAddress] = useState(false);
-  // const [selectedAddress, setSelectedAddress] = useState(
-  //   deliveryAddressRedux.address.length !== 0 ? deliveryAddressRedux.address[0] : false,
-  // );
-
-  // CREDIT CARD SETUP - Stripe
-  const [loading, setLoading] = useState(false);
-  const [succeeded, setSucceeded] = useState(false);
-  const [error, setError] = useState(null);
-  const [processing, setProcessing] = useState(false);
-  const [disabled, setDisabled] = useState(true);
-  const [result, setResult] = useState();
-
-  const handleChange = async (e) => {
-    setDisabled(e.empty);
-    setError(e.error ? e.error.message : '');
-  };
-
-  const onSubmitCrypto = async () => {
-    setProcessing(true);
-    try {
-      if (!newAddress && deliveryAddressRedux.address.length !== 0) {
-        const res = await PolygonPayment(
-          user.id,
-          wallet.polygon_address,
-          cartItems,
-          deliveryAddress,
-          agreed,
-        );
-
-        setTimeout(() => {
-          setProcessing(false);
-        }, 3000);
-
-        setShowConfetti(true);
-        setTimeout(() => {
-          setShowConfetti((prev) => !prev);
-        }, 10000);
-
-        if (res.status === 200) {
-          ToastSuccess('Payment Successful');
-          ClearCart();
-          setTimeout(() => {
-            router.push('/library/courses');
-          }, 3000);
-        }
-      }
-      if (newAddress) {
-        const res = await PolygonPayment(
-          user.id,
-          wallet.polygon_address,
-          cartItems,
-          formData,
-          agreed,
-        );
-
-        setTimeout(() => {
-          setProcessing(false);
-        }, 3000);
-
-        setShowConfetti(true);
-        setTimeout(() => {
-          setShowConfetti((prev) => !prev);
-        }, 10000);
-
-        if (res.status === 200) {
-          ToastSuccess('Payment Successful');
-          ClearCart();
-          setTimeout(() => {
-            router.push('/library/courses');
-          }, 3000);
-        }
-      }
-    } catch (err) {
-      setProcessing(false);
-      if (err.response) {
-        ToastError(err.response.data.error);
-      } else {
-        ToastError('An error occurred while processing your payment');
-      }
-    }
-  };
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -199,8 +119,94 @@ export default function Checkout() {
     coupon_name,
     shipping_id,
   } = formData;
+  const relevantFields = [
+    full_name,
+    address_line_1,
+    address_line_2,
+    city,
+    state_province_region,
+    postal_zip_code,
+    telephone_number,
+    coupon_name,
+  ];
 
+  const hasFormData = relevantFields.some((value) => value !== '');
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const [processing, setProcessing] = useState(false);
+  const onSubmitCrypto = async () => {
+    // setProcessing(true);
+    try {
+      if (
+        deliveryAddressRedux &&
+        deliveryAddressRedux.address &&
+        deliveryAddressRedux.address.length === 0
+      ) {
+        const res = await PolygonPayment(
+          user.id,
+          wallet.address,
+          wallet.polygon_address,
+          cartItems,
+          formData,
+          agreed,
+        );
+
+        setTimeout(() => {
+          setProcessing(false);
+        }, 3000);
+
+        if (res.status === 200) {
+          ToastSuccess('Payment Successful');
+          setShowConfetti(true);
+          setTimeout(() => {
+            setShowConfetti((prev) => !prev);
+          }, 10000);
+          setTimeout(() => {
+            router.push('/library/courses');
+          }, 3000);
+        }
+      }
+
+      if (
+        deliveryAddressRedux &&
+        deliveryAddressRedux.address &&
+        deliveryAddressRedux.address.length !== 0
+      ) {
+        setProcessing(true);
+
+        const res = await PolygonPayment(
+          user.id,
+          wallet.address,
+          wallet.polygon_address,
+          cartItems,
+          hasFormData ? formData : deliveryAddress,
+          agreed,
+        );
+
+        setTimeout(() => {
+          setProcessing(false);
+        }, 3000);
+
+        if (res.status === 200) {
+          ToastSuccess('Payment Successful');
+          setShowConfetti(true);
+          setTimeout(() => {
+            setShowConfetti((prev) => !prev);
+          }, 10000);
+          setTimeout(() => {
+            router.push('/library/courses');
+          }, 3000);
+        }
+      }
+    } catch (err) {
+      setProcessing(false);
+      if (err.response) {
+        ToastError(err.response.data.error);
+      } else {
+        ToastError('An error occurred while processing your payment, try again :D');
+      }
+    }
+  };
 
   const [ethPayment, setEthPayment] = useState(null);
   const [polygonPayment, setPolygonPayment] = useState(null);
@@ -218,8 +224,6 @@ export default function Checkout() {
     setEthPayment(null);
     setAdaPayment('cardano');
   };
-
-  if (!isAuthenticated) return router.push('/');
 
   const [effectDropdownDelivery, setEffectDropdownDelivery] = useState(false);
   // eslint-disable-next-line
@@ -456,7 +460,7 @@ export default function Checkout() {
                       </h3>
                     </div>
                     <div className=" flex-shrink-0">
-                      {newAddress && (
+                      {(newAddress || !deliveryAddress) && (
                         <div className="text-base dark:text-dark-txt-secondary text-gray-500">
                           <span className="text-md font-regular mr-2 dark:text-dark-txt-secondary">
                             Save for later
@@ -515,13 +519,13 @@ export default function Checkout() {
                           </button>
                         )}
                         {!newAddress ? (
-                          <RadioGroup value={deliveryAddress.id} onChange={setDeliveryAddress}>
+                          <RadioGroup value={deliveryAddress} onChange={setDeliveryAddress}>
                             <RadioGroup.Label className="sr-only"> Address </RadioGroup.Label>
                             <div className="space-y-4">
                               {deliveryAddressRedux.address.map((address) => (
                                 <RadioGroup.Option
                                   key={address.id}
-                                  value={address.id}
+                                  value={address}
                                   className={({ checked, active }) =>
                                     classNames(
                                       checked
@@ -766,11 +770,11 @@ export default function Checkout() {
                         Select Payment Method
                       </div>
                     ) : ethPayment ? (
-                      maticBalance > maticCost ? (
+                      maticBalance > maticCost + 0.05 ? (
                         <>
                           {cartItems && cartItems.some((u) => u.product) ? (
                             <>
-                              {deliveryAddressRedux && deliveryAddressRedux.address.length !== 0 ? (
+                              {deliveryAddress !== 0 ? (
                                 <>
                                   {processing ? (
                                     <>

@@ -20,6 +20,7 @@ import BasicInfoSec from './components/BasicInfo';
 import TaughtSec from './components/TaughtSec';
 import ImageGallery from './components/ImageGallery';
 import VideoGallery from './components/VideoGallery';
+import Link from 'next/link';
 
 export default function Basics() {
   const router = useRouter();
@@ -303,12 +304,12 @@ export default function Basics() {
                 <p className="mt-1 font-bold dark:text-dark-primary text-purple-600">
                   {myUser && myUser.username}
                 </p>
-                <a
-                  href={`/@${myUser && myUser.username}`}
+                <Link
+                  href={`/@/${myUser && myUser.username}`}
                   className="mt-1 text-purple-600 dark:text-dark-accent underline underline-offset-2"
                 >
                   View instructor profile
-                </a>
+                </Link>
               </div>
             </div>
           </div>

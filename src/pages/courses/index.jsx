@@ -6,6 +6,10 @@ import FeaturedCourses from '../components/courses/list/FeaturedCourses';
 import PopularTopics from '../categories/c/components/PopularTopics';
 import PopularInstructors from '../categories/c/components/PopularInstructors';
 import SearchCourses from '../categories/c/components/SearchCourses';
+import { useCallback, useEffect, useState } from 'react';
+import FetchBestSellingInstructors from '@/api/courses/instructors/GetBestSelling';
+import FetchPopularCourseCategories from '@/api/GetPopularCategories';
+import FetchCourses from '@/api/courses/List';
 
 const SeoList = {
   title: 'Boomslag Courses - Explore Premium Online Courses',
@@ -25,13 +29,89 @@ const SeoList = {
   twitterHandle: '@boomslag_',
 };
 
-export default function Courses({
-  mostViewedCourses,
-  newestCourses,
-  mostSoldCourses,
-  categories,
-  instructors,
-}) {
+export default function Courses() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState([]);
+  const [pageSize, setPageSize] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPageSize, setMaxPageSize] = useState(100);
+  const [filterBy, setFilterBy] = useState(null);
+  const [filterByAuthor, setFilterByAuthor] = useState(null);
+  const [searchBy, setSearchBy] = useState('');
+  const [filterByCategory, setFilterByCategory] = useState(null);
+  const [filterByBusinessActivity, setFilterByBusinessActivity] = useState(null);
+  const [filterByType, setFilterByType] = useState(null);
+  const [orderBy, setOrderBy] = useState('-published');
+
+  const fetchCourses = useCallback(
+    async (page, searchBy) => {
+      setLoading(true);
+      try {
+        const res = await FetchCourses(
+          page,
+          pageSize,
+          maxPageSize,
+          filterBy,
+          orderBy,
+          filterByAuthor,
+          filterByCategory,
+          filterByBusinessActivity,
+          filterByType,
+          searchBy,
+        );
+        if (res.data) {
+          setCount(res.data.count);
+          setCourses(res.data.results);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      pageSize,
+      maxPageSize,
+      filterBy,
+      orderBy,
+      filterByAuthor,
+      filterByCategory,
+      filterByBusinessActivity,
+      filterByType,
+    ],
+  );
+
+  useEffect(() => {
+    fetchCourses(currentPage, '');
+  }, [fetchCourses, currentPage]);
+
+  // Fetch Categories
+  const [categories, setCategories] = useState(null);
+  const fetchPopularCategories = useCallback(async () => {
+    const res = await FetchPopularCourseCategories();
+    if (res.status === 200) {
+      setCategories(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPopularCategories();
+  }, [fetchPopularCategories]);
+
+  // Fetch Instructors
+  const [instructors, setInstructors] = useState(null);
+  const fetchPopularInstructors = useCallback(async () => {
+    const res = await FetchBestSellingInstructors();
+    if (res.status === 200) {
+      setInstructors(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPopularInstructors();
+  }, [fetchPopularInstructors]);
+
   return (
     <div className="dark:bg-dark-bg">
       <Head>
@@ -66,12 +146,8 @@ export default function Courses({
         {/* We've used 3xl here, but feel free to try other max-widths based on your needs */}
         <div className="mx-auto max-w-7xl p-0 pt-12 md:p-12">
           <div className="space-y-12">
-            <PopularTabs
-              coursesBySold={mostSoldCourses}
-              courses={newestCourses}
-              coursesByViews={mostViewedCourses}
-            />
-            <FeaturedCourses data={newestCourses} />
+            <PopularTabs coursesBySold={courses} courses={courses} coursesByViews={courses} />
+            <FeaturedCourses data={courses} />
             <PopularTopics categories={categories} />
             <PopularInstructors instructors={instructors} />
             <SearchCourses categories={categories} />
@@ -85,39 +161,3 @@ export default function Courses({
 Courses.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>;
 };
-
-export async function getServerSideProps() {
-  const categoriesRes = await axios.get(
-    `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/category/popular/`,
-  );
-
-  const instructorsRes = await axios.get(
-    `${process.env.NEXT_PUBLIC_APP_API_URL}/api/users/instructors/best_selling/`,
-  );
-
-  const mostViewedCoursesRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_COURSES_URL
-    }/api/courses/search/?p=${1}&page_size=${12}&max_page_size=${100}&filter=${'views'}&order=${'-published'}&search=${''}&rating=${''}&language=${''}&duration=${''}&category=${''}&level=${''}&pricing=${''}&author=${''}`,
-  );
-  const newestCoursesRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_COURSES_URL
-    }/api/courses/search/?p=${1}&page_size=${12}&max_page_size=${100}&filter=${'-published'}&order=${'-published'}&search=${''}&rating=${''}&language=${''}&duration=${''}&category=${''}&level=${''}&pricing=${''}&author=${''}`,
-  );
-  const mostSoldCoursesRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_COURSES_URL
-    }/api/courses/search/?p=${1}&page_size=${12}&max_page_size=${100}&filter=${'sold'}&order=${'-published'}&search=${''}&rating=${''}&language=${''}&duration=${''}&category=${''}&level=${''}&pricing=${''}&author=${''}`,
-  );
-
-  return {
-    props: {
-      categories: categoriesRes.data.results,
-      instructors: instructorsRes.data.results,
-      mostViewedCourses: mostViewedCoursesRes.data.results,
-      newestCourses: newestCoursesRes.data.results,
-      mostSoldCourses: mostSoldCoursesRes.data.results,
-    },
-  };
-}

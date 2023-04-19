@@ -14,19 +14,9 @@ export default async function LoadMessages(
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_APP_CHAT_API_URL}/api/chat/load_conversation_messages/${roomName}/${roomGroupName}/?p=${page}&page_size=${pageSize}&max_page_size=${maxPageSize}&filter_by=${filterBy}&order_by=${orderBy}&search=${search}`,
+      `/api/chat/load_conversation_messages?roomName=${roomName}&roomGroupName=${roomGroupName}&p=${page}&page_size=${pageSize}&max_page_size=${maxPageSize}&filter_by=${filterBy}&order_by=${orderBy}&search=${search}`,
       {
-        ...config,
         signal: abortSignal,
       },
     );

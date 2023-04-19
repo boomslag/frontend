@@ -121,7 +121,7 @@ export default function UserDropDownMenu({ logoutHandler }) {
       interactive
       placement="bottom"
       duration={[100, 75]}
-      offset={[0, 20]}
+      offset={[0, 15]}
       arrow={false}
       content={
         <div className="w-64 cursor-default rounded-lg dark:bg-dark-main bg-white shadow-lg">
@@ -169,7 +169,7 @@ export default function UserDropDownMenu({ logoutHandler }) {
           {/* Divider */}
           <div className="relative pb-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t dark:border-dark-border border-gray-300" />
+              <div className="w-full border-t dark:border-dark-second border-gray-300" />
             </div>
             <div className="relative flex justify-center" />
           </div>
@@ -210,7 +210,7 @@ export default function UserDropDownMenu({ logoutHandler }) {
           </ul>
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t dark:border-dark-border border-gray-300" />
+              <div className="w-full border-t dark:border-dark-second border-gray-300" />
             </div>
             <div className="relative flex justify-center" />
           </div>
@@ -223,7 +223,7 @@ export default function UserDropDownMenu({ logoutHandler }) {
           </ul>
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t dark:border-dark-border border-gray-300" />
+              <div className="w-full border-t dark:border-dark-second border-gray-300" />
             </div>
             <div className="relative flex justify-center" />
           </div>
@@ -236,12 +236,12 @@ export default function UserDropDownMenu({ logoutHandler }) {
           </ul>
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t dark:border-dark-border border-gray-300" />
+              <div className="w-full border-t dark:border-dark-second border-gray-300" />
             </div>
             <div className="relative flex justify-center" />
           </div>
           <ul className=" grid gap-3 p-3">
-            <Link href={`/@${myUser && myUser.username}`}>
+            <Link href={`/@/${myUser && myUser.username}`}>
               <li className="text-sm hover:text-iris-500 dark:hover:text-dark-accent dark:text-dark-txt-secondary">
                 Public Profile
               </li>
@@ -254,7 +254,7 @@ export default function UserDropDownMenu({ logoutHandler }) {
           </ul>
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t dark:border-dark-border border-gray-300" />
+              <div className="w-full border-t dark:border-dark-second border-gray-300" />
             </div>
             <div className="relative flex justify-center" />
           </div>

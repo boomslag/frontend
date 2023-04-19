@@ -3,7 +3,11 @@ import React, { useRef, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import moment from 'moment';
 import { CircleLoader } from 'react-spinners';
+import ReactDropzone from 'react-dropzone';
+import { v4 as uuidv4 } from 'uuid';
 import DeleteEpisodeVideo from '@/api/manage/curriculum/episodes/DeleteVideo';
+import { ToastError } from '@/components/ToastError';
+import CustomVideo from '@/components/CustomVideo';
 
 export default function FileTableContent({
   FetchInstructorSections,
@@ -13,34 +17,44 @@ export default function FileTableContent({
   courseUUID,
 }) {
   const [openDelete, setOpenDelete] = useState(false);
+  const [openVideo, setOpenVideo] = useState(false);
   const cancelButtonRef = useRef(null);
 
   const [editVideo, setEditVideo] = useState(false);
 
   const [percentage, setPercentage] = useState(0);
   const [loadingFile, setLoadingFile] = useState(false);
-  const [salesVideo, setSalesVideo] = useState();
+  const [video, setVideo] = useState();
   const [salesVideoFileName, setSalesVideoFileName] = useState();
   const refVideo = useRef();
   const resetVideoInput = () => {
     refVideo.current.value = '';
   };
-  const videoSelectedHandler = (e) => {
-    const file = e.target.files[0];
+
+  const handleDrop = (acceptedFiles) => {
+    const file = acceptedFiles.find(
+      (file) =>
+        file.size <= 2 * 1024 * 1024 * 1024 &&
+        (file.type === 'video/mp4' || file.type === 'video/mpeg'),
+    );
+
+    if (!file) {
+      ToastError('Video must be Max 2GB and .mp4 or .mpeg');
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
-    if (file) {
-      if (file.type === 'video/mp4' && file.size <= 2000000000) {
-        setSalesVideo(file);
-      } else {
-        alert('Please select a Video of mime type MP4 with size 2GB or lower');
-        setSalesVideo(null);
-        setSalesVideoFileName(null);
-        resetVideoInput();
-      }
-    }
+    reader.onload = () => {
+      setVideo({
+        id: uuidv4(),
+        title: file.name,
+        file: reader.result,
+      });
+    };
+    reader.onerror = (error) => {
+      console.log(error);
+    };
   };
 
   const handleVideoReplace = async (e) => {
@@ -62,8 +76,8 @@ export default function FileTableContent({
     };
 
     const formData = new FormData();
-    formData.append('video', salesVideo);
-    formData.append('filename', salesVideoFileName);
+    formData.append('video', video.file);
+    formData.append('filename', video.title);
     formData.append('episodeUUID', episode.id);
 
     try {
@@ -85,8 +99,9 @@ export default function FileTableContent({
     }
 
     setLoadingFile(false);
+    setEditVideo(false);
     setPercentage(0);
-    setSalesVideo(null);
+    setVideo(null);
     setSalesVideoFileName(null);
   };
 
@@ -112,30 +127,35 @@ export default function FileTableContent({
                 </label> */}
           <div className="flex justify-center">
             <div className="mb-2 w-full">
-              <input
-                className="form-control
-                                    m-0
-                                    block
-                                    w-full
-                                    rounded
-                                    border
-                                    border-solid
-                                    border-gray-300 dark:border-dark-border
-                                    dark:bg-dark-second
-                                    dark:text-dark-txt
-                                    bg-white bg-clip-padding
-                                    px-3 py-1.5 text-base
-                                    font-normal
-                                    text-gray-700
-                                    transition
-                                    ease-in-out
-                                    focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-                ref={refVideo}
-                onChange={(e) => videoSelectedHandler(e)}
-                required
-                type="file"
-                id="formFile"
-              />
+              <ReactDropzone onDrop={handleDrop}>
+                {({ getRootProps, getInputProps }) => (
+                  <div
+                    className="relative form-control text-md m-0 mt-2 block w-full cursor-pointer rounded border-2 border-dashed border-gray-200 bg-white dark:bg-dark-second dark:border-dark-border dark:text-dark-txt-secondary hover:dark:bg-dark-third bg-clip-padding p-4 text-gray-700 transition ease-in-out hover:border-gray-300 hover:bg-gray-50 focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
+                    {...getRootProps()}
+                  >
+                    <input {...getInputProps()} />
+                    {video ? (
+                      <>
+                        <video
+                          src={video.file}
+                          className="w-full h-auto"
+                          controls
+                          preload="metadata"
+                        />
+                        <button
+                          type="button"
+                          className="absolute top-0 right-0 p-1 m-1 bg-red-500 text-white rounded-full focus:outline-none"
+                          onClick={() => setVideo(null)}
+                        >
+                          <i className="fas fa-times" />
+                        </button>
+                      </>
+                    ) : (
+                      'Drag and drop or click to upload video'
+                    )}
+                  </div>
+                )}
+              </ReactDropzone>
               <div className="mt-2 h-1 w-full bg-gray-300 dark:bg-dark-second">
                 <div
                   style={{ width: `${percentage}%` }}
@@ -219,6 +239,15 @@ export default function FileTableContent({
                       {moment(episode.date).subtract(10, 'days').calendar()}
                     </td>
                     <td className="relative space-x-2 whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpenVideo(true);
+                        }}
+                        className="text-purple-700 dark:text-dark-accent dark:hover:text-dark-primary hover:text-purple-900"
+                      >
+                        View
+                      </button>
                       <button
                         type="button"
                         onClick={() => {
@@ -308,6 +337,69 @@ export default function FileTableContent({
                     >
                       Cancel
                     </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <Transition.Root show={openVideo} as={Fragment}>
+        <Dialog as="div" className="relative z-20" onClose={setOpenVideo}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-black px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-6">
+                  <div>
+                    <div className=" px-4 py-5 sm:px-6">
+                      <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                        <div className="ml-4 mt-4">
+                          <h3 className="text-sm font-medium leading-6 text-gray-500">
+                            {episode && episode.title} - Video Preview
+                          </h3>
+                          <p className="text-md  mt-1 font-bold text-white">
+                            {episode && episode.filename}
+                          </p>
+                        </div>
+                        <div className="ml-4 mt-4 flex-shrink-0">
+                          {/* <button
+                                        type="button"
+                                        className="relative inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    >
+                                        Create new job
+                                    </button> */}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-4 py-2 text-white sm:px-4">
+                      {/* <video src={test_video} controls className="w-full h-96"/> */}
+                      <CustomVideo
+                        className=" h-96 w-full object-contain "
+                        url={episode && episode.file}
+                      />
+                      <div className="h-full w-full bg-white" />
+                    </div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

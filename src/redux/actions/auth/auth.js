@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Web3 from 'web3';
+import Cookies from 'js-cookie';
 import { ToastError } from '../../../components/toast/ToastError';
 import { ToastSuccess } from '../../../components/ToastSuccess';
 import {
@@ -7,7 +8,6 @@ import {
   SIGNUP_FAIL,
   SET_AUTH_LOADING,
   REMOVE_AUTH_LOADING,
-  LOGOUT,
   ACTIVATION_SUCCESS,
   ACTIVATION_FAIL,
   RESET_PASSWORD_SUCCESS,
@@ -44,10 +44,10 @@ import {
   LOGOUT_FAIL,
   RESET_REGISTER_SUCCESS,
 } from './types';
-import Cookies from 'js-cookie';
 
 import PraediumToken from '@/contracts/PraediumToken.sol/PraediumToken.json';
 import GalacticReserveToken from '@/contracts/GalacticReserveToken.sol/GalacticReserveToken.json';
+import { synchCartAuthenticated } from '../cart/cart';
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.NEXT_PUBLIC_APP_RPC_ETH_PROVIDER),
@@ -145,35 +145,29 @@ export const getUser = (username) => async (dispatch) => {
 // };
 
 export const getUserDelivery = () => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    try {
-      const config = {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem('access')}`,
-          Accept: 'application/json',
-        },
-      };
+  try {
+    const config = {
+      headers: {
+        Accept: 'application/json',
+      },
+    };
 
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/delivery/get_addresses/`,
-        config,
-      );
+    const res = await axios.get('/api/auth/getAddresses', config);
 
-      if (res.status === 200) {
-        dispatch({
-          type: GET_DELIVERY_SUCCESS,
-          payload: res.data.results,
-        });
-      } else {
-        dispatch({
-          type: GET_DELIVERY_FAIL,
-        });
-      }
-    } catch (err) {
+    if (res.status === 200) {
+      dispatch({
+        type: GET_DELIVERY_SUCCESS,
+        payload: res.data.results,
+      });
+    } else {
       dispatch({
         type: GET_DELIVERY_FAIL,
       });
     }
+  } catch (err) {
+    dispatch({
+      type: GET_DELIVERY_FAIL,
+    });
   }
 };
 
@@ -205,36 +199,20 @@ export const loadUserProfile = () => async (dispatch) => {
 };
 
 export const loadUserContacts = () => async (dispatch) => {
-  if (localStorage.getItem('access')) {
-    const config = {
-      headers: {
-        Authorization: `JWT ${localStorage.getItem('access')}`,
-        Accept: 'application/json',
-      },
-    };
+  try {
+    const res = await axios.get('/api/contacts/my_contact_lists');
 
-    try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/contacts/my_contact_lists`,
-        config,
-      );
-
-      if (res.status === 200) {
-        dispatch({
-          type: GET_USER_CONTACTS_SUCCESS,
-          payload: res.data.results,
-        });
-      } else {
-        dispatch({
-          type: GET_USER_CONTACTS_FAIL,
-        });
-      }
-    } catch (err) {
+    if (res.status === 200) {
+      dispatch({
+        type: GET_USER_CONTACTS_SUCCESS,
+        payload: res.data.results,
+      });
+    } else {
       dispatch({
         type: GET_USER_CONTACTS_FAIL,
       });
     }
-  } else {
+  } catch (err) {
     dispatch({
       type: GET_USER_CONTACTS_FAIL,
     });
@@ -252,6 +230,8 @@ export const loadUserWallet = () => async (dispatch) => {
 
     const data = await res.json();
     if (res.status === 200) {
+      Cookies.set('address', data.wallet.address, { expires: 365 });
+      Cookies.set('polygonAddress', data.wallet.polygon_address, { expires: 365 });
       dispatch({
         type: MY_USER_WALLET_LOADED_SUCCESS,
         payload: data.wallet,
@@ -381,25 +361,23 @@ export const login = (email, password) => async (dispatch) => {
     if (res.status === 200) {
       await dispatch(loadUser());
       await dispatch(loadUserProfile());
+      await dispatch(loadUserContacts());
       await dispatch(loadUserWallet());
+      await dispatch(synchCartAuthenticated());
       await dispatch({
         type: LOGIN_SUCCESS,
       });
-      // await dispatch(load_ethereum_balance());
-      // await dispatch(get_user_delivery());
-      // await dispatch(get_notifications());
-      // await dispatch(get_items());
     } else {
       dispatch({
         type: LOGIN_FAIL,
       });
-      ToastError('Error con el servidor');
+      ToastError('Wrong email or password.');
     }
   } catch (err) {
     dispatch({
       type: LOGIN_FAIL,
     });
-    ToastError('Error, Correo o Contraseña incorrecto.');
+    ToastError('Wrong email or password.');
   }
 
   dispatch({

@@ -31,6 +31,7 @@ export default function AnswersList({
       {!loading ? (
         answers.map((answer, index) => (
           <AnswerItem
+            key={answer.id}
             authState={authState}
             answer={answer}
             index={index}

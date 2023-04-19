@@ -135,9 +135,9 @@ export default function PaymentMethod({
               </div>
               <div className="ml-4 mt-2 flex-shrink-0">
                 <span className="font-regular mr-2 inline-flex text-sm dark:text-dark-txt-secondary text-gray-500">
-                  {maticBalance > maticCost ? 'Sufficient funds' : 'Insufficient funds'}
+                  {maticBalance > maticCost + 0.05 ? 'Sufficient funds' : 'Insufficient funds'}
                 </span>
-                {maticBalance > maticCost ? (
+                {maticBalance > maticCost + 0.05 ? (
                   <CheckCircleIcon className="relative inline-flex h-5 w-5 text-forest-green-300" />
                 ) : (
                   <XCircleIcon className="relative inline-flex h-5 w-5 text-rose-500" />

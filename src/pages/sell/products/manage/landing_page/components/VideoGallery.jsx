@@ -18,26 +18,21 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function VideoGallery({ product, productUUID, setHasChangesVideos, percentage }) {
-  const productVideos = product && product.videos;
-  const reduxVideos = useSelector((state) => state.products.videos);
-
+export default function VideoGallery({
+  product,
+  productUUID,
+  setHasChangesVideos,
+  percentage,
+  productVideos,
+  videosList,
+  setVideosList,
+}) {
   const dispatch = useDispatch();
-
-  const [videosList, setVideosList] = useState(
-    productVideos && productVideos.length !== 0 ? productVideos : reduxVideos,
-  );
 
   const [originalVideos, setOriginalVideos] = useState([]);
   useEffect(() => {
-    setVideosList(productVideos && productVideos.length !== 0 ? productVideos : reduxVideos);
-    dispatch(
-      onchangeProductVideo(
-        productVideos && productVideos.length !== 0 ? productVideos : reduxVideos,
-      ),
-    );
+    setVideosList(productVideos && productVideos.length !== 0 ? productVideos : []);
     setOriginalVideos(JSON.parse(JSON.stringify(videosList)));
-    // eslint-disable-next-line
   }, [product]);
 
   const [base64Videos, setBase64Videos] = useState([]);
@@ -76,7 +71,6 @@ export default function VideoGallery({ product, productUUID, setHasChangesVideos
       .then((items) => {
         setVideosList([...videosList, ...items]);
         setBase64Videos([...base64Videos, ...items]);
-        dispatch(onchangeCourseVideo([...base64Videos, ...items]));
       })
       .catch((error) => {
         console.log(error);
@@ -88,7 +82,7 @@ export default function VideoGallery({ product, productUUID, setHasChangesVideos
   };
 
   async function handleVideoDelete(item) {
-    dispatch(deleteProductVideo(productUUID, item.id));
+    dispatch(deleteProductVideo(productUUID[0], item.id));
   }
 
   // Save Reference for dragItem and dragOverItem
@@ -122,22 +116,12 @@ export default function VideoGallery({ product, productUUID, setHasChangesVideos
 
     // Update the actual array
     setVideosList(_videosList);
-    dispatch(updateDraggablesVideo(_videosList));
 
     const listItem = document.getElementById(item.id);
     listItem.classList.remove('bg-gray-50');
   };
 
   useEffect(() => {
-    if (base64Videos.length > 0) dispatch(onchangeProductVideo(base64Videos));
-  }, [base64Videos, dispatch]);
-
-  useEffect(() => {
-    dispatch(onchangeProductVideo(videosList));
-  }, [videosList, dispatch]);
-
-  useEffect(() => {
-    // Check if any of the items have an empty title or hex property
     if (!_.isEqual(originalVideos, videosList)) {
       setHasChangesVideos(true);
     } else {

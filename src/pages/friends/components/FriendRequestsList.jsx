@@ -6,7 +6,7 @@ export default function FriendRequestsList({ friendRequests }) {
     <div>
       {friendRequests &&
         friendRequests.length > 0 &&
-        friendRequests.map((request) => <FriendRequestCard data={request} />)}
+        friendRequests.map((request) => <FriendRequestCard key={request.id} data={request} />)}
     </div>
   );
 }

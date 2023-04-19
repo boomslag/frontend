@@ -2,12 +2,13 @@ import Layout from './components/Layout';
 import axios from 'axios';
 import Head from 'next/head';
 import cookie from 'cookie';
+import html2canvas from 'html2canvas';
 
 import React, { Fragment, useEffect, useState, useCallback } from 'react';
 import { CircleLoader } from 'react-spinners';
 import moment from 'moment';
 import { Dialog, Transition, Tab, Menu } from '@headlessui/react';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import QRCode from 'qrcode';
 import { jsPDF } from 'jspdf';
 import slugify from 'react-slugify';
@@ -66,6 +67,7 @@ import { useSelector } from 'react-redux';
 import Button from '@/components/Button';
 import { useRouter } from 'next/router';
 import DarkModeButton from '@/components/DarkModeButton.jsx';
+import Image from 'next/image';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -73,20 +75,13 @@ function classNames(...classes) {
 
 export default function CourseWatch({
   courseUUID,
+  access,
   course,
   authorProfile,
   author,
-  isTokenOwner,
-  access,
   user,
+  isTokenOwner,
 }) {
-  const router = useRouter();
-
-  const details = course && course.details;
-  const authState = useSelector((state) => state.auth);
-  const profile = useSelector((state) => state.auth.profile);
-  const wallet = useSelector((state) => state.auth.wallet);
-
   const SeoList = {
     title: course.details.title
       ? `Watch - ${course.details.title}`
@@ -110,6 +105,11 @@ export default function CourseWatch({
         : 'https://bafybeiaor24mrcurzyzccxl7xw46zdqpor4sfuhddl6tzblujoiukchxnq.ipfs.w3s.link/teach.png',
     twitterHandle: '@BoomSlag',
   };
+
+  const router = useRouter();
+
+  const details = course && course.details;
+  const authState = useSelector((state) => state.auth);
 
   const [loading, setLoading] = useState(false);
   const [loadingData, setDataLoading] = useState(false);
@@ -242,12 +242,21 @@ export default function CourseWatch({
   const pdfDownload = (e) => {
     e.preventDefault();
     const doc = new jsPDF('landscape', 'pt', 'A4');
-    const margin = 10;
-    const scale = (doc.internal.pageSize.width - margin * 2) / document.body.scrollWidth;
-    doc.html(document.getElementById('pdf-view'), {
-      callback: () => {
-        doc.save(`certificate_of_completion${slugify(details && details.title)}.pdf`);
-      },
+    const pdfView = document.getElementById('pdf-view');
+    const scale = 2; // You can adjust the scale value to improve image quality
+
+    // Create canvas using html2canvas
+    html2canvas(pdfView, { scale }).then((canvas) => {
+      // Calculate the width and height of the canvas
+      const imgWidth = doc.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Add the canvas image to the PDF
+      const imgData = canvas.toDataURL('image/jpeg', 0.5); // Use JPEG compression with a quality setting of 0.5
+      doc.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+
+      // Save the PDF
+      doc.save(`certificate_of_completion${slugify(details && details.title)}.pdf`);
     });
   };
 
@@ -301,6 +310,7 @@ export default function CourseWatch({
 
   // COURSE CONTENT / SECTIONS
   const [src, setSrc] = useState(sections && sections[0].episodes[0].file);
+
   const [episodeQuestions, setEpisodeQuestions] = useState([]);
   const [episode, setEpisode] = useState(sections && sections[0].episodes[0]);
   const [content, setContent] = useState(sections && sections[0].episodes[0].content);
@@ -427,7 +437,7 @@ export default function CourseWatch({
       }
       fetchCourseQuestions(currentQuestionsPage, '');
     }
-  }, [fetchCourseQuestions, fetchEpisodeQuestions, currentQuestionsPage, episode]);
+  }, [fetchCourseQuestions, fetchEpisodeQuestions, currentQuestionsPage, episode, courseUUID]);
 
   // SIDEBAR
 
@@ -511,7 +521,6 @@ export default function CourseWatch({
     }
   };
 
-  // TODO: SET REVIEWS Create / Edit
   const reviewsArea = () => (
     <ReviewsSec
       review={review}
@@ -560,7 +569,7 @@ export default function CourseWatch({
         <Tab
           className={({ selected }) =>
             classNames(
-              'col-span-1 w-full py-2.5 text-lg leading-5 md:col-span-2',
+              'col-span-1 w-full py-4 text-lg leading-5 md:col-span-2',
               '',
               selected
                 ? 'flex items-center justify-center space-x-2 border-b-4 border-gray-900 p-1 font-bold text-black focus:outline-none dark:text-dark-txt dark:border-dark-primary'
@@ -578,7 +587,7 @@ export default function CourseWatch({
           }}
           className={({ selected }) =>
             classNames(
-              'col-span-1 w-full py-2.5 text-lg leading-5 md:col-span-2',
+              'col-span-1 w-full py-4 text-lg leading-5 md:col-span-2',
               '',
               selected
                 ? 'flex items-center justify-center space-x-2 border-b-4 border-gray-900 p-1 font-bold text-black focus:outline-none dark:text-dark-txt dark:border-dark-primary'
@@ -591,7 +600,7 @@ export default function CourseWatch({
         <Tab
           className={({ selected }) =>
             classNames(
-              'col-span-1 w-full py-2.5 text-lg leading-5 md:col-span-2',
+              'col-span-1 w-full py-4 text-lg leading-5 md:col-span-2',
               '',
               selected
                 ? 'flex items-center justify-center space-x-2 border-b-4 border-gray-900 p-1 font-bold text-black focus:outline-none dark:text-dark-txt dark:border-dark-primary'
@@ -784,6 +793,7 @@ export default function CourseWatch({
                     <WatchList
                       id={id}
                       viewedEpisodes={viewedEpisodes}
+                      fetchViewedEpisodes={fetchViewedEpisodes}
                       setId={setId}
                       setToggle={setToggleSidebar}
                       handleToggle={handleToggle}
@@ -908,7 +918,7 @@ export default function CourseWatch({
                                     required
                                     placeholder="1 - 5"
                                   >
-                                    <option value="" disabled selected>
+                                    <option value="" disabled>
                                       0 - 5
                                     </option>
                                     <option value="1">1</option>
@@ -1160,6 +1170,7 @@ export default function CourseWatch({
                   <WatchList
                     id={id}
                     setId={setId}
+                    fetchViewedEpisodes={fetchViewedEpisodes}
                     viewedEpisodes={viewedEpisodes}
                     setToggle={setToggleSidebar}
                     handleToggle={handleToggle}
@@ -1574,10 +1585,12 @@ export default function CourseWatch({
                     >
                       {/* Watermark */}
                       <div
-                        className="top-0 left-0 h-44 w-full md:absolute md:h-full"
+                        className="top-0 left-0 h-56 w-full md:absolute md:h-full"
                         style={{ zIndex: 0 }}
                       >
                         <img
+                          width={1200}
+                          height={1200}
                           src="/assets/img/placeholder/oo_watermark_beige.png"
                           className="pointer-events-none -z-10 h-full w-full select-none object-cover"
                           style={{ zIndex: 0 }}
@@ -1587,10 +1600,12 @@ export default function CourseWatch({
 
                       {/* LEFT side */}
                       <div className="col-span-8 mr-2">
-                        <div className=" border-green-600 h-[460px] w-full  rounded-xl border-2  px-6 py-8 ">
+                        <div className=" border-green-400 h-[460px] w-full border-opacity-50 rounded-xl border-2  px-6 py-8 ">
                           <div className="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                            <div className="ml-4 mt-2">
+                            <div className="ml-4 ">
                               <img
+                                width={256}
+                                height={256}
                                 alt=""
                                 src="/assets/img/logos/triangle.png"
                                 className="h-12 w-auto"
@@ -1602,11 +1617,11 @@ export default function CourseWatch({
                           </div>
                           <div className="mt-12">
                             <p className=" text-sm text-gray-500">Certificate of completion</p>
-                            <h3 className="my-4 text-3xl font-bold leading-6 text-gray-900">
+                            <h3 className="my-4 text-xl font-bold leading-6 text-gray-900">
                               {certificate && certificate.title}
                             </h3>
                             <h2
-                              className="text-md font-regular mb-2 text-gray-900 dark:text-dark-txt lg:text-lg"
+                              className="text-md font-regular mb-2 text-gray-900 dark:text-dark"
                               dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(
                                   certificate && details.short_description,
@@ -1688,28 +1703,32 @@ export default function CourseWatch({
                         <h3 className="text-lg font-bold leading-6 text-gray-900">
                           Certificate Recipient:
                         </h3>
-                        <div className="mt-4 flex">
+                        <div className="mt-2 flex">
                           <div className="mr-4 flex-shrink-0">
-                            <img
+                            {/* <Image
+                              width={256}
+                              height={256}
                               className="inline-block h-14 w-14 rounded-full"
                               src={authState && authState.profile.picture}
                               alt=""
-                            />
+                            /> */}
                           </div>
                           <div>
-                            <h4 className="text-lg font-bold dark:text-black">
+                            <h4 className="text-md font-medium dark:text-dark">
                               {user.first_name} {user.last_name}
                             </h4>
                           </div>
                         </div>
-                        <h3 className="mt-4 text-lg font-bold leading-6 text-gray-900">
+                        <h3 className="mt-8 text-lg font-bold leading-6 text-gray-900">
                           About the course:
                         </h3>
                         <div className="-ml-3.5 flex flex-col justify-center">
                           <div className="relative flex w-72   max-w-xs flex-col space-y-1 rounded-xl p-3 ">
                             {/* Image */}
-                            <div className="grid   w-full place-items-center">
-                              <img
+                            <div className="grid w-full place-items-center">
+                              {/* <Image
+                                width={256}
+                                height={256}
                                 src={certificate && certificate.thumbnail}
                                 alt={
                                   details && details.title.length > 46
@@ -1717,9 +1736,9 @@ export default function CourseWatch({
                                     : details && details.title
                                 }
                                 className=""
-                              />
+                              /> */}
                             </div>
-                            <h2 className="text-md dark:text-black font-bold">
+                            <h2 className="text-md dark:text-black font-semibold">
                               {details && details.title}
                             </h2>
                             <p className="text-xs dark:text-dark text-gray-600">
@@ -1833,11 +1852,12 @@ CourseWatch.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>;
 };
 
-const fetchVerifyTokenOwnership = async (nftAddress, ticketId, access) => {
+const fetchVerifyTokenOwnership = async (polygonAddress, nftAddress, ticketId, access) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/verify_ticket_ownership/`,
       {
+        polygon_address: polygonAddress,
         nft_address: nftAddress,
         ticket_id: ticketId,
       },
@@ -1873,11 +1893,11 @@ const fetchAuthenticatedUser = async (access) => {
 };
 
 export async function getServerSideProps(context) {
-  const courseUUID = context.query.courseUUID;
+  const { courseUUID } = context.query;
   const cookies = cookie.parse(context.req.headers.cookie || '');
 
   // Read the JWT token from the cookie
-  const access = cookies.access;
+  const { access, polygonAddress } = cookies;
 
   // Check if username is defined
   if (!courseUUID || courseUUID.length === 0) {
@@ -1889,6 +1909,7 @@ export async function getServerSideProps(context) {
   const courseRes = await axios.get(
     `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/get/${courseUUID}/`,
   );
+
   const authorId = courseRes.data.results.details.author;
   const authorProfileRes = await axios.get(
     `${process.env.NEXT_PUBLIC_APP_API_URL}/api/users/get/profile/${authorId}/`,
@@ -1903,7 +1924,12 @@ export async function getServerSideProps(context) {
 
   const user = await fetchAuthenticatedUser(access);
 
-  const isTokenOwner = await fetchVerifyTokenOwnership(nftAddress, ticketId, access);
+  const isTokenOwner = await fetchVerifyTokenOwnership(
+    polygonAddress,
+    nftAddress,
+    ticketId,
+    access,
+  );
 
   // Check if the user is not the author, and if not, then check if they have the ticket
   if (authorId !== user.id && !isTokenOwner) {
@@ -1917,13 +1943,13 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      courseUUID: courseUUID,
+      courseUUID,
+      access,
       course: courseRes.data.results,
       authorProfile: authorProfileRes.data.results,
       author: authorRes.data.results,
-      isTokenOwner: isTokenOwner,
-      access: access,
-      user: user,
+      isTokenOwner,
+      user,
     },
   };
 }

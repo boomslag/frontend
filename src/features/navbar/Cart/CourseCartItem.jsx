@@ -1,9 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { getItems, removeCartItem } from '@/redux/actions/cart/cart';
+import {
+  getItems,
+  removeCartItem,
+  removeCartItemAnonymous,
+  removeCartItemAuthenticated,
+} from '@/redux/actions/cart/cart';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 
 export default function CourseCartItem({ data }) {
@@ -28,10 +33,15 @@ export default function CourseCartItem({ data }) {
   };
 
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   async function handleRemoveCartItem() {
     setLoading(true);
-    dispatch(removeCartItem(data.course_id, 'Course'));
+    if (isAuthenticated) {
+      dispatch(removeCartItemAuthenticated(data.course_id, 'Course'));
+    } else {
+      dispatch(removeCartItemAnonymous(data.course_id, 'Course'));
+    }
     // await dispatch(getCartTotal(cartItems));
     setLoading(false);
   }
@@ -54,19 +64,13 @@ export default function CourseCartItem({ data }) {
     >
       <div className="relative mx-auto flex h-full w-full max-w-xs flex-col border-t-2 border-l-2 border-r-2 dark:border-b-2 dark:border-dark-border border-dark-bg dark:shadow-none shadow-neubrutalism-md transition duration-300  ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl md:max-w-full md:flex-row ">
         <Link href={`/courses/${data.course_id}`} className=" flex-shrink-0 sm:mb-0 sm:mr-4">
-          <Image
-            src={data.course_image}
-            alt=""
-            className="my-2 ml-2 h-16 w-16"
-            width={256}
-            height={256}
-          />
+          <Image src={data.course_image} alt="" className="h-20 w-auto" width={256} height={256} />
         </Link>
         <div className="relative flex w-full flex-col space-y-2 p-2">
           <div className="item-center flex justify-between">
             <Link
               href={`/courses/${data.course_id}`}
-              className={`text-left text-sm font-bold ${
+              className={`text-left text-md font-bold ${
                 hover ? 'text-iris-500 dark:text-dark-primary' : 'dark:text-dark-txt text-gray-800'
               }`}
             >
@@ -79,7 +83,7 @@ export default function CourseCartItem({ data }) {
                   handleRemoveCartItem();
                   // close_cart()
                 }}
-                className="ml-4 mt-2 flex-shrink-0 "
+                className="ml-4 flex-shrink-0 "
               >
                 {loading ? (
                   <LoadingMoon className="inline-flex" size={20} color="#1e1f48" />

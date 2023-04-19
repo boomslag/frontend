@@ -5,15 +5,6 @@ export default async function SendMessage(formData, files) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-      signal: abortSignal,
-    };
-
     const form = new FormData();
     form.append('message', formData.get('message'));
     form.append('roomName', formData.get('roomName'));
@@ -35,11 +26,9 @@ export default async function SendMessage(formData, files) {
       }
     }
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_CHAT_API_URL}/api/chat/send_message/`,
-      form,
-      config,
-    );
+    const res = await axios.post('/api/chat/send_message', form, {
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

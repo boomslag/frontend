@@ -83,9 +83,9 @@ export default function AuthLinks() {
     <ul className="ml-1 flex space-x-4">
       <MenuDropdown />
       <AnimatedTippy
-        offsetY={20}
+        offsetY={15}
         content={
-          <div className="w-full dark:bg-dark-main bg-white rounded-lg p-4 leading-6">
+          <div className="w-full  p-4 leading-6">
             <div className="mb-2 flex items-center">
               <span className="mr-2 text-lg font-bold dark:text-dark-txt text-gray-900">
                 Ethereum Address:

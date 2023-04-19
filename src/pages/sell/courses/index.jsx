@@ -133,8 +133,8 @@ export default function Courses() {
       </div>
 
       <div className="px-8  pb-5 sm:flex sm:items-center sm:justify-between">
-        <div className="mt-1 flex gap-x-4">
-          <div className="w-full ">
+        <div className="mt-1 md:flex gap-4">
+          <div className="w-full block">
             <form onSubmit={(e) => onSubmit(e)} className=" dark:border-dark-border  flex border">
               <div className=" flex flex-grow items-stretch ">
                 <input

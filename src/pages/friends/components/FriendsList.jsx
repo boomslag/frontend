@@ -6,7 +6,7 @@ export default function FriendsList({ friendList }) {
     <div>
       {friendList &&
         friendList.length > 0 &&
-        friendList.map((friend) => <FriendCard data={friend} />)}
+        friendList.map((friend) => <FriendCard key={friend.username} data={friend} />)}
     </div>
   );
 }

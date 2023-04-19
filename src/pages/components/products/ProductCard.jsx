@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import UpdateProductClicks from '@/api/products/UpdateClicks';
+import Image from 'next/image';
 
 export default function ProductCard({ data }) {
   let {
@@ -44,21 +45,23 @@ export default function ProductCard({ data }) {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-border dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
+        className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-second dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
       >
         {/* Image */}
         <Link
-          onClick={() => {
-            handleUpdateClicks();
-          }}
+          // onClick={() => {
+          //   handleUpdateClicks();
+          // }}
           href={`/product/${slug}`}
           className="relative grid w-full place-items-center "
         >
-          <img
+          <Image
+            width={512}
+            height={512}
             id={`img-shadow${id}`}
-            src={images[0]}
+            src={images[0].file}
             alt={title.length > 46 ? title.slice(0, 45) : title}
-            className="object-cover"
+            className="object-cover h-40"
           />
           <div
             id={`img-shadow${id}`}
@@ -96,9 +99,9 @@ export default function ProductCard({ data }) {
           </div>
           {/* Description */}
           <Link
-            onClick={() => {
-              handleUpdateClicks();
-            }}
+            // onClick={() => {
+            //   handleUpdateClicks();
+            // }}
             href={`/product/${slug}`}
             className={`text-md justify-start text-left font-bold  ${
               hover ? 'text-iris-500 dark:text-dark-primary' : 'text-gray-800 dark:text-dark-txt'

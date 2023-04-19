@@ -36,7 +36,7 @@ export default function Goals() {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (productUUID) dispatch(getProduct(productUUID));
+    if (productUUID) dispatch(getProduct(productUUID[0]));
   }, [productUUID, dispatch]);
 
   const handleSubmit = useCallback(async () => {

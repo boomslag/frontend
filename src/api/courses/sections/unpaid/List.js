@@ -6,12 +6,10 @@ export default async function FetchSectionsUnpaid(courseUUID, page, pageSize, ma
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
     const config = {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
     };
 

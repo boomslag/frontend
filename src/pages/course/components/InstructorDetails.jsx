@@ -5,7 +5,7 @@ import {
   StarIcon,
   UserGroupIcon,
 } from '@heroicons/react/20/solid';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 function InstructorDetails({ data, profile }) {
   const sanitizedProfileInfo = DOMPurify.sanitize(profile && profile.profile_info);

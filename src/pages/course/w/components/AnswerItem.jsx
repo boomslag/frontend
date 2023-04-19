@@ -12,11 +12,11 @@ import moment from 'moment';
 import { Menu, Transition, Dialog } from '@headlessui/react';
 import DOMPurify from 'dompurify';
 
-import AddAnswerLike from '@/api/courses/questions/answers/AddLike';
 import UpdateQuestionAnswer from '@/api/courses/questions/answers/Update';
 import AcceptAnswer from '@/api/courses/questions/answers/AcceptAnswer';
 import SimpleEditor from '@/components/SimpleEditor';
 import DeleteAnswer from '@/api/courses/questions/answers/Delete';
+import AddAnswerLike from '@/api/courses/questions/answers/AddLike';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

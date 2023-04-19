@@ -19,26 +19,20 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function ImageGallery({ product, productUUID, setHasChangesImages }) {
-  const productImages = product && product.images;
-  const reduxImages = useSelector((state) => state.products.images);
-
+export default function ImageGallery({
+  product,
+  productUUID,
+  setHasChangesImages,
+  productImages,
+  imagesList,
+  setImagesList,
+}) {
   const dispatch = useDispatch();
-
-  const [imagesList, setImagesList] = useState(
-    productImages && productImages.length !== 0 ? productImages : reduxImages,
-  );
 
   const [originalImages, setOriginalImages] = useState([]);
   useEffect(() => {
-    setImagesList(productImages && productImages.length !== 0 ? productImages : reduxImages);
-    dispatch(
-      onchangeProductImage(
-        productImages && productImages.length !== 0 ? productImages : reduxImages,
-      ),
-    );
+    setImagesList(productImages && productImages.length !== 0 ? productImages : []);
     setOriginalImages(JSON.parse(JSON.stringify(imagesList)));
-    // eslint-disable-next-line
   }, [product]);
 
   const [base64Images, setBase64Images] = useState([]);
@@ -76,7 +70,6 @@ export default function ImageGallery({ product, productUUID, setHasChangesImages
       .then((items) => {
         setImagesList([...imagesList, ...items]);
         setBase64Images([...base64Images, ...items]);
-        dispatch(onchangeProductImage([...base64Images, ...items]));
       })
       .catch((error) => {
         console.log(error);
@@ -88,7 +81,7 @@ export default function ImageGallery({ product, productUUID, setHasChangesImages
   };
 
   async function handleImageDelete(item) {
-    dispatch(deleteProductImage(productUUID, item));
+    dispatch(deleteProductImage(productUUID[0], item));
   }
 
   // Save Reference for dragItem and dragOverItem
@@ -122,22 +115,12 @@ export default function ImageGallery({ product, productUUID, setHasChangesImages
 
     // Update the actual array
     setImagesList(_imagesList);
-    dispatch(updateDraggablesImage(_imagesList));
 
     const listItem = document.getElementById(item.id);
     listItem.classList.remove('bg-gray-50');
   };
 
   useEffect(() => {
-    if (base64Images.length > 0) dispatch(onchangeProductImage(base64Images));
-  }, [base64Images, dispatch]);
-
-  useEffect(() => {
-    dispatch(onchangeProductImage(imagesList));
-  }, [imagesList, dispatch]);
-
-  useEffect(() => {
-    // Check if any of the items have an empty title or hex property
     if (!_.isEqual(originalImages, imagesList)) {
       setHasChangesImages(true);
     } else {
@@ -282,7 +265,7 @@ export default function ImageGallery({ product, productUUID, setHasChangesImages
                     className="bx bx-trash text-xl"
                     onClick={() => {
                       handleDelete(index);
-                      courseImages.length > 0 ? handleImageDelete(item.id) : null;
+                      productImages.length > 0 ? handleImageDelete(item.id) : null;
                     }}
                   />
                 </button>

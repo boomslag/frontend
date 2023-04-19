@@ -28,6 +28,7 @@ export default function WatchList({
   id,
   setId,
   viewedEpisodes,
+  fetchViewedEpisodes,
 }) {
   return (
     <nav className="flex-1 pt-5">
@@ -46,6 +47,7 @@ export default function WatchList({
           id={id}
           setId={setId}
           setSrc={setSrc}
+          fetchViewedEpisodes={fetchViewedEpisodes}
           details={details}
           fetchQuestions={fetchQuestions}
           sections={sections}

@@ -5,26 +5,21 @@ export default async function RemoveFriend(email) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
     const config = {
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
       },
     };
 
-    const body = JSON.stringify({
+    const body = {
       email,
-    });
+    };
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_USER_API_URL}/api/friends/remove_friend/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
-      },
-    );
+    const res = await axios.put(`/api/friends/remove-friend`, body, {
+      ...config,
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

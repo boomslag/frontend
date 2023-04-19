@@ -5,27 +5,17 @@ export default async function UpdateQuestionAnswer(answerId, body) {
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const content = JSON.stringify({
       answerId,
       body,
     });
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/answers/update/`,
-      content,
-      {
-        ...config,
-        signal: abortSignal,
+    const res = await axios.put('/api/courses/episodes/questions/answers/update', content, {
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      signal: abortSignal,
+    });
 
     if (res.status === 200) {
       return res;

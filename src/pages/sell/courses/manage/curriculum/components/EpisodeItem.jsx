@@ -14,7 +14,8 @@ import { BellAlertIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import Link from 'next/link';
 import { CircleLoader } from 'react-spinners';
-
+import ReactDropzone from 'react-dropzone';
+import { v4 as uuidv4 } from 'uuid';
 import RichTextEditor from '@/components/RichTextEditor';
 import ResourceContentList from './ResourceContentList';
 import ArticleTableContent from './ArticleTableContent';
@@ -25,6 +26,7 @@ import EditEpisodeContent from '@/api/manage/curriculum/episodes/EditContent';
 import DeleteEpisode from '@/api/manage/curriculum/episodes/Delete';
 import CreateExternalResource from '@/api/manage/curriculum/episodes/CreateExternalResource';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
+import { ToastError } from '@/components/ToastError';
 
 const mailingLists = [
   { id: 1, title: 'Video', description: '', users: '621 users', icon: AcademicCapIcon },
@@ -68,30 +70,37 @@ export default function EpisodeItem({
   const [resourceFileFileName, setResourceFileFileName] = useState();
   const ref = useRef();
 
-  const [salesVideo, setSalesVideo] = useState();
+  const [video, setVideo] = useState();
   const [salesVideoFileName, setSalesVideoFileName] = useState();
   const refVideo = useRef();
   const resetVideoInput = () => {
     refVideo.current.value = '';
   };
 
-  const videoSelectedHandler = (e) => {
-    const file = e.target.files[0];
+  const handleDrop = (acceptedFiles) => {
+    const file = acceptedFiles.find(
+      (file) =>
+        file.size <= 2 * 1024 * 1024 * 1024 &&
+        (file.type === 'video/mp4' || file.type === 'video/mpeg'),
+    );
+
+    if (!file) {
+      ToastError('Video must be Max 2GB and .mp4 or .mpeg');
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
-    if (file) {
-      if (file.type === 'video/mp4' && file.size <= 2000000000) {
-        setSalesVideo(file);
-        setSalesVideoFileName(file.name);
-      } else {
-        alert('Please select a Video of mime type MP4 with size 2GB or lower');
-        setSalesVideo(null);
-        setSalesVideoFileName(null);
-        resetVideoInput();
-      }
-    }
+    reader.onload = () => {
+      setVideo({
+        id: uuidv4(),
+        title: file.name,
+        file: reader.result,
+      });
+    };
+    reader.onerror = (error) => {
+      console.log(error);
+    };
   };
 
   const [loadingDescription, setLoadingDescription] = useState(false);
@@ -226,8 +235,8 @@ export default function EpisodeItem({
     };
 
     const formData = new FormData();
-    formData.append('video', salesVideo);
-    formData.append('filename', salesVideoFileName);
+    formData.append('video', video.file);
+    formData.append('filename', video.title);
     formData.append('episodeUUID', episode.id);
 
     try {
@@ -251,7 +260,7 @@ export default function EpisodeItem({
     setLoadingFile(false);
     setAddContent(false);
     setPercentage(0);
-    setSalesVideo(null);
+    setVideo(null);
     setSalesVideoFileName(null);
   };
 
@@ -977,30 +986,35 @@ export default function EpisodeItem({
             >
               <div className="flex justify-center">
                 <div className="mb-2 w-full">
-                  <input
-                    className="form-control
-                                    m-0
-                                    block
-                                    w-full
-                                    rounded
-                                    border
-                                    border-solid
-                                    border-gray-300 dark:border-dark-border
-                                    dark:bg-dark-second
-                                    dark:text-dark-txt
-                                    bg-white bg-clip-padding
-                                    px-3 py-1.5 text-base
-                                    font-normal
-                                    text-gray-700
-                                    transition
-                                    ease-in-out
-                                    focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-                    ref={refVideo}
-                    onChange={(e) => videoSelectedHandler(e)}
-                    required
-                    type="file"
-                    id="formFile"
-                  />
+                  <ReactDropzone onDrop={handleDrop}>
+                    {({ getRootProps, getInputProps }) => (
+                      <div
+                        className="relative form-control text-md m-0 mt-2 block w-full cursor-pointer rounded border-2 border-dashed border-gray-200 bg-white dark:bg-dark-second dark:border-dark-border dark:text-dark-txt-secondary hover:dark:bg-dark-third bg-clip-padding p-4 text-gray-700 transition ease-in-out hover:border-gray-300 hover:bg-gray-50 focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
+                        {...getRootProps()}
+                      >
+                        <input {...getInputProps()} />
+                        {video ? (
+                          <>
+                            <video
+                              src={video.file}
+                              className="w-full h-auto"
+                              controls
+                              preload="metadata"
+                            />
+                            <button
+                              type="button"
+                              className="absolute top-0 right-0 p-1 m-1 bg-red-500 text-white rounded-full focus:outline-none"
+                              onClick={() => setVideo(null)}
+                            >
+                              <i className="fas fa-times" />
+                            </button>
+                          </>
+                        ) : (
+                          'Drag and drop or click to upload video'
+                        )}
+                      </div>
+                    )}
+                  </ReactDropzone>
                   <div className="mt-2 h-1 w-full bg-gray-300 dark:bg-dark-second">
                     <div
                       style={{ width: `${percentage}%` }}

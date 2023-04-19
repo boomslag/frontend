@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Navbar from './components/Navbar';
 import _ from 'lodash';
@@ -28,9 +28,15 @@ export default function Messages() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const fetchProduct = useCallback(async () => {
     dispatch(getProduct(productUUID));
-  }, [productUUID, dispatch]);
+  }, [dispatch, productUUID]);
+
+  useEffect(() => {
+    if (productUUID) {
+      fetchProduct(productUUID[0]);
+    }
+  }, [fetchProduct, productUUID]);
 
   const [welcomeMessage, setWelcomeMessage] = useState((details && details.welcome_message) || '');
   const [congratsMessage, setCongratsMessage] = useState(
@@ -39,7 +45,10 @@ export default function Messages() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    await SetProductHandle(productUUID[0], true, 'messages');
+
+    if (productUUID && product && product.details && product.details.messages_bool === false) {
+      await SetProductHandle(productUUID[0], true, 'messages');
+    }
 
     const promises = [];
 

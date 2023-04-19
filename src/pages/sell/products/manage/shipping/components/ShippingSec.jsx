@@ -149,7 +149,7 @@ export default function ShippingSec({ product, loading, productUUID, setHasChang
             <>
               {shippingList.map((item, index) => (
                 <li
-                  key={item.id}
+                  key={index}
                   id={item.id}
                   draggable={draggable}
                   onDragStart={(e) => onDragStart(e, index, item)}

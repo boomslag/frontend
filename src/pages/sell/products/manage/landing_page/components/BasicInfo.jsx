@@ -19,7 +19,7 @@ export default function BasicInfoSec({
   const details = product && product.details;
 
   // LANGUAGE
-  const productLanguage = details.language;
+  const productLanguage = details && details.language;
   const reduxLanguage = useSelector((state) => state.products.language);
   const [language, setLanguage] = useState(productLanguage || reduxLanguage);
 
@@ -38,7 +38,7 @@ export default function BasicInfoSec({
   }, [language, originalLanguage, setHasChangesLanguage]);
 
   // LEVEL
-  const productLevel = details.level;
+  const productLevel = details && details.level;
   const reduxLevel = useSelector((state) => state.products.level);
   const [level, setLevel] = useState(productLevel || reduxLevel);
 
@@ -57,7 +57,7 @@ export default function BasicInfoSec({
   }, [level, originalLevel, setHasChangesLevel]);
 
   // CATEGORY
-  const productCategory = details.category;
+  const productCategory = details && details.category;
   const reduxCategory = useSelector((state) => state.products.category);
   const [category, setCategory] = useState(productCategory.id || reduxCategory);
 
@@ -103,7 +103,7 @@ export default function BasicInfoSec({
               -- Select Language --
             </option>
             {languages.map((language) => (
-              <option key={language} value={language.name}>
+              <option key={language.name} value={language.name}>
                 {language.name}
               </option>
             ))}

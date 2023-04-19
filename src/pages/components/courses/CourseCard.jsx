@@ -3,6 +3,7 @@ import slugify from 'react-slugify';
 
 import UpdateCourseClicks from '@/api/courses/UpdateClicks';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function CourseCard({ data }) {
   const [hover, setHover] = useState(false);
@@ -28,21 +29,23 @@ export default function CourseCard({ data }) {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-border dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
+        className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-second dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
       >
         {/* Image */}
         <Link
           href={`/course/${data.slug}`}
-          onClick={() => {
-            handleUpdateClicks();
-          }}
+          // onClick={() => {
+          //   handleUpdateClicks();
+          // }}
           className="relative grid w-full place-items-center "
         >
-          <img
+          <Image
+            width={512}
+            height={512}
             id={`img-shadow${data.id}`}
-            src={data.images[0].file}
+            src={data.thumbnail}
             alt={data.title.length > 46 ? data.title.slice(0, 45) : data.title}
-            className="object-cover"
+            className="object-cover h-40"
           />
           <div
             id={`img-shadow${data.id}`}
@@ -81,9 +84,9 @@ export default function CourseCard({ data }) {
           {/* Description */}
           <Link
             href={`/course/${data.slug}`}
-            onClick={() => {
-              handleUpdateClicks();
-            }}
+            // onClick={() => {
+            //   handleUpdateClicks();
+            // }}
             className={`text-md justify-start text-left font-bold  ${
               hover ? 'text-iris-500 dark:text-dark-primary' : 'text-gray-800 dark:text-dark-txt'
             }`}

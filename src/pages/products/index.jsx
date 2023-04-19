@@ -6,6 +6,10 @@ import FeaturedProducts from '../components/products/list/FeaturedProducts';
 import PopularTopics from '../categories/p/components/PopularTopics';
 import PopularInstructors from '../categories/p/components/PopularInstructors';
 import SearchProducts from '../categories/p/components/SearchProducts';
+import { useCallback, useEffect, useState } from 'react';
+import FetchBestSellingInstructors from '@/api/courses/instructors/GetBestSelling';
+import FetchProducts from '@/api/products/List';
+import FetchProductPopularCategories from '@/api/products/GetPopularCategories';
 
 const SeoList = {
   title: 'Boomslag - Buy & Sell Products with NFTs on our Marketplace',
@@ -22,13 +26,89 @@ const SeoList = {
   twitterHandle: '@BoomSlag',
 };
 
-export default function Products({
-  categories,
-  instructors,
-  mostViewedProducts,
-  newestProducts,
-  mostSoldProducts,
-}) {
+export default function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState([]);
+  const [pageSize, setPageSize] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPageSize, setMaxPageSize] = useState(100);
+  const [filterBy, setFilterBy] = useState(null);
+  const [filterByAuthor, setFilterByAuthor] = useState(null);
+  const [searchBy, setSearchBy] = useState('');
+  const [filterByCategory, setFilterByCategory] = useState(null);
+  const [filterByBusinessActivity, setFilterByBusinessActivity] = useState(null);
+  const [filterByType, setFilterByType] = useState(null);
+  const [orderBy, setOrderBy] = useState('-published');
+
+  const fetchProducts = useCallback(
+    async (page, searchBy) => {
+      setLoading(true);
+      try {
+        const res = await FetchProducts(
+          page,
+          pageSize,
+          maxPageSize,
+          filterBy,
+          orderBy,
+          filterByAuthor,
+          filterByCategory,
+          filterByBusinessActivity,
+          filterByType,
+          searchBy,
+        );
+        if (res.data) {
+          setCount(res.data.count);
+          setProducts(res.data.results);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      pageSize,
+      maxPageSize,
+      filterBy,
+      orderBy,
+      filterByAuthor,
+      filterByCategory,
+      filterByBusinessActivity,
+      filterByType,
+    ],
+  );
+
+  useEffect(() => {
+    fetchProducts(currentPage, '');
+  }, [fetchProducts, currentPage]);
+
+  // Fetch Categories
+  const [categories, setCategories] = useState(null);
+  const fetchPopularCategories = useCallback(async () => {
+    const res = await FetchProductPopularCategories();
+    if (res.status === 200) {
+      setCategories(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPopularCategories();
+  }, [fetchPopularCategories]);
+
+  // Fetch Instructors
+  const [instructors, setInstructors] = useState(null);
+  const fetchPopularInstructors = useCallback(async () => {
+    const res = await FetchBestSellingInstructors();
+    if (res.status === 200) {
+      setInstructors(res.data.results);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPopularInstructors();
+  }, [fetchPopularInstructors]);
+
   return (
     <div className="dark:bg-dark-bg">
       <Head>
@@ -63,12 +143,8 @@ export default function Products({
         {/* We've used 3xl here, but feel free to try other max-widths based on your needs */}
         <div className="mx-auto max-w-7xl p-0 pt-12 md:p-12">
           <div className="space-y-12">
-            <PopularTabs
-              productsBySold={mostSoldProducts}
-              products={newestProducts}
-              productsByViews={mostViewedProducts}
-            />
-            <FeaturedProducts data={newestProducts} />
+            <PopularTabs productsBySold={products} products={products} productsByViews={products} />
+            <FeaturedProducts data={products} />
             <PopularTopics categories={categories} />
             <PopularInstructors instructors={instructors} />
             <SearchProducts categories={categories} />
@@ -82,39 +158,3 @@ export default function Products({
 Products.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>;
 };
-
-export async function getServerSideProps() {
-  const categoriesRes = await axios.get(
-    `${process.env.NEXT_PUBLIC_APP_PRODUCTS_URL}/api/category/popular/`,
-  );
-
-  const instructorsRes = await axios.get(
-    `${process.env.NEXT_PUBLIC_APP_API_URL}/api/users/instructors/best_selling/`,
-  );
-
-  const mostViewedRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_PRODUCTS_URL
-    }/api/products/list/?filter=date_created&p=${1}&page_size=${12}&max_page_size=${100}&filter=${'views'}`,
-  );
-  const newestRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_PRODUCTS_URL
-    }/api/products/list/?filter=date_created&p=${1}&page_size=${12}&max_page_size=${100}`,
-  );
-  const mostSoldRes = await axios.get(
-    `${
-      process.env.NEXT_PUBLIC_APP_PRODUCTS_URL
-    }/api/products/list/?filter=date_created&p=${1}&page_size=${12}&max_page_size=${100}&filter=${'sold'}`,
-  );
-
-  return {
-    props: {
-      categories: categoriesRes.data.results,
-      instructors: instructorsRes.data.results,
-      mostViewedProducts: mostViewedRes.data.results,
-      newestProducts: newestRes.data.results,
-      mostSoldProducts: mostSoldRes.data.results,
-    },
-  };
-}

@@ -19,6 +19,7 @@ export default function WatchListItem({
   id,
   setId,
   viewedEpisodes,
+  fetchViewedEpisodes,
 }) {
   const [hidden, setHidden] = useState(true);
 
@@ -53,6 +54,7 @@ export default function WatchListItem({
           section.episodes.map((data) => (
             <WatchListContentItem
               id={id}
+              fetchViewedEpisodes={fetchViewedEpisodes}
               setId={setId}
               key={data.id} // use the `id` property as the key
               details={details}

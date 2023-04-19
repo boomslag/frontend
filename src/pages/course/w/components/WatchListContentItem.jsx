@@ -24,6 +24,7 @@ export default function WatchListContentItem({
   id,
   setId,
   viewedEpisodes,
+  fetchViewedEpisodes,
 }) {
   const [viewedEpisode, setViewedEpisode] = useState();
   const [hovered, setHovered] = useState(false);
@@ -35,26 +36,27 @@ export default function WatchListContentItem({
     setResourceHidden(true);
 
     if (setSrc) {
-      setSrc(data && data !== null && data !== undefined && data.file);
+      setSrc(data && data.file);
     }
     if (setContent) {
-      setContent(data && data !== null && data !== undefined && data.content);
+      setContent(data && data.content);
     }
     if (setTitle) {
-      setTitle(data && data !== null && data !== undefined && data.title);
+      setTitle(data && data.title);
     }
     if (setResources) {
-      setResources(data && data !== null && data !== undefined && data.resources);
+      setResources(data && data.resources);
     }
     if (setEpisode) {
-      setEpisode(data && data !== null && data !== undefined && data);
-      setId(data && data !== null && data !== undefined && data.id);
+      setEpisode(data && data);
+      setId(data && data.id);
     }
   };
 
   const handleViewedEpisode = async () => {
     setViewedEpisode(true);
-    await AddEpisodeViewed(id);
+    await AddEpisodeViewed(data && data.id);
+    await fetchViewedEpisodes();
   };
 
   return (

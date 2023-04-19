@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { AcademicCapIcon, ShoppingCartIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/router';
 
 export default function Sidebar({ product, productUUID }) {
+  const router = useRouter();
   const details = product && product.details;
 
   const targetAudienceBool = details && details.target_audience_bool;
@@ -28,7 +30,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Target audience',
       href: `/sell/products/manage/goals/${productUUID}`,
       icon: AcademicCapIcon,
-      current: window.location.pathname === `/sell/products/manage/goals/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/goals/`),
       ready: targetAudienceBool,
     },
 
@@ -38,7 +40,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Features',
       href: `/sell/products/manage/features/${productUUID}`,
       icon: ChatBubbleLeftIcon,
-      current: window.location.pathname === `/sell/products/manage/features/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/features/`),
       ready: features,
     },
     {
@@ -47,7 +49,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Supply chain',
       href: `/sell/products/manage/supply_chain/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/supply_chain/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/supply_chain/`),
       ready: supplyChain,
     },
     {
@@ -56,7 +58,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Delivery',
       href: `/sell/products/manage/delivery/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/delivery/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/delivery/`),
       ready: delivery,
     },
     {
@@ -65,7 +67,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Warehousing',
       href: `/sell/products/manage/warehousing/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/warehousing/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/warehousing/`),
       ready: warehousing,
     },
   ];
@@ -77,8 +79,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Value proposition',
       href: `/sell/products/manage/value_proposition/${productUUID}`,
       icon: AcademicCapIcon,
-      current:
-        window.location.pathname === `/sell/products/manage/value_proposition/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/value_proposition/`),
       ready: valueProp,
     },
     {
@@ -87,7 +88,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Marketing Strategy',
       href: `/sell/products/manage/marketing/${productUUID}`,
       icon: ChatBubbleLeftIcon,
-      current: window.location.pathname === `/sell/products/manage/marketing/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/marketing/`),
       ready: marketing,
     },
     {
@@ -96,7 +97,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Product Details',
       href: `/sell/products/manage/details/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/details/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/details/`),
       ready: productDetails,
     },
     {
@@ -105,7 +106,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Accessibility',
       href: `/sell/products/manage/accessibility/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/accessibility/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/accessibility/`),
       ready: accessibility,
     },
     {
@@ -114,7 +115,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Documentation',
       href: `/sell/products/manage/documentation/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/documentation/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/documentation/`),
       ready: documentation,
     },
   ];
@@ -126,7 +127,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Landing Page',
       href: `/sell/products/manage/landing_page/${productUUID}`,
       icon: AcademicCapIcon,
-      current: window.location.pathname === `/sell/products/manage/landing_page/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/landing_page/`),
       ready: landingPage,
     },
     {
@@ -135,7 +136,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Pricing',
       href: `/sell/products/manage/pricing/${productUUID}`,
       icon: ChatBubbleLeftIcon,
-      current: window.location.pathname === `/sell/products/manage/pricing/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/pricing/`),
       ready: pricing,
     },
     {
@@ -144,7 +145,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Promotions',
       href: `/sell/products/manage/promotions/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/promotions/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/promotions/`),
       ready: promotions,
     },
     {
@@ -153,7 +154,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Shipping',
       href: `/sell/products/manage/shipping/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/shipping/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/shipping/`),
       ready: shipping,
     },
     {
@@ -162,7 +163,7 @@ export default function Sidebar({ product, productUUID }) {
       name: 'Messages',
       href: `/sell/products/manage/messages/${productUUID}`,
       icon: ShoppingCartIcon,
-      current: window.location.pathname === `/sell/products/manage/messages/${productUUID}`,
+      current: router.pathname.startsWith(`/sell/products/manage/messages/`),
       ready: messages,
     },
   ];

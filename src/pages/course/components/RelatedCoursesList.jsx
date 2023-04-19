@@ -1,11 +1,13 @@
 import React from 'react';
-import CourseCardHorizontal from '../../components/courses/CourseCardHorizontal';
+import CourseCardHorizontal from '@/components/CourseCardHorizontal';
 
 export default function RelatedCoursesList({ courses }) {
   return (
     <div>
       {courses &&
-        courses.map((course, index) => <CourseCardHorizontal data={course} index={index} />)}
+        courses.map((course, index) => (
+          <CourseCardHorizontal data={course} key={course.id} index={index} />
+        ))}
       <button
         type="button"
         // onClick={() => setOpen(true)}

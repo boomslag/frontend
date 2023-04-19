@@ -1,7 +1,7 @@
 import React from 'react';
 // eslint-disable-next-line
 import LoadingMoon from '@/components/loaders/LoadingMoon';
-import ProductCardHorizontal from '../ProductCardHorizontal';
+import ProductCardHorizontal from '@/components/ProductCardHorizontal';
 
 export default function FeaturedProducts({ data }) {
   return (

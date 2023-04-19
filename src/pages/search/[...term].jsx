@@ -23,10 +23,10 @@ import LevelFilter from '../categories/c/components/LevelFilter';
 import PriceFilter from '../categories/c/components/PriceFilter';
 import axios from 'axios';
 import CategoriesFilter from '../categories/c/components/CategoriesFilter';
-import CourseCardHorizontal from '../components/courses/CourseCardHorizontal';
+import CourseCardHorizontal from '@/components/CourseCardHorizontal';
 import FetchSearchProducts from '@/api/products/SearchProducts';
 import ProductCard from '../../components/ProductCard';
-import ProductCardHorizontal from '../components/products/ProductCardHorizontal';
+import ProductCardHorizontal from '@/components/ProductCardHorizontal';
 
 const sortOptions = [
   { name: 'Most Sold', filterBy: 'sold', order: 'desc' },

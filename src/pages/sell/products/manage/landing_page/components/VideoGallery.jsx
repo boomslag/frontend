@@ -12,6 +12,7 @@ import {
   updateDraggablesVideo,
 } from '@/redux/actions/products/products';
 import { ToastError } from '@/components/ToastError';
+import Image from 'next/image';
 // import { onchangeProductVideo, onchangeProductVideoFilename } from "../../../../../redux/actions/products/products";
 
 function classNames(...classes) {
@@ -141,50 +142,54 @@ export default function VideoGallery({
             {/* Video selector */}
             <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
               <Tab.List className="grid grid-cols-4 gap-6">
-                {videosList.map((item) => (
-                  <Tab
-                    key={item.id}
-                    className="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span className="sr-only"> {item.title} </span>
-                        <span className="absolute inset-0 overflow-hidden rounded-md">
-                          <img
-                            src={item.file}
-                            alt=""
-                            className="h-full w-full object-cover object-center"
+                {videosList &&
+                  videosList.map((item) => (
+                    <Tab
+                      key={item.id}
+                      className="relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4"
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className="sr-only"> {item.title} </span>
+                          <span className="absolute inset-0 overflow-hidden rounded-md">
+                            <Image
+                              width={256}
+                              height={256}
+                              src={item.file}
+                              alt=""
+                              className="h-full w-full object-cover object-center"
+                            />
+                          </span>
+                          <span
+                            className={classNames(
+                              selected ? 'ring-indigo-500' : 'ring-transparent',
+                              'pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2',
+                            )}
+                            aria-hidden="true"
                           />
-                        </span>
-                        <span
-                          className={classNames(
-                            selected ? 'ring-indigo-500' : 'ring-transparent',
-                            'pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2',
-                          )}
-                          aria-hidden="true"
-                        />
-                      </>
-                    )}
-                  </Tab>
-                ))}
+                        </>
+                      )}
+                    </Tab>
+                  ))}
               </Tab.List>
             </div>
 
             <Tab.Panels className="aspect-w-0.5 aspect-h-0.5 w-full">
-              {videosList.map((item) => (
-                <Tab.Panel key={item.id}>
-                  <video className="h-64 w-full" controls>
-                    <source src={item.file} type="video/mp4" />
-                    Your browser does not support the video tag.
-                    <track
-                      src="captions_es.vtt"
-                      kind="captions"
-                      srcLang="es"
-                      label="spanishCaptions"
-                    />
-                  </video>
-                </Tab.Panel>
-              ))}
+              {videosList &&
+                videosList.map((item) => (
+                  <Tab.Panel key={item.id}>
+                    <video className="h-64 w-full" controls>
+                      <source src={item.file} type="video/mp4" />
+                      Your browser does not support the video tag.
+                      <track
+                        src="captions_es.vtt"
+                        kind="captions"
+                        srcLang="es"
+                        label="spanishCaptions"
+                      />
+                    </video>
+                  </Tab.Panel>
+                ))}
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -241,39 +246,42 @@ export default function VideoGallery({
             </div>
           </div>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            {videosList.map((item, index) => (
-              <li
-                key={item.id}
-                id={item.id}
-                draggable
-                onDragStart={(e) => onDragStart(e, index, item)}
-                onDragEnter={(e) => onDragEnter(e, index)}
-                onDragEnd={(e) => onDragEnd(e, index, item)}
-                onDragOver={(e) => e.preventDefault()}
-                className="relative"
-              >
-                <div className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100">
-                  <img
-                    src={item.file}
-                    alt=""
-                    className="pointer-events-none object-cover group-hover:opacity-75"
-                  />
-                </div>
-                <p className="pointer-events-none mt-2 dark:text-dark-txt block truncate text-sm font-medium text-gray-900">
-                  {item.title}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleDelete(index);
-                    videosList.length > 0 ? handleVideoDelete(item) : null;
-                  }}
-                  className=" block text-sm font-medium dark:text-dark-txt-secondary text-gray-500"
+            {videosList &&
+              videosList.map((item, index) => (
+                <li
+                  key={item.id}
+                  id={item.id}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, index, item)}
+                  onDragEnter={(e) => onDragEnter(e, index)}
+                  onDragEnd={(e) => onDragEnd(e, index, item)}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="relative"
                 >
-                  <i className="bx bx-trash text-xl" />
-                </button>
-              </li>
-            ))}
+                  <div className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100">
+                    <Image
+                      width={256}
+                      height={256}
+                      src={item.file}
+                      alt=""
+                      className="pointer-events-none object-cover group-hover:opacity-75"
+                    />
+                  </div>
+                  <p className="pointer-events-none mt-2 dark:text-dark-txt block truncate text-sm font-medium text-gray-900">
+                    {item.title}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleDelete(index);
+                      videosList.length > 0 ? handleVideoDelete(item) : null;
+                    }}
+                    className=" block text-sm font-medium dark:text-dark-txt-secondary text-gray-500"
+                  >
+                    <i className="bx bx-trash text-xl" />
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

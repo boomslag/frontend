@@ -34,11 +34,11 @@ export default function AnswerItem({
 }) {
   const [open, setOpen] = useState(false);
 
-  const likeCount = answer && answer.likes && answer.likes.length;
+  const likeCount = answer && answer && answer.likes && answer && answer.likes.length;
 
   const [likes, setLikes] = useState(likeCount);
   const [like, setLike] = useState(
-    answer && answer.likes.some((u) => u.user === authState.user.id),
+    answer && answer && answer.likes.some((u) => u.user === authState.user.id),
   );
 
   const [edit, setEdit] = useState(false);
@@ -47,19 +47,19 @@ export default function AnswerItem({
   const addLike = async () => {
     if (like) {
       setLike(false);
-      await AddAnswerLike(answer.id, 'remove');
+      await AddAnswerLike(answer && answer.id, 'remove');
       setLikes((previousState) => previousState - 1);
     } else {
       setLike(true);
-      await AddAnswerLike(answer.id, 'add');
+      await AddAnswerLike(answer && answer.id, 'add');
       setLikes((previousState) => previousState + 1);
     }
   };
 
-  const [acceptedAnswer, setAcceptedAnswer] = useState(answer.is_accepted_answer);
+  const [acceptedAnswer, setAcceptedAnswer] = useState(answer && answer.is_accepted_answer);
 
   const acceptAnswer = async () => {
-    await AcceptAnswer(answer.id)
+    await AcceptAnswer(answer && answer.id)
       .then((response) => {
         // Handle successful response
         setAcceptedAnswer(true);
@@ -72,9 +72,9 @@ export default function AnswerItem({
   };
 
   const unacceptAnswer = async () => {
-    // dispatch(unaccept_answer(answer.answer_uuid, question.question_uuid))
+    // dispatch(unaccept_answer(answer&&answer.answer_uuid, question.question_uuid))
     // fetchQuestions(episode.episode_uuid)
-    await AcceptAnswer(answer.id)
+    await AcceptAnswer(answer && answer.id)
       .then((response) => {
         // Handle successful response
         setAcceptedAnswer(false);
@@ -87,7 +87,7 @@ export default function AnswerItem({
   const onEditAnswer = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await UpdateQuestionAnswer(answer.id, body);
+    await UpdateQuestionAnswer(answer && answer.id, body);
     await fetchAnswers(1, '');
     setLoading(false);
     setBody('');
@@ -96,7 +96,7 @@ export default function AnswerItem({
   const onDeleteAnswer = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await DeleteAnswer(answer.id);
+    await DeleteAnswer(answer && answer.id);
     await fetchAnswers(1, '');
     setLoading(false);
     setBody('');
@@ -106,12 +106,18 @@ export default function AnswerItem({
     <>
       <div className="flex ">
         <div className="mr-4  flex-shrink-0">
-          <img className="inline-block h-14 w-14 rounded-full" src={answer.user.picture} alt="" />
+          <img
+            className="inline-block h-14 w-14 rounded-full"
+            src={answer && answer.user.picture}
+            alt=""
+          />
         </div>
         <div className="w-full">
           <div className="-ml-4 -mt-2  flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="ml-4 mt-2 flex">
-              <div className=" text-md font-bold  underline underline-offset-2">{answer.user}</div>
+              <div className=" text-md font-bold  underline underline-offset-2">
+                {answer && answer.user}
+              </div>
               {acceptedAnswer ? (
                 <span className="ml-2 inline-flex items-center rounded-full bg-forest-green-100 px-2.5 py-0.5 text-xs font-medium text-forest-green-800">
                   Correct answer
@@ -123,7 +129,7 @@ export default function AnswerItem({
 
             <div className="ml-4 mt-2 flex-shrink-0">
               <div className="flex">
-                {answer.user === authState.user.id ? (
+                {answer && answer.user === authState.user.id ? (
                   <>
                     {!acceptedAnswer ? (
                       <CheckCircleIcon
@@ -171,7 +177,7 @@ export default function AnswerItem({
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right dark:divide-dark-border dark:bg-dark-bg divide-y divide-gray-100 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <div className="py-1">
-                        {answer.user === authState.user.id && (
+                        {answer && answer.user === authState.user.id && (
                           <>
                             <Menu.Item>
                               {({ active }) => (
@@ -219,7 +225,7 @@ export default function AnswerItem({
                             </Menu.Item>
                           </>
                         )}
-                        {answer.user !== authState.user.id && (
+                        {answer && answer.user !== authState.user.id && (
                           <Menu.Item>
                             {({ active }) => (
                               <a
@@ -245,10 +251,10 @@ export default function AnswerItem({
               </div>
             </div>
           </div>
-          <p className="text-sm text-gray-600">{moment(answer.created_date).fromNow()}</p>
+          <p className="text-sm text-gray-600">{moment(answer && answer.created_date).fromNow()}</p>
           <p
             className=" font-regular mt-1 text-sm"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer.body) }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer && answer.body) }}
           />
         </div>
       </div>

@@ -46,7 +46,7 @@ export default function InboxListItem({ inbox, user, setChat }) {
           Inbox with {userInfo.username ? userInfo.username : 'Unknown User'}
         </p>
         <p className="text-sm text-gray-500">
-          {inbox.last_message ? inbox.last_message.slice(0, 19) : 'New Conversation'}
+          {inbox && inbox.last_message ? inbox.last_message.slice(0, 19) : 'New Conversation'}
         </p>
       </div>
     </button>

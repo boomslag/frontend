@@ -1,6 +1,6 @@
 import React from 'react';
-import StandardPagination from '@/components/pagination/StandardPagination';
 import Link from 'next/link';
+import StandardPagination from '@/components/pagination/StandardPagination';
 
 export default function TokenListSec({
   tokens,
@@ -48,36 +48,37 @@ export default function TokenListSec({
                 </tr>
               </thead>
               <tbody className="divide-y dark:divide-dark-border divide-gray-200">
-                {tokens.map((token) => (
-                  <tr key={token.address}>
-                    <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium dark:text-dark-txt-secondary text-gray-900 sm:pl-0">
-                      {token.symbol}
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
-                      {token.address}
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
-                      {tokenBalances.find((tb) => tb[token.symbol])?.balance || 'N/A'}
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
-                      <Link
-                        href="/send"
-                        className="text-indigo-600 dark:text-dark-accent dark:hover:text-dark-primary hover:text-indigo-900"
-                      >
-                        Trade
-                      </Link>
-                    </td>
-                    {/* <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
+                {tokens &&
+                  tokens.map((token) => (
+                    <tr key={token.address}>
+                      <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium dark:text-dark-txt-secondary text-gray-900 sm:pl-0">
+                        {token.symbol}
+                      </td>
+                      <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
+                        {token.address}
+                      </td>
+                      <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
+                        {tokenBalances.find((tb) => tb[token.symbol])?.balance || 'N/A'}
+                      </td>
+                      <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
+                        <Link
+                          href="/send"
+                          className="text-indigo-600 dark:text-dark-accent dark:hover:text-dark-primary hover:text-indigo-900"
+                        >
+                          Trade
+                        </Link>
+                      </td>
+                      {/* <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
                       <a href="/" className="text-indigo-600 hover:text-indigo-900">
                         Edit<span className="sr-only">, test</span>
                       </a>
                     </td> */}
-                  </tr>
-                ))}
+                    </tr>
+                  ))}
               </tbody>
             </table>
             <StandardPagination
-              data={tokens}
+              data={tokens && tokens}
               count={count}
               pageSize={pageSize}
               currentPage={currentPage}

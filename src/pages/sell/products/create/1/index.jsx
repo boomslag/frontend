@@ -47,9 +47,9 @@ export default function CreateProduct1() {
 
   const [selectedMailingLists, setSelectedMailingLists] = useState(type);
 
-  if (!isAuthenticated || (myUser && myUser.role !== 'seller')) {
-    return router.push('/');
-  }
+  // if (!isAuthenticated || (myUser && myUser.role !== 'seller')) {
+  //   return router.push('/');
+  // }
 
   // eslint-disable-next-line
   useEffect(() => {

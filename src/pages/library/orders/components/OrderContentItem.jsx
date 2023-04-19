@@ -3,22 +3,19 @@ import { useSelector } from 'react-redux';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { useDispatch } from 'react-redux';
-import SimpleEditor from '@/components/SimpleEditor';
 import { CircleLoader } from 'react-spinners';
+import Image from 'next/image';
+import SimpleEditor from '@/components/SimpleEditor';
 import CreateProductReview from '@/api/products/CreateReview';
 import FetchProductReview from '@/api/products/GetReview';
 import UpdateProductReview from '@/api/products/UpdateReview';
-import Image from 'next/image';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function OrderContentItem({ item, order, index }) {
-  const dispatch = useDispatch();
   const [review, setReview] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const product_id = item.product;
 
   const fetchReview = useCallback(async () => {
@@ -124,13 +121,13 @@ export default function OrderContentItem({ item, order, index }) {
                 ORDER PLACED
               </h3>
               <p className="mt-1 text-sm dark:text-dark-txt-secondary text-gray-500">
-                {moment(order.date_issued).format('MMMM Do YYYY, h:mm:ss a')}
+                {moment(order && order.date_issued).format('MMMM Do YYYY, h:mm:ss a')}
               </p>
             </div>
 
             <div className="ml-4 mt-4 flex-shrink-0">
               <h3 className="text-xs font-medium leading-6 dark:text-dark-txt text-gray-600">
-                ORDER: <span>{item.id}</span>
+                ORDER: <span>{item && item.id}</span>
               </h3>
               <p className="mt-1 text-xs text-gray-500 space-x-2">
                 <button className="inline-flex dark:text-dark-accent dark:hover:text-dark-primary text-purple-600 hover:underline">
@@ -225,8 +222,8 @@ export default function OrderContentItem({ item, order, index }) {
               <div className="p-4">
                 <div className="flex items-center">
                   <img
-                    src={review.thumbnail}
-                    alt={`${review.user}.`}
+                    src={review && review.thumbnail}
+                    alt={`${review && review.user}.`}
                     className="h-12 w-12 rounded-full"
                   />
                   <div className="ml-4">
@@ -238,20 +235,20 @@ export default function OrderContentItem({ item, order, index }) {
                         <StarIcon
                           key={rate}
                           className={classNames(
-                            review.rating > rate ? 'text-yellow-400' : 'text-gray-300',
+                            review && review.rating > rate ? 'text-yellow-400' : 'text-gray-300',
                             'h-5 w-5 flex-shrink-0',
                           )}
                           aria-hidden="true"
                         />
                       ))}
                     </div>
-                    <p className="sr-only">{review.rating} out of 5 stars</p>
+                    <p className="sr-only">{review && review.rating} out of 5 stars</p>
                   </div>
                 </div>
 
                 <div
                   className="mt-4 space-y-6 text-base italic dark:text-dark-txt-secondary text-gray-600"
-                  dangerouslySetInnerHTML={{ __html: review.comment }}
+                  dangerouslySetInnerHTML={{ __html: review && review.comment }}
                 />
               </div>
 
@@ -344,14 +341,14 @@ export default function OrderContentItem({ item, order, index }) {
               <Image
                 width={512}
                 height={512}
-                src={item.thumbnail}
+                src={item && item.thumbnail}
                 alt="Thumbnail"
                 className="w-full h-full object-center object-cover sm:w-full sm:h-full"
               />
             </dt>
             <dd className="mt-1 flex text-sm dark:text-dark-txt text-gray-900 sm:col-span-2 sm:mt-0">
               <span className="flex-grow">
-                <p className="text-lg font-semibold">{item.name}</p>
+                <p className="text-lg font-semibold">{item && item.name}</p>
                 {/* <p className="mt-2 text-sm font-medium text-gray-900 dark:text-dark-txt">
                                     <img 
                                         className="h-4 w-4 inline-flex mr-1"
@@ -360,36 +357,36 @@ export default function OrderContentItem({ item, order, index }) {
                                     {(item.price.toFixed(2))/(ethereum_price)}
                                 </p> */}
                 <p className="mt-2 text-sm text-gray-500 dark:text-dark-txt">
-                  Quantity: {item.count}
+                  Quantity: {item && item.count}
                 </p>
-                {item.weight && (
+                {item && item.weight && (
                   <p className="mt-2 text-sm text-gray-500 dark:text-dark-txt">
-                    Weight: {item.weight_name}.g
+                    Weight: {item && item.weight_name}.g
                   </p>
                 )}
-                {item.color && (
+                {item && item.color && (
                   <p className="mt-2 text-sm text-gray-500 dark:text-dark-txt">
                     Color:{' '}
-                    {item.color ? (
+                    {item && item.color ? (
                       <div
                         className="rounded-full inline-flex ml-4 h-4 w-4"
-                        style={{ backgroundColor: item.color_hex }}
+                        style={{ backgroundColor: item && item.color_hex }}
                       />
                     ) : (
                       <></>
                     )}
                   </p>
                 )}
-                {item.size && (
+                {item && item.size && (
                   <p className="text-gray-500 mt-2 dark:text-dark-txt">
                     <span>Size: </span>
-                    {item.size ? item.size_name : <></>}
+                    {item.size ? item && item.size_name : <></>}
                   </p>
                 )}
-                {item.material && (
+                {item && item.material && (
                   <p className="text-gray-500 mt-2 dark:text-dark-txt">
                     <span>Material: </span>
-                    {item.material ? item.material_name : <></>}
+                    {item.material ? item && item.material_name : <></>}
                   </p>
                 )}
               </span>
@@ -452,7 +449,9 @@ export default function OrderContentItem({ item, order, index }) {
             <div className="hidden sm:grid grid-cols-4 text-sm font-medium text-gray-600 dark:text-dark-txt">
               <div
                 className={classNames(
-                  item.status === 'not_processed' ? 'text-gray-600 rounded-full bg-gray-300' : '',
+                  item && item.status === 'not_processed'
+                    ? 'text-gray-600 rounded-full bg-gray-300'
+                    : '',
                   'text-center',
                 )}
               >
@@ -460,7 +459,9 @@ export default function OrderContentItem({ item, order, index }) {
               </div>
               <div
                 className={classNames(
-                  item.status === 'processing' ? 'text-blue-600 rounded-full bg-blue-300' : '',
+                  item && item.status === 'processing'
+                    ? 'text-blue-600 rounded-full bg-blue-300'
+                    : '',
                   'text-center',
                 )}
               >
@@ -468,7 +469,9 @@ export default function OrderContentItem({ item, order, index }) {
               </div>
               <div
                 className={classNames(
-                  item.status === 'shipping' ? 'text-blue-600 rounded-full bg-blue-300' : '',
+                  item && item.status === 'shipping'
+                    ? 'text-blue-600 rounded-full bg-blue-300'
+                    : '',
                   'text-center',
                 )}
               >
@@ -476,7 +479,9 @@ export default function OrderContentItem({ item, order, index }) {
               </div>
               <div
                 className={classNames(
-                  item.status === 'delivered' ? 'text-green-600 rounded-full bg-green-300' : '',
+                  item && item.status === 'delivered'
+                    ? 'text-green-600 rounded-full bg-green-300'
+                    : '',
                   'text-center',
                 )}
               >
@@ -522,10 +527,10 @@ export default function OrderContentItem({ item, order, index }) {
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm dark:text-dark-txt-secondary text-gray-500">
-                          Tracking Number: {item.tracking_number}
+                          Tracking Number: {item && item.tracking_number}
                         </p>
                         <p className="text-sm dark:text-dark-txt-secondary text-gray-500">
-                          Tracking Link: {item.tracking_url}
+                          Tracking Link: {item && item.tracking_url}
                         </p>
                       </div>
                     </div>
@@ -566,27 +571,33 @@ export default function OrderContentItem({ item, order, index }) {
                   <dd className="mt-3 text-gray-500 dark:text-dark-txt">
                     <span className="block">
                       Address1:{' '}
-                      <span className="dark:text-dark-txt-secondary">{item.address_line_1}</span>
+                      <span className="dark:text-dark-txt-secondary">
+                        {item && item.address_line_1}
+                      </span>
                     </span>
                     <span className="block">
                       Address 2:{' '}
                       <span className="dark:text-dark-txt-secondary">
-                        {item.address_line_2 ? item.address_line_2 : ''}
+                        {item && item.address_line_2 ? item.address_line_2 : ''}
                       </span>
                     </span>
                     <p>
                       Shipping:{' '}
-                      <span className="dark:text-dark-txt-secondary">{item.shipping_name}</span>
+                      <span className="dark:text-dark-txt-secondary">
+                        {item && item.shipping_name}
+                      </span>
                     </p>
                     <p>
                       Time to delivery:{' '}
                       <span className="dark:text-dark-txt-secondary">
-                        {item.shipping_time} Days
+                        {item && item.shipping_time} Days
                       </span>
                     </p>
                     <p>
                       Phone Number:{' '}
-                      <span className="dark:text-dark-txt-secondary">{item.telephone_number}</span>
+                      <span className="dark:text-dark-txt-secondary">
+                        {item && item.telephone_number}
+                      </span>
                     </p>
                   </dd>
                 </Dialog.Panel>

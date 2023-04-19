@@ -29,6 +29,7 @@ export default function AnswersList({
   return (
     <div className="space-y-6 py-4">
       {!loading ? (
+        answers &&
         answers.map((answer, index) => (
           <AnswerItem
             key={answer.id}

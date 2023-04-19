@@ -25,10 +25,11 @@ export default function ChatInbox({ chat, user }) {
   useEffect(() => {
     const fetchParticipantDetails = async () => {
       const details = await Promise.all(
-        chat.participants.map(async (participant) => {
-          const res = await GetUserInfo(participant.uuid);
-          return res.data.results;
-        }),
+        chat &&
+          chat.participants.map(async (participant) => {
+            const res = await GetUserInfo(participant.uuid);
+            return res.data.results;
+          }),
       );
 
       setOtherParticipants([]); // Reset the otherParticipants array
@@ -42,7 +43,7 @@ export default function ChatInbox({ chat, user }) {
       });
     };
     fetchParticipantDetails();
-  }, [chat.participants, user.id]);
+  }, [chat, user.id]);
 
   const [messages, setMessages] = useState([]);
   const [count, setCount] = useState([]);

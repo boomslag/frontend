@@ -3,8 +3,11 @@ import AnswersList from './AnswersList';
 
 export default function AnswersSec({
   answers,
+  authState,
   fetchAnswers,
   question,
+  loading,
+  setLoading,
   episode,
   count,
   setCount,
@@ -20,34 +23,31 @@ export default function AnswersSec({
   setOrderBy,
   searchTerm,
   setSearchTerm,
-  loading,
-  setLoading,
-  authState,
 }) {
   return (
     <div className="px-4">
       <AnswersList
-        answers={answers}
-        authState={authState}
-        fetchAnswers={fetchAnswers}
-        question={question}
-        episode={episode}
-        count={count}
-        setCount={setCount}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        maxPageSize={maxPageSize}
-        setMaxPageSize={setMaxPageSize}
-        filterBy={filterBy}
-        setFilterBy={setFilterBy}
-        orderBy={orderBy}
-        setOrderBy={setOrderBy}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        loading={loading}
-        setLoading={setLoading}
+        answers={answers && answers}
+        authState={authState && authState}
+        fetchAnswers={fetchAnswers && fetchAnswers}
+        question={question && question}
+        loading={loading && loading}
+        setLoading={setLoading && setLoading}
+        episode={episode && episode}
+        count={count && count}
+        setCount={setCount && setCount}
+        pageSize={pageSize && pageSize}
+        setPageSize={setPageSize && setPageSize}
+        currentPage={currentPage && currentPage}
+        setCurrentPage={setCurrentPage && setCurrentPage}
+        maxPageSize={maxPageSize && maxPageSize}
+        setMaxPageSize={setMaxPageSize && setMaxPageSize}
+        filterBy={filterBy && filterBy}
+        setFilterBy={setFilterBy && setFilterBy}
+        orderBy={orderBy && orderBy}
+        setOrderBy={setOrderBy && setOrderBy}
+        searchTerm={searchTerm && searchTerm}
+        setSearchTerm={setSearchTerm && setSearchTerm}
       />
     </div>
   );

@@ -25,17 +25,22 @@ export default function CourseCard({ data }) {
         className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-border dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
       >
         {/* Image */}
-        <Link href={`/course/${data.slug}`} className="relative grid w-full place-items-center ">
+        <Link
+          href={`/course/${data && data.slug}`}
+          className="relative grid w-full place-items-center "
+        >
           <Image
             width={512}
             height={512}
-            id={`img-shadow${data.id}`}
-            src={data.thumbnail}
-            alt={data.title.length > 46 ? data.title.slice(0, 45) : data.title}
+            id={`img-shadow${data && data.id}`}
+            src={data && data.thumbnail}
+            alt={
+              data && data.title.length > 46 ? data && data.title.slice(0, 45) : data && data.title
+            }
             className="object-cover w-auto h-40"
           />
           <div
-            id={`img-shadow${data.id}`}
+            id={`img-shadow${data && data.id}`}
             className="bg-gray-350 absolute inset-0 mix-blend-multiply"
             aria-hidden="true"
           />
@@ -47,7 +52,7 @@ export default function CourseCard({ data }) {
               href="/category/test"
               className="hidden font-medium dark:text-dark-txt-secondary text-gray-500 hover:underline hover:underline-offset-2 md:block"
             >
-              {data.category}
+              {data && data.category}
             </Link>
             <div className="flex items-center">
               <svg
@@ -60,50 +65,50 @@ export default function CourseCard({ data }) {
               </svg>
 
               <p className="ml-1 select-none text-sm font-bold text-gray-600">
-                {data.student_rating}
+                {data && data.student_rating}
                 <span className="font-normal dark:text-dark-txt text-gray-500">
                   {' '}
-                  ({data.student_rating_no} reviews)
+                  ({data && data.student_rating_no} reviews)
                 </span>
               </p>
             </div>
           </div>
           {/* Description */}
           <Link
-            href={`/course/${data.slug}`}
+            href={`/course/${data && data.slug}`}
             className={`text-md justify-start text-left font-bold  ${
               hover ? 'text-iris-500 dark:text-dark-primary' : 'text-gray-800 dark:text-dark-txt'
             }`}
           >
-            {data.title}
+            {data && data.title}
           </Link>
           <p className="select-none justify-start text-left text-base text-gray-500">
-            {data.short_description.length > 46
-              ? data.short_description.slice(0, 60)
-              : data.short_description}
+            {data && data.short_description.length > 46
+              ? data && data.short_description.slice(0, 60)
+              : data && data.short_description}
           </p>
           <div className="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="ml-4">
               <div className="select-none text-sm font-bold text-gray-800 dark:text-dark-txt">
                 <div className="">
-                  {data.discount ? (
+                  {data && data.discount ? (
                     <p className="mt-2 text-gray-800 dark:text-dark-txt">
                       {' '}
-                      <strong>${data.price}</strong> /{' '}
-                      <span className="line-through">{data.compare_price}</span>
+                      <strong>${data && data.price}</strong> /{' '}
+                      <span className="line-through">{data && data.compare_price}</span>
                     </p>
                   ) : (
                     <p className="mt-2 text-gray-800 dark:text-dark-txt">
-                      <strong>${data.price}</strong>
+                      <strong>${data && data.price}</strong>
                     </p>
                   )}
                 </div>
               </div>
             </div>
             <div className="ml-4 flex-shrink-0">
-              {data.discount ? (
+              {data && data.discount ? (
                 <p className="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800">
-                  {calculateDiscountPercentage(data.price, data.compare_price)}% Off
+                  {calculateDiscountPercentage(data && data.price, data && data.compare_price)}% Off
                 </p>
               ) : (
                 <div />
@@ -111,7 +116,7 @@ export default function CourseCard({ data }) {
             </div>
             <div className="ml-4  flex-shrink-0">
               <div className="flex gap-x-2">
-                {data.best_seller ? (
+                {data && data.best_seller ? (
                   <div className="inline-flex rounded-full bg-almond-200 px-3 py-1 text-xs font-medium text-almond-800  ">
                     Bestseller
                   </div>
@@ -119,14 +124,14 @@ export default function CourseCard({ data }) {
                   <div />
                 )}
                 {/* <div
-                  id={`CourseCard${data.id}`}
+                  id={`CourseCard${data&&data.id}`}
                   onMouseEnter={() => {
-                    const heartIcon = document.getElementById(`CourseCard${data.id}`);
+                    const heartIcon = document.getElementById(`CourseCard${data&&data.id}`);
                     heartIcon.classList.remove('bx-heart');
                     heartIcon.classList.add('bxs-heart');
                   }}
                   onMouseLeave={() => {
-                    const heartIcon = document.getElementById(`CourseCard${data.id}`);
+                    const heartIcon = document.getElementById(`CourseCard${data&&data.id}`);
                     heartIcon.classList.remove('bxs-heart');
                     heartIcon.classList.add('bx-heart');
                   }}

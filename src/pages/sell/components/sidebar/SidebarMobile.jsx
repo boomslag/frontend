@@ -26,7 +26,7 @@ function classNames(...classes) {
 export default function SidebarMobile(sidebarOpen, setSidebarOpen) {
   return (
     <div>
-      <Transition.Root show={sidebarOpen} as={Fragment}>
+      <Transition.Root show={sidebarOpen || false} as={Fragment}>
         <Dialog as="div" className="relative z-40 md:hidden" onClose={setSidebarOpen}>
           <Transition.Child
             as={Fragment}

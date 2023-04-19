@@ -111,7 +111,7 @@ export default function SendPolygon({ wallet, txInfo }) {
         setBalance(await web3.eth.getBalance(wallet.polygon_address));
         setGasLimit(21000);
       } else if (contractABI !== '') {
-        const contract = new web3.eth.Contract(contractABI, selected.address);
+        const contract = new web3.eth.Contract(contractABI, selected && selected.address);
         setBalance(await contract.methods.balanceOf(wallet.polygon_address).call());
         if (toAccount !== '' && amount !== '' && amount > 0) {
           const data = contract.methods.transfer(toAccount, amount).encodeABI();
@@ -148,7 +148,7 @@ export default function SendPolygon({ wallet, txInfo }) {
     };
     fetchMaticBalance();
     // eslint-disable-next-line
-  }, [wallet.address]);
+  }, [wallet]);
 
   useEffect(() => {
     const estimatedGasFeeWei = gasPrice * gasLimit;
@@ -245,36 +245,37 @@ export default function SendPolygon({ wallet, txInfo }) {
                     leaveTo="opacity-0"
                   >
                     <Listbox.Options className="text-md duration absolute mt-1 block max-h-60 w-full overflow-auto border dark:border-dark-border bg-white py-3 text-base font-medium shadow-neubrutalism-sm ring-1 ring-black ring-opacity-5 transition ease-in-out placeholder:text-gray-300  focus:outline-none focus:ring-gray-900 dark:bg-dark-bg dark:text-dark-txt sm:text-sm">
-                      {polygonTokens.map((token) => (
-                        <Listbox.Option
-                          key={token.address}
-                          className={({ active }) =>
-                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                              active
-                                ? 'bg-amber-100 text-amber-900'
-                                : 'text-gray-900 dark:text-dark-txt'
-                            }`
-                          }
-                          value={token}
-                        >
-                          {({ selected }) => (
-                            <>
-                              <span
-                                className={`block truncate ${
-                                  selected ? 'font-bold' : 'font-normal'
-                                }`}
-                              >
-                                {token.name} ({token.symbol})
-                              </span>
-                              {selected ? (
-                                <span className="text-amber-600 absolute inset-y-0 left-0 flex items-center pl-3">
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                      {polygonTokens &&
+                        polygonTokens.map((token) => (
+                          <Listbox.Option
+                            key={token.address}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                active
+                                  ? 'bg-amber-100 text-amber-900'
+                                  : 'text-gray-900 dark:text-dark-txt'
+                              }`
+                            }
+                            value={token}
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? 'font-bold' : 'font-normal'
+                                  }`}
+                                >
+                                  {token.name} ({token.symbol})
                                 </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
+                                {selected ? (
+                                  <span className="text-amber-600 absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
                     </Listbox.Options>
                   </Transition>
                 </div>

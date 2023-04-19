@@ -23,11 +23,11 @@ export default function CreateProduct2() {
 
   const [content, setContent] = useState(title || '');
 
-  useEffect(() => {
-    if (!isAuthenticated || (!type && myUser && myUser.role !== 'seller')) {
-      router.push('/');
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   if (!isAuthenticated || (!type && myUser && myUser.role !== 'seller')) {
+  //     router.push('/');
+  //   }
+  // }, [dispatch]);
 
   return (
     <div className="dark:bg-dark-main">

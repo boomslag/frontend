@@ -1,17 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Tab } from '@headlessui/react';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import ReactDropzone from 'react-dropzone';
 // import { CircleLoader } from 'react-spinners/CircleLoader';
-import {
-  deleteCourseImage,
-  onchangeCourseImage,
-  updateDraggablesImage,
-} from '@/redux/actions/courses/courses';
+import { deleteCourseImage } from '@/redux/actions/courses/courses';
 import { ToastError } from '@/components/ToastError';
+import Image from 'next/image';
 // import { onchangeCourseImage, onchangeCourseImageFilename } from "@/redux/actions/Courses/Courses";
 
 function classNames(...classes) {
@@ -139,47 +136,53 @@ export default function ImageGallery({
             {/* Image selector */}
             <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
               <Tab.List className="grid grid-cols-4 gap-6">
-                {imagesList.map((image) => (
-                  <Tab
-                    key={image.id}
-                    className="relative flex h-24 cursor-pointer items-center justify-center rounded-md dark:bg-dark-second dark:border-dark-border bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 "
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span className="sr-only"> {image.title} </span>
-                        <span className="absolute inset-0 overflow-hidden rounded-md">
-                          <img
-                            src={image.file}
-                            alt=""
-                            className="h-full w-full object-cover object-center"
+                {imagesList &&
+                  imagesList.map((image) => (
+                    <Tab
+                      key={image.id}
+                      className="relative flex h-24 cursor-pointer items-center justify-center rounded-md dark:bg-dark-second dark:border-dark-border bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 "
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className="sr-only"> {image.title} </span>
+                          <span className="absolute inset-0 overflow-hidden rounded-md">
+                            <Image
+                              width={256}
+                              height={256}
+                              src={image.file}
+                              alt=""
+                              className="h-full w-full object-cover object-center"
+                            />
+                          </span>
+                          <span
+                            className={classNames(
+                              selected
+                                ? 'border-iris-500 dark:border-dark-accent'
+                                : 'dark:border-dark-border',
+                              'pointer-events-none absolute inset-0 rounded-md border ring-none outline-none focus:ring-none focus:outline-none',
+                            )}
+                            aria-hidden="true"
                           />
-                        </span>
-                        <span
-                          className={classNames(
-                            selected
-                              ? 'border-iris-500 dark:border-dark-accent'
-                              : 'dark:border-dark-border',
-                            'pointer-events-none absolute inset-0 rounded-md border ring-none outline-none focus:ring-none focus:outline-none',
-                          )}
-                          aria-hidden="true"
-                        />
-                      </>
-                    )}
-                  </Tab>
-                ))}
+                        </>
+                      )}
+                    </Tab>
+                  ))}
               </Tab.List>
             </div>
 
             <Tab.Panels className="aspect-w-0.5 aspect-h-0.5 w-full">
-              {imagesList.map((image) => (
-                <Tab.Panel key={image.id}>
-                  <img
-                    src={image.file}
-                    alt=""
-                    className="h-64 w-full object-cover object-center sm:rounded-lg"
-                  />
-                </Tab.Panel>
-              ))}
+              {imagesList &&
+                imagesList.map((image) => (
+                  <Tab.Panel key={image.id}>
+                    <Image
+                      width={256}
+                      height={256}
+                      src={image.file}
+                      alt=""
+                      className="h-64 w-full object-cover object-center sm:rounded-lg"
+                    />
+                  </Tab.Panel>
+                ))}
             </Tab.Panels>
           </Tab.Group>
         </div>
@@ -237,41 +240,44 @@ export default function ImageGallery({
             </div>
           </div>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
-            {imagesList.map((item, index) => (
-              <li
-                key={item.id}
-                id={item.id}
-                draggable
-                onDragStart={(e) => onDragStart(e, index, item)}
-                onDragEnter={(e) => onDragEnter(e, index)}
-                onDragEnd={(e) => onDragEnd(e, index, item)}
-                onDragOver={(e) => e.preventDefault()}
-                className="relative"
-              >
-                <div className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100">
-                  <img
-                    src={item.file}
-                    alt=""
-                    className="pointer-events-none object-cover group-hover:opacity-75"
-                  />
-                </div>
-                <p className="pointer-events-none mt-2 block truncate text-sm font-medium dark:text-dark-txt-secondary text-gray-900">
-                  {item.title}
-                </p>
-                <button
-                  type="button"
-                  className="block text-sm font-medium dark:text-dark-txt-secondary text-gray-500"
+            {imagesList &&
+              imagesList.map((item, index) => (
+                <li
+                  key={item.id}
+                  id={item.id}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, index, item)}
+                  onDragEnter={(e) => onDragEnter(e, index)}
+                  onDragEnd={(e) => onDragEnd(e, index, item)}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="relative"
                 >
-                  <i
-                    className="bx bx-trash text-xl"
-                    onClick={() => {
-                      handleDelete(index);
-                      courseImages.length > 0 ? handleImageDelete(item.id) : null;
-                    }}
-                  />
-                </button>
-              </li>
-            ))}
+                  <div className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100">
+                    <Image
+                      width={256}
+                      height={256}
+                      src={item.file}
+                      alt=""
+                      className="pointer-events-none object-cover group-hover:opacity-75"
+                    />
+                  </div>
+                  <p className="pointer-events-none mt-2 block truncate text-sm font-medium dark:text-dark-txt-secondary text-gray-900">
+                    {item.title}
+                  </p>
+                  <button
+                    type="button"
+                    className="block text-sm font-medium dark:text-dark-txt-secondary text-gray-500"
+                  >
+                    <i
+                      className="bx bx-trash text-xl"
+                      onClick={() => {
+                        handleDelete(index);
+                        courseImages.length > 0 ? handleImageDelete(item.id) : null;
+                      }}
+                    />
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

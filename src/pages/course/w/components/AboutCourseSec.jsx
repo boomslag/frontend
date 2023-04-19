@@ -25,33 +25,36 @@ export default function AboutCourseSec({
           <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
             <dt className="text-md font-medium dark:text-dark-txt text-gray-500">Statistics</dt>
             <dd className="text-md mt-1 dark:text-dark-txt text-gray-900 sm:mt-0">
-              Skill level: {details.level}
+              Skill level: {details && details.level}
             </dd>
             <dd className="text-md mt-1 dark:text-dark-txt text-gray-900 sm:mt-0">
               Lectures:{' '}
-              <span className="dark:text-dark-txt-secondary">{details.total_lectures}</span>
+              <span className="dark:text-dark-txt-secondary">
+                {details && details.total_lectures}
+              </span>
             </dd>
             <dd className="text-md mt-1 text-gray-900 sm:mt-0" />
             <dd className="text-md mt-1 text-gray-900 dark:text-dark-txt sm:mt-0">
-              Students: <span className="dark:text-dark-txt-secondary">{details.students}</span>
+              Students:{' '}
+              <span className="dark:text-dark-txt-secondary">{details && details.students}</span>
             </dd>
             <dd className="text-md mt-1 dark:text-dark-txt text-gray-900 sm:mt-0">
               Video:{' '}
               <span className="dark:text-dark-txt-secondary">
-                {details.total_duration} total hours
+                {details && details.total_duration} total hours
               </span>
             </dd>
             <dd className="text-md mt-1 text-gray-900 sm:mt-0" />
             <dd className="text-md mt-1 text-gray-900 dark:text-dark-txt sm:mt-0">
               Languages:
-              <span className="dark:text-dark-txt-secondary">{details.language}</span>
+              <span className="dark:text-dark-txt-secondary">{details && details.language}</span>
             </dd>
             <dd className="text-md mt-1 text-gray-900 sm:mt-0" />
             <dd className="text-md mt-1 text-gray-900 sm:mt-0" />
             <dd className="text-md mt-1 text-gray-900 sm:mt-0 dark:text-dark-txt">
               Captions:{' '}
               <span className="dark:text-dark-txt-secondary">
-                {details.captions ? 'Yes' : 'No'}
+                {details && details.captions ? 'Yes' : 'No'}
               </span>
             </dd>
           </div>

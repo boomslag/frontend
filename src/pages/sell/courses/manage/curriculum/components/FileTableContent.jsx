@@ -106,7 +106,7 @@ export default function FileTableContent({
   };
 
   const handleDeleteVideo = async () => {
-    await DeleteEpisodeVideo(episode.id);
+    await DeleteEpisodeVideo(episode && episode.id);
     const sectionsData = await FetchInstructorSections(courseUUID);
     setSections(sectionsData);
     setOpen(false);
@@ -236,7 +236,9 @@ export default function FileTableContent({
                       Status
                     </td>
                     <td className="whitespace-nowrap py-4 px-3 text-sm dark:text-dark-txt-secondary text-gray-500">
-                      {moment(episode.date).subtract(10, 'days').calendar()}
+                      {moment(episode && episode.date)
+                        .subtract(10, 'days')
+                        .calendar()}
                     </td>
                     <td className="relative space-x-2 whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0">
                       <button

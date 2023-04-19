@@ -4,9 +4,8 @@ import CourseCardHorizontal from '../../components/courses/CourseCardHorizontal'
 export default function RelatedCoursesList({ courses }) {
   return (
     <div>
-      {courses.map((course, index) => (
-        <CourseCardHorizontal data={course} index={index} />
-      ))}
+      {courses &&
+        courses.map((course, index) => <CourseCardHorizontal data={course} index={index} />)}
       <button
         type="button"
         // onClick={() => setOpen(true)}

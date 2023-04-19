@@ -18,7 +18,7 @@ export default function ResourceContentItem({
 
   const handleResourceRemove = async () => {
     setLoading(true);
-    await DeleteResource(resource.id);
+    await DeleteResource(resource && resource.id);
     setLoading(false);
     const sectionsData = await FetchInstructorSections(courseUUID);
     setSections(sectionsData);
@@ -27,7 +27,7 @@ export default function ResourceContentItem({
   return (
     <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
       <div className="flex w-0 flex-1 items-center">
-        {resource.file ? (
+        {resource && resource.file ? (
           <PaperClipIcon
             className="h-5 w-5 flex-shrink-0 dark:text-dark-txt text-gray-400"
             aria-hidden="true"
@@ -36,12 +36,12 @@ export default function ResourceContentItem({
           <GlobeAltIcon className="h-5 w-5 flex-shrink-0 text-light-blue" aria-hidden="true" />
         )}
         <a
-          href={resource.url}
+          href={resource && resource.url}
           rel="noreferrer"
           target="_blank"
           className="ml-2 w-0 flex-1 truncate dark:text-dark-txt-secondary"
         >
-          {resource.title}
+          {resource && resource.title}
         </a>
       </div>
       <div className="ml-4 flex-shrink-0">

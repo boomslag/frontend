@@ -10,7 +10,7 @@ export default function ProductsList({ pageSize, products, count, currentPage, s
           products.map((product) => <ProductCardHorizontal key={product.id} data={product} />)}
       </ul>
       <StandardPagination
-        data={products}
+        data={products && products}
         count={count}
         pageSize={pageSize}
         currentPage={currentPage}

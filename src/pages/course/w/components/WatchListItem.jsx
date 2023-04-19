@@ -35,10 +35,10 @@ export default function WatchListItem({
       >
         <div className="ml-4 ">
           <p className="text-sm font-extrabold leading-6 dark:text-dark-txt text-gray-900">
-            Section {section.number}: {section.title}
+            Section {section && section.number}: {section && section.title}
           </p>
           <p className="mt-1 text-xs dark:text-dark-txt-secondary text-gray-500">
-            0/{section.episodes.length} | {section.total_duration}
+            0/{section && section.episodes.length} | {section && section.total_duration}
           </p>
         </div>
         <div className="ml-4  flex-shrink-0">
@@ -51,6 +51,7 @@ export default function WatchListItem({
       </div>
       <div className={hidden ? ' hidden' : '  '}>
         {section ? (
+          section &&
           section.episodes.map((data) => (
             <WatchListContentItem
               id={id}

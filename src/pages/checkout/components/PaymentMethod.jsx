@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { RadioGroup } from '@headlessui/react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -65,7 +66,7 @@ export default function PaymentMethod({
                   as="span"
                   className="mt-2 flex text-sm sm:mt-0 sm:ml-4 sm:flex-col sm:text-right"
                 >
-                  <img
+                  <Image
                     width={40}
                     height={40}
                     className="h-5 w-5"
@@ -126,7 +127,7 @@ export default function PaymentMethod({
                     }}
                     className="relative inline-flex w-full cursor-pointer items-center py-2 text-sm font-medium dark:text-dark-txt-secondary text-gray-600"
                   >
-                    {ethereumWallet.polygon_address}
+                    {ethereumWallet && ethereumWallet.polygon_address}
                   </button>
                 </CopyToClipboard>
               </div>

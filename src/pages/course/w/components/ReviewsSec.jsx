@@ -42,7 +42,7 @@ export default function ReviewsSec({
                   />
                 ))}
               </div>
-              <p className="sr-only">{reviewsAvg.toFixed(1)} out of 5 stars</p>
+              <p className="sr-only">{reviewsAvg && reviewsAvg.toFixed(1)} out of 5 stars</p>
             </div>
             <p className="ml-2 text-sm dark:text-dark-txt-secondary text-gray-900">
               Based on {reviewsTotalCount} reviews
@@ -53,42 +53,45 @@ export default function ReviewsSec({
             <h3 className="sr-only">Review data</h3>
 
             <dl className="space-y-3">
-              {reviewsCounts.map((count) => (
-                <div
-                  key={count.rating}
-                  className="flex cursor-pointer items-center text-sm dark:text-dark-txt-secondary"
-                  onClick={() => setSelectedRating(count.rating)}
-                >
-                  <dt className="flex flex-1 items-center">
-                    <p className="w-3 font-medium text-gray-900 dark:text-dark-txt-secondary">
-                      {count.rating}
-                      <span className="sr-only"> star reviews</span>
-                    </p>
-                    <div aria-hidden="true" className="ml-1 flex flex-1 items-center">
-                      <StarIcon
-                        className={classNames(
-                          count.count > 0 ? 'text-yellow-500' : 'text-gray-300',
-                          'h-5 w-5 flex-shrink-0',
-                        )}
-                        aria-hidden="true"
-                      />
+              {reviewsCounts &&
+                reviewsCounts.map((count) => (
+                  <div
+                    key={count.rating}
+                    className="flex cursor-pointer items-center text-sm dark:text-dark-txt-secondary"
+                    onClick={() => setSelectedRating(count.rating)}
+                  >
+                    <dt className="flex flex-1 items-center">
+                      <p className="w-3 font-medium text-gray-900 dark:text-dark-txt-secondary">
+                        {count.rating}
+                        <span className="sr-only"> star reviews</span>
+                      </p>
+                      <div aria-hidden="true" className="ml-1 flex flex-1 items-center">
+                        <StarIcon
+                          className={classNames(
+                            count.count > 0 ? 'text-yellow-500' : 'text-gray-300',
+                            'h-5 w-5 flex-shrink-0',
+                          )}
+                          aria-hidden="true"
+                        />
 
-                      <div className="relative ml-3 flex-1">
-                        <div className="h-3 rounded-full border border-gray-200 bg-gray-100" />
-                        {count.count > 0 ? (
-                          <div
-                            className="absolute inset-y-0 rounded-full border border-almond-400 bg-yellow-400"
-                            style={{ width: `calc(${count.count} / ${reviewsTotalCount} * 100%)` }}
-                          />
-                        ) : null}
+                        <div className="relative ml-3 flex-1">
+                          <div className="h-3 rounded-full border border-gray-200 bg-gray-100" />
+                          {count.count > 0 ? (
+                            <div
+                              className="absolute inset-y-0 rounded-full border border-almond-400 bg-yellow-400"
+                              style={{
+                                width: `calc(${count.count} / ${reviewsTotalCount} * 100%)`,
+                              }}
+                            />
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                  </dt>
-                  <dd className="ml-3 w-10 text-right text-sm tabular-nums dark:text-dark-txt-secondary text-gray-900">
-                    {Math.round((count.count / reviewsTotalCount) * 100)}%
-                  </dd>
-                </div>
-              ))}
+                    </dt>
+                    <dd className="ml-3 w-10 text-right text-sm tabular-nums dark:text-dark-txt-secondary text-gray-900">
+                      {Math.round((count.count / reviewsTotalCount) * 100)}%
+                    </dd>
+                  </div>
+                ))}
             </dl>
           </div>
 
@@ -158,8 +161,8 @@ export default function ReviewsSec({
                 ))}
             </div>
             <StandardPagination
-              data={reviews}
-              count={reviewsCount}
+              data={reviews && reviews}
+              count={reviewsCount && reviewsCount}
               pageSize={reviewsPageSize}
               currentPage={reviewsPage}
               setCurrentPage={setReviewsPage}

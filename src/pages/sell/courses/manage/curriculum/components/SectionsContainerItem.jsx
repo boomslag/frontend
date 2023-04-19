@@ -54,8 +54,8 @@ export default function SectionsContainerItem({
 
     const body = JSON.stringify({
       title: episodeTitle,
-      number: section.episodes.length + 1,
-      sectionUUID: section.id,
+      number: section && section.episodes.length + 1,
+      sectionUUID: section && section.id,
       courseUUID: courseid,
     });
 
@@ -85,7 +85,12 @@ export default function SectionsContainerItem({
   const onSubmitEditSection = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await EditSection(sectionTitle, learningObjective, section.number, section.id);
+    await EditSection(
+      sectionTitle,
+      learningObjective,
+      section && section.number,
+      section && section.id,
+    );
     const sectionsData = await FetchInstructorSections(courseUUID);
     setSections(sectionsData);
     setLoading(false);
@@ -130,7 +135,7 @@ export default function SectionsContainerItem({
         {editSection ? (
           <div className="mb-2 flex border dark:border-dark-border border-gray-500 dark:bg-dark-third bg-white p-2">
             <p className="text-md font-bold dark:text-dark-txt leading-6 text-gray-900">
-              Section {section.number}: {section.title}
+              Section {section && section.number}: {section && section.title}
             </p>
             <form onSubmit={(e) => onSubmitEditSection(e, index)} className="w-full ">
               <div className="relative w-full">
@@ -203,7 +208,8 @@ export default function SectionsContainerItem({
             <div className="ml-4 mt-2">
               <div className="flex cursor-move pb-5">
                 <p className="text-md font-bold leading-6 dark:text-dark-txt text-gray-900">
-                  Section {section.number}: <span className="ml-1">{section.title}</span>
+                  Section {section && section.number}:{' '}
+                  <span className="ml-1">{section && section.title}</span>
                 </p>
                 <div id={`section-edit${+index}`} className="mx-2 hidden space-x-2">
                   <PencilIcon
@@ -683,7 +689,7 @@ export default function SectionsContainerItem({
                         type="button"
                         className="inline-flex w-full justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base font-medium text-white sm:col-start-2 sm:text-sm"
                         onClick={() => {
-                          handleSectionRemove(section.id);
+                          handleSectionRemove(section && section.id);
                         }}
                       >
                         OK

@@ -1,10 +1,10 @@
+import Image from 'next/image';
 import React, { Fragment, useState, useRef } from 'react';
 import { PencilIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import DOMPurify from 'dompurify';
 import EditEpisodeContent from '@/api/manage/curriculum/episodes/EditContent';
 import RichTextEditor from '@/components/RichTextEditor';
-import Image from 'next/image';
 
 export default function ArticleTableContent({
   FetchInstructorSections,
@@ -34,7 +34,7 @@ export default function ArticleTableContent({
     setOpen(false);
   };
 
-  const tempDiv = document.createElement('div');
+  const tempDiv = document && document.createElement('div');
   tempDiv.innerHTML = DOMPurify.sanitize(episode.content);
   const sanitizedDescription = tempDiv.textContent;
 

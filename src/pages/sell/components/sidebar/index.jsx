@@ -8,9 +8,10 @@ import {
   ShoppingCartIcon,
   WrenchIcon,
 } from '@heroicons/react/24/outline';
-import SidebarIcon from './SidebarIcon';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
+import SidebarIcon from './SidebarIcon';
 
 export default function Sidebar() {
   const [sidebarHidden, setSidebarHidden] = useState(true);
@@ -42,7 +43,7 @@ export default function Sidebar() {
     >
       <div className="sticky top-0  text-white">
         <Link href="/sell/dashboard" className=" flex">
-          <img
+          <Image
             className="mb-2 ml-2 inline-flex h-12 w-auto object-cover"
             src="/assets/img/logos/triangle.png"
             width={60}

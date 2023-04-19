@@ -14,20 +14,21 @@ export default function ResourceContentList({
 
   return (
     <ul className="">
-      {resources.map((resource, index) => (
-        <ResourceContentItem
-          key={resource.id}
-          index={index}
-          resource={resource}
-          FetchInstructorSections={FetchInstructorSections}
-          sections={sections}
-          setSections={setSections}
-          episodes={episodes}
-          episode={episode}
-          section={section}
-          courseUUID={courseUUID}
-        />
-      ))}
+      {resources &&
+        resources.map((resource, index) => (
+          <ResourceContentItem
+            key={resource.id}
+            index={index}
+            resource={resource}
+            FetchInstructorSections={FetchInstructorSections}
+            sections={sections}
+            setSections={setSections}
+            episodes={episodes}
+            episode={episode}
+            section={section}
+            courseUUID={courseUUID}
+          />
+        ))}
     </ul>
   );
 }

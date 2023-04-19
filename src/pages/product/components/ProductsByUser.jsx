@@ -7,7 +7,9 @@ export default function ProductsByUser({ product, products }) {
         <h2 className="text-2xl font-black text-gray-900 mb-4 dark:text-dark-txt">
           More Products from:{' '}
           <span className="text-purple-500">
-            <Link href={`/@/${product.author.username}`}>@{product.author.username}</Link>
+            <Link href={`/@/${product && product.author.username}`}>
+              @{product && product.author.username}
+            </Link>
           </span>
         </h2>
       </div>

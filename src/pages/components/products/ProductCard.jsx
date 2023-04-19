@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import UpdateProductClicks from '@/api/products/UpdateClicks';
+// import UpdateProductClicks from '@/api/products/UpdateClicks';
 import Image from 'next/image';
 
 export default function ProductCard({ data }) {
@@ -18,7 +18,7 @@ export default function ProductCard({ data }) {
     compare_price,
     shipping,
     best_seller,
-  } = data;
+  } = data && data;
 
   const [hover, setHover] = useState(false);
 
@@ -29,9 +29,9 @@ export default function ProductCard({ data }) {
     setHover(false);
   };
 
-  const handleUpdateClicks = () => {
-    UpdateProductClicks(data && id);
-  };
+  // const handleUpdateClicks = () => {
+  //   UpdateProductClicks(data && id);
+  // };
 
   const current = new Date();
   const deliveryDays = new Date(current.setDate(current.getDate() + Number(shipping[0].time)));

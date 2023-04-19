@@ -4,9 +4,10 @@ import InboxListItem from './InboxListItem';
 export default function InboxesList({ inboxes, user, setChat, chat }) {
   return (
     <ul className="">
-      {inboxes.map((inbox) => (
-        <InboxListItem key={inbox.id} inbox={inbox} user={user} setChat={setChat} chat={chat} />
-      ))}
+      {inboxes &&
+        inboxes.map((inbox) => (
+          <InboxListItem key={inbox.id} inbox={inbox} user={user} setChat={setChat} chat={chat} />
+        ))}
     </ul>
   );
 }

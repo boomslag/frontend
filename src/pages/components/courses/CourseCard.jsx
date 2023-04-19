@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import slugify from 'react-slugify';
 
-import UpdateCourseClicks from '@/api/courses/UpdateClicks';
 import Link from 'next/link';
 import Image from 'next/image';
+// import UpdateCourseClicks from '@/api/courses/UpdateClicks';
 
 export default function CourseCard({ data }) {
   const [hover, setHover] = useState(false);
@@ -15,9 +15,9 @@ export default function CourseCard({ data }) {
     setHover(false);
   };
 
-  const handleUpdateClicks = () => {
-    UpdateCourseClicks(data && data.id);
-  };
+  // const handleUpdateClicks = () => {
+  //   UpdateCourseClicks(data && data.id);
+  // };
 
   function calculateDiscountPercentage(originalPrice, discountedPrice) {
     if (originalPrice === 0) return 0;
@@ -33,7 +33,7 @@ export default function CourseCard({ data }) {
       >
         {/* Image */}
         <Link
-          href={`/course/${data.slug}`}
+          href={`/course/${data && data.slug}`}
           // onClick={() => {
           //   handleUpdateClicks();
           // }}
@@ -42,13 +42,13 @@ export default function CourseCard({ data }) {
           <Image
             width={512}
             height={512}
-            id={`img-shadow${data.id}`}
-            src={data.thumbnail}
-            alt={data.title.length > 46 ? data.title.slice(0, 45) : data.title}
+            id={`img-shadow${data && data.id}`}
+            src={data && data.thumbnail}
+            alt={data && data.title.length > 46 ? data.title.slice(0, 45) : data.title}
             className="object-cover h-40"
           />
           <div
-            id={`img-shadow${data.id}`}
+            id={`img-shadow${data && data.id}`}
             className="bg-gray-350 absolute inset-0 mix-blend-multiply"
             aria-hidden="true"
           />
@@ -57,10 +57,10 @@ export default function CourseCard({ data }) {
           {/* Badges */}
           <div className="item-center -mt-1 flex justify-between">
             <Link
-              href={`/categories/c/${slugify(data.category)}`}
+              href={`/categories/c/${slugify(data && data.category)}`}
               className="hidden font-medium dark:text-dark-txt-secondary text-gray-500 hover:underline hover:underline-offset-2 md:block"
             >
-              {data.category}
+              {data && data.category}
             </Link>
             <div className="flex items-center">
               <svg
@@ -73,17 +73,17 @@ export default function CourseCard({ data }) {
               </svg>
 
               <p className="ml-1 select-none text-sm font-bold dark:text-dark-txt-secondary text-gray-600">
-                {data.student_rating}
+                {data && data.student_rating}
                 <span className="font-normal dark:text-dark-txt text-gray-500">
                   {' '}
-                  ({data.student_rating_no} reviews)
+                  ({data && data.student_rating_no} reviews)
                 </span>
               </p>
             </div>
           </div>
           {/* Description */}
           <Link
-            href={`/course/${data.slug}`}
+            href={`/course/${data && data.slug}`}
             // onClick={() => {
             //   handleUpdateClicks();
             // }}
@@ -91,7 +91,7 @@ export default function CourseCard({ data }) {
               hover ? 'text-iris-500 dark:text-dark-primary' : 'text-gray-800 dark:text-dark-txt'
             }`}
           >
-            {data.title}
+            {data && data.title}
           </Link>
           <p className="select-none justify-start text-left text-base dark:text-dark-txt-secondary text-gray-500">
             {data && data.short_description && data.short_description.length > 46
@@ -102,22 +102,22 @@ export default function CourseCard({ data }) {
             <div className="ml-4">
               <div className="select-none text-sm font-bold text-gray-800 dark:text-dark-txt">
                 <div className="">
-                  {data.discount ? (
+                  {data && data.discount ? (
                     <p className="mt-2 text-gray-800 dark:text-dark-txt">
                       {' '}
-                      <strong>${data.price}</strong> /{' '}
-                      <span className="line-through">{data.compare_price}</span>
+                      <strong>${data && data.price}</strong> /{' '}
+                      <span className="line-through">{data && data.compare_price}</span>
                     </p>
                   ) : (
                     <p className="mt-2 text-gray-800 dark:text-dark-txt">
-                      <strong>${data.price}</strong>
+                      <strong>${data && data.price}</strong>
                     </p>
                   )}
                 </div>
               </div>
             </div>
             <div className="ml-4 flex-shrink-0">
-              {data.discount ? (
+              {data && data.discount ? (
                 <p className="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800">
                   {calculateDiscountPercentage(data.price, data.compare_price)}% Off
                 </p>
@@ -127,7 +127,7 @@ export default function CourseCard({ data }) {
             </div>
             <div className="ml-4  flex-shrink-0">
               <div className="flex gap-x-2">
-                {data.best_seller ? (
+                {data && data.best_seller ? (
                   <div className="inline-flex rounded-full bg-almond-200 px-3 py-1 text-xs font-medium text-almond-800  ">
                     Bestseller
                   </div>

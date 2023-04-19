@@ -116,11 +116,11 @@ export default function CreateProduct3() {
     router.push('/sell/products/create/4');
   };
 
-  useEffect(() => {
-    if (!isAuthenticated || (!type && myUser && myUser.role !== 'seller')) {
-      router.push('/');
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!isAuthenticated || (!type && myUser && myUser.role !== 'seller')) {
+  //     router.push('/');
+  //   }
+  // }, []);
 
   return (
     <div className="dark:bg-dark-main">

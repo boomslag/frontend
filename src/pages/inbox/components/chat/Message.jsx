@@ -9,15 +9,6 @@ import {
   HandThumbUpIcon,
   HeartIcon,
   XMarkIcon,
-  GifIcon,
-  ChevronDownIcon,
-  ScaleIcon,
-  MicrophoneIcon,
-  PhoneIcon,
-  VideoCameraIcon,
-  Cog6ToothIcon,
-  PlusIcon,
-  MagnifyingGlassIcon,
   LockClosedIcon,
   PencilIcon,
   ArrowUturnLeftIcon,
@@ -25,6 +16,8 @@ import {
 } from '@heroicons/react/20/solid';
 import VoteRadioGroup from './VoteRadioGroup';
 import VotePoll from '@/api/chat/VotePoll';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const moods = [
   {
@@ -126,13 +119,15 @@ export default function Message({ message, chat, user, myParticipant, otherParti
 
   return (
     <div className={`flex w-full ${isMyMessage ? 'flex-row-reverse' : 'items-start'}`}>
-      <a href={isMyMessage ? `/@${myParticipant?.username}` : `/@${msgSender?.username}`}>
-        <img
+      <Link href={isMyMessage ? `/@${myParticipant?.username}` : `/@${msgSender?.username}`}>
+        <Image
+          width={256}
+          height={256}
           className="mx-2 inline-block h-8 w-8 rounded-full"
           src={isMyMessage ? myParticipant?.picture : msgSender?.picture}
           alt=""
         />
-      </a>
+      </Link>
 
       <div
         onMouseEnter={() => setShowMenu(true)}
@@ -176,16 +171,16 @@ export default function Message({ message, chat, user, myParticipant, otherParti
           </>
         )}
         {message.gif && (
-          <img
+          <Image
+            width={256}
+            height={256}
             src={message.gif.url}
-            width={20}
-            height={20}
             alt={message.gif.title}
             className="h-32 w-full rounded-lg object-contain"
           />
         )}
-        {message.poll && <VoteRadioGroup poll={message.poll} onVote={handleVote} />}
-        {message.voice_message && <audio src={message.voice_message} controls />}
+        {message && message.poll && <VoteRadioGroup poll={message.poll} onVote={handleVote} />}
+        {message && message.voice_message && <audio src={message.voice_message} controls />}
         {/* Display Attached Images */}
         {message.files && message.files.length > 0 && (
           <div className="mt-2 flex flex-wrap justify-center">
@@ -193,7 +188,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
               .filter((file) => allowedImageTypes.includes(file.mime_type))
               .slice(0, 4)
               .map((file) => (
-                <a
+                <Link
                   href={file.file}
                   download={file.name}
                   key={file.id}
@@ -201,12 +196,14 @@ export default function Message({ message, chat, user, myParticipant, otherParti
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <img
+                  <Image
+                    width={256}
+                    height={256}
                     src={file.file}
                     alt={file.name}
                     className="h-auto w-full rounded-sm object-cover"
                   />
-                </a>
+                </Link>
               ))}
           </div>
         )}
@@ -228,14 +225,14 @@ export default function Message({ message, chat, user, myParticipant, otherParti
                   </div>
                   <div className="ml-4 flex-shrink-0">
                     {allowedFileTypes.includes(file.mime_type) ? (
-                      <a
+                      <Link
                         // type="button"
                         href={file.url}
                         download={file.name}
                         className="cursor-pointer font-medium text-iris-600 hover:text-iris-500"
                       >
                         {file.name}
-                      </a>
+                      </Link>
                     ) : (
                       <span className="text-red-500">File type not accepted</span>
                     )}
@@ -253,7 +250,7 @@ export default function Message({ message, chat, user, myParticipant, otherParti
               )
               .slice(0, 4)
               .map((file) => (
-                <a
+                <Link
                   href={file.file}
                   download={file.name}
                   key={file.id}
@@ -274,13 +271,15 @@ export default function Message({ message, chat, user, myParticipant, otherParti
                       {/* <track kind="descriptions" src="descriptions_en.vtt" /> */}
                     </video>
                   ) : (
-                    <img
+                    <Image
+                      width={256}
+                      height={256}
                       src={file.file}
                       alt={file.name}
                       className="h-auto w-full rounded-sm object-cover"
                     />
                   )}
-                </a>
+                </Link>
               ))}
           </div>
         )}

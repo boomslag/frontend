@@ -2,6 +2,7 @@ import { StarIcon } from '@heroicons/react/20/solid';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import UpdateProductClicks from '@/api/products/UpdateClicks';
+import Image from 'next/image';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -22,7 +23,7 @@ export default function ProductCardHorizontal({ data }) {
     compare_price,
     shipping,
     best_seller,
-  } = data;
+  } = data && data;
 
   const [hover, setHover] = useState(false);
 
@@ -55,17 +56,19 @@ export default function ProductCardHorizontal({ data }) {
           // onClick={() => {
           //   handleUpdateClicks();
           // }}
-          href={`/product/${data.slug}`}
+          href={`/product/${slug}`}
           className="relative grid w-full place-items-center dark:bg-dark-bg bg-gray-50 md:w-5/12"
         >
-          <img
-            src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
-            alt={data.title}
+          <Image
+            width={256}
+            height={256}
+            src={images[0].file}
+            alt={title}
             className="h-full object-cover"
           />
 
           <div
-            id={`img-shadow${data.id}`}
+            id={`img-shadow${id}`}
             className="bg-gray-350 absolute inset-0 mix-blend-multiply"
             aria-hidden="true"
           />
@@ -77,12 +80,12 @@ export default function ProductCardHorizontal({ data }) {
               onClick={() => {
                 handleUpdateClicks();
               }}
-              href={`/product/${data.slug}`}
+              href={`/product/${slug}`}
               className={`text-lg font-bold  ${
                 hover ? 'text-iris-500 dark:text-dark-primary' : 'dark:text-dark-txt text-gray-800'
               }`}
             >
-              {data.title}
+              {title}
             </Link>
 
             <div className="flex items-center">
@@ -133,7 +136,7 @@ export default function ProductCardHorizontal({ data }) {
           <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="">
               <p className="text-xs dark:text-dark-txt-secondary text-gray-500">
-                {data.author.username}
+                {data && data.author.username}
               </p>
             </div>
             <div className="ml-4 flex-shrink-0">
@@ -143,9 +146,7 @@ export default function ProductCardHorizontal({ data }) {
           <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="">
               <h3 className="flex space-x-2">
-                <span className="text-md inline-flex font-semibold text-almond-600">
-                  {data.rating}
-                </span>
+                <span className="text-md inline-flex font-semibold text-almond-600">{rating}</span>
                 <div className="ml-1 flex items-center">
                   {[0, 1, 2, 3, 4].map((rating) => (
                     <StarIcon
@@ -159,7 +160,7 @@ export default function ProductCardHorizontal({ data }) {
                   ))}
                 </div>
                 <span className="inline-flex text-xs dark:text-dark-txt-secondary text-gray-400">
-                  ({data.rating_no})
+                  ({rating_no})
                 </span>
               </h3>
             </div>
@@ -169,14 +170,14 @@ export default function ProductCardHorizontal({ data }) {
           </div>
           <div className="absolute bottom-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
             <p className="inline-flex text-xs dark:text-dark-txt-secondary text-gray-500">
-              {data.category.name}
+              {category.name}
             </p>
             <div className="ml-4  flex-shrink-0">
               <div className="flex gap-x-2" />
             </div>
           </div>
           <div className="absolute bottom-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-            {data.best_seller && (
+            {best_seller && (
               <span className="relative inline-flex items-center bg-[#eceb98] px-2.5 py-0.5 text-xs font-bold text-[#314d22]">
                 Bestseller
               </span>

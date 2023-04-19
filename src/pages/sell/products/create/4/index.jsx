@@ -32,11 +32,11 @@ export default function CreateProduct4() {
   const title = useSelector((state) => state.create.product_title);
   const product = useSelector((state) => state.products.product);
 
-  useEffect(() => {
-    if (product) {
-      router.push(`/sell/products/manage/goals/${product.id}`);
-    }
-  }, [product]);
+  // useEffect(() => {
+  //   if (product) {
+  //     router.push(`/sell/products/manage/goals/${product.id}`);
+  //   }
+  // }, [product]);
 
   const plans = [
     {

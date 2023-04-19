@@ -59,7 +59,7 @@ export default function BasicInfoSec({
   // CATEGORY
   const productCategory = details && details.category;
   const reduxCategory = useSelector((state) => state.products.category);
-  const [category, setCategory] = useState(productCategory.id || reduxCategory);
+  const [category, setCategory] = useState(productCategory?.id || reduxCategory);
 
   const [originalCategory, setOriginalCategory] = useState('');
   useEffect(() => {
@@ -102,11 +102,12 @@ export default function BasicInfoSec({
             <option value="" disabled>
               -- Select Language --
             </option>
-            {languages.map((language) => (
-              <option key={language.name} value={language.name}>
-                {language.name}
-              </option>
-            ))}
+            {languages &&
+              languages.map((language) => (
+                <option key={language.name} value={language.name}>
+                  {language.name}
+                </option>
+              ))}
           </select>
         </div>
         <div>

@@ -79,7 +79,7 @@ export default function QuestionListItem({
     }
   };
 
-  const questionId = question && question.id;
+  const questionId = question && question && question.id;
   // Create and Fetch Answer
   const [loadingAnswers, setLoadingAnswers] = useState(false);
   const [answers, setAnswers] = useState([]);
@@ -138,22 +138,22 @@ export default function QuestionListItem({
     }
   };
 
-  const likeCount = question && question.likes && question.likes.length;
+  const likeCount = question && question && question.likes && question && question.likes.length;
 
   const [likes, setLikes] = useState(likeCount);
 
   const [like, setLike] = useState(
-    question && question.likes.some((u) => u.user === authState.user.id),
+    question && question && question.likes.some((u) => u.user === authState.user.id),
   );
 
   const addLike = async () => {
     if (like) {
       setLike(false);
-      await AddQuestionLike(question.id, 'remove');
+      await AddQuestionLike(question && question.id, 'remove');
       setLikes((previousState) => previousState - 1);
     } else {
       setLike(true);
-      await AddQuestionLike(question.id, 'add');
+      await AddQuestionLike(question && question.id, 'add');
       setLikes((previousState) => previousState + 1);
     }
   };
@@ -167,19 +167,21 @@ export default function QuestionListItem({
           </div>
           <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2 md:gap-4">
             <div>
-              <div className=" truncate text-sm font-medium">{question.user}</div>
+              <div className=" truncate text-sm font-medium">{question && question.user}</div>
               <p className="mt-2 flex items-center space-x-1 text-gray-500">
                 <button
                   type="button"
                   onClick={handleClick}
                   className="cursor-pointer truncate text-xs dark:text-dark-accent text-purple-700 underline underline-offset-4 hover:text-purple-600"
                 >
-                  Lecture {question.episode.episode_number}
+                  Lecture {question && question.episode.episode_number}
                 </button>
 
                 <span className="truncate text-xs">&middot;</span>
                 <span className="truncate text-xs dark:text-dark-txt-secondary">
-                  {moment(question.created_date).startOf('minute').fromNow()}
+                  {moment(question && question.created_date)
+                    .startOf('minute')
+                    .fromNow()}
                 </span>
               </p>
             </div>
@@ -187,10 +189,10 @@ export default function QuestionListItem({
               <div>
                 <p className=" text-sm font-bold dark:text-dark-txt text-gray-900">
                   <button type="button" className="cursor-pointer" onClick={handleViewAnswers}>
-                    {question.title}
+                    {question && question.title}
                   </button>
                 </p>
-                {question.correct_answer ? (
+                {question && question.correct_answer ? (
                   <p className="mt-2 flex items-center text-sm dark:text-dark-txt text-gray-500">
                     <CheckCircleIcon
                       className="text-green-400 mr-1.5 h-5 w-5 flex-shrink-0"
@@ -220,7 +222,7 @@ export default function QuestionListItem({
           </div>
           <div className="flex">
             <span className="mr-2 text-lg font-bold dark:text-dark-txt">
-              {question.get_answers_count}
+              {question && question.get_answers_count}
             </span>
             <ChatBubbleLeftRightIcon
               onClick={handleViewAnswers}
@@ -248,7 +250,7 @@ export default function QuestionListItem({
   const onCreateAnswer = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await CreateQuestionAnswer(question.id, body);
+    await CreateQuestionAnswer(question && question.id, body);
     await fetchAnswers(currentPage, searchTerm);
     setLoading(false);
     handleAddAnswer();
@@ -258,7 +260,7 @@ export default function QuestionListItem({
   const onEditQuestion = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await UpdateQuestion(question.id, title, body);
+    await UpdateQuestion(question && question.id, title, body);
     if (episode.id) {
       await fetchEpisodeQuestions(currentQuestionsPage, '');
     } else {
@@ -274,7 +276,7 @@ export default function QuestionListItem({
   const onDeleteQuestion = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await DeleteQuestion(question.id);
+    await DeleteQuestion(question && question.id);
     if (episode.id) {
       await fetchEpisodeQuestions(currentQuestionsPage, '');
     } else {
@@ -369,27 +371,29 @@ export default function QuestionListItem({
                 </div>
                 <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2 md:gap-4">
                   <div>
-                    <div className=" truncate text-sm font-medium">{question.user}</div>
+                    <div className=" truncate text-sm font-medium">{question && question.user}</div>
                     <p className="mt-2 flex items-center space-x-1 text-gray-500">
                       <span
                         onClick={handleClick}
                         className="cursor-pointer truncate text-xs dark:text-dark-accent text-purple-700 underline underline-offset-4 hover:text-purple-600"
                       >
-                        Lecture {question.episode.episode_number}
+                        Lecture {question && question.episode.episode_number}
                       </span>
 
                       <span className="truncate text-xs">&middot;</span>
                       <span className="truncate text-xs dark:text-dark-txt">
-                        {moment(question.created_date).startOf('minute').fromNow()}
+                        {moment(question && question.created_date)
+                          .startOf('minute')
+                          .fromNow()}
                       </span>
                     </p>
                   </div>
                   <div className="hidden md:block">
                     <div>
                       <p className="text-sm font-bold dark:text-dark-txt text-gray-900">
-                        {question.title}
+                        {question && question.title}
                       </p>
-                      {question.correct_answer ? (
+                      {question && question.correct_answer ? (
                         <p className="mt-2 flex items-center text-sm text-gray-500">
                           <CheckCircleIcon
                             className="text-green-400 mr-1.5 h-5 w-5 flex-shrink-0"
@@ -434,7 +438,7 @@ export default function QuestionListItem({
                     >
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y dark:bg-dark-bg dark:divide-dark-border divide-gray-100 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="py-1">
-                          {question.user === authState.user.id && (
+                          {question && question.user === authState.user.id && (
                             <>
                               <Menu.Item>
                                 {({ active }) => (
@@ -482,7 +486,7 @@ export default function QuestionListItem({
                               </Menu.Item>
                             </>
                           )}
-                          {question.user !== authState.user.id && (
+                          {question && question.user !== authState.user.id && (
                             <Menu.Item>
                               {({ active }) => (
                                 <Link
@@ -507,7 +511,9 @@ export default function QuestionListItem({
                   </Menu>
                 </div>
                 <div className="flex">
-                  <span className="mr-2 text-lg font-bold">{question.get_answers_count}</span>
+                  <span className="mr-2 text-lg font-bold">
+                    {question && question.get_answers_count}
+                  </span>
                   <ChatBubbleLeftRightIcon
                     onClick={handleViewAnswers}
                     className="mt-0.5 h-6 w-6 cursor-pointer dark:text-dark-txt-secondary text-gray-500"
@@ -520,14 +526,14 @@ export default function QuestionListItem({
               className="mt-2 space-y-1 px-4 text-sm dark:text-dark-txt-secondary text-gray-700"
               dangerouslySetInnerHTML={{
                 __html:
-                  DOMPurify.sanitize(question.body.length) > 97
-                    ? DOMPurify.sanitize(question.body.slice(0, 96))
-                    : question && DOMPurify.sanitize(question.body),
+                  DOMPurify.sanitize(question && question.body.length) > 97
+                    ? DOMPurify.sanitize(question && question.body.slice(0, 96))
+                    : question && DOMPurify.sanitize(question && question.body),
               }}
             />
           </div>
 
-          {question.correct_answer ? (
+          {question && question.correct_answer ? (
             <div className="px-4">
               <label className="mb-1 block text-sm font-black dark:text-dark-txt text-gray-700">
                 Correct answer
@@ -536,7 +542,7 @@ export default function QuestionListItem({
                 <div className="mr-4  flex-shrink-0">
                   {/* <img
                     className="inline-block h-14 w-14 rounded-full"
-                    src={question.correct_answer.user.picture}
+                    src={question && question.correct_answer.user.picture}
                     alt=""
                   /> */}
                 </div>
@@ -544,17 +550,17 @@ export default function QuestionListItem({
                   <div className="-ml-4 -mt-2  flex flex-wrap items-center justify-between sm:flex-nowrap">
                     <div className="ml-4 mt-2 ">
                       <div className=" text-md font-bold text-purple-700 underline underline-offset-2">
-                        {question.correct_answer.user}
+                        {question && question.correct_answer.user}
                       </div>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-dark-txt-secondary">
-                    {moment(question.correct_answer.created_date).fromNow()}
+                    {moment(question && question.correct_answer.created_date).fromNow()}
                   </p>
                   <p
                     className=" font-regular mt-1 dark:text-dark-txt-secondary text-sm"
                     dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(question.correct_answer.body),
+                      __html: DOMPurify.sanitize(question && question.correct_answer.body),
                     }}
                   />
                 </div>
@@ -567,7 +573,7 @@ export default function QuestionListItem({
           <div className="-ml-4 -mt-2 flex flex-wrap items-center justify-between px-4 sm:flex-nowrap">
             <div className="ml-4 mt-2">
               <h3 className="text-md font-bold leading-6 dark:text-dark-txt text-gray-900">
-                {question.get_answers_count} Replies
+                {question && question.get_answers_count} Replies
               </h3>
             </div>
             <button

@@ -62,7 +62,7 @@ export default function StockSec({ setHasChangesStock }) {
         </span>
       )}
       <div className="relative mt-1 ">
-        {productWeights.length > 0 ? (
+        {productWeights && productWeights.length > 0 ? (
           <div className="dark:text-dark-txt">
             {stock}{' '}
             <span className="text-sm text-gray-700 dark:text-dark-txt-secondary">

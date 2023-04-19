@@ -1,42 +1,42 @@
 import CheckBadgeIcon from '@heroicons/react/24/solid/CheckBadgeIcon';
 import React from 'react';
-import AcceptFriend from '@/api/friends/Accept';
 import Link from 'next/link';
 import Image from 'next/image';
+import AcceptFriend from '@/api/friends/Accept';
 
 export default function FriendRequestCard({ data }) {
   const handleAcceptFriend = async () => {
-    await AcceptFriend(data.id, true);
+    await AcceptFriend(data && data.id, true);
   };
 
   const handleDeclineFriend = async () => {
-    await AcceptFriend(data.id, false);
+    await AcceptFriend(data && data.id, false);
   };
 
   return (
     <div>
-      <article key={data.id} className="flex flex-col items-start justify-between">
+      <article key={data && data.id} className="flex flex-col items-start justify-between">
         <div className="max-w-xl">
           <div className="relative mt-8 flex items-center gap-x-4">
             <Image
               width={256}
               height={256}
-              src={data.picture}
+              src={data && data.picture}
               alt=""
               className="h-10 w-10 rounded-full bg-gray-100"
             />
             <div className="text-sm leading-6">
               <p className="font-semibold text-gray-900">
-                <Link href={`/@/${data.username}`}>
+                <Link href={`/@/${data && data.username}`}>
                   <span className="absolute inset-0" />
-                  {data.username}
-                  {data.verified && (
+                  {data && data.username}
+                  {data && data.verified && (
                     <CheckBadgeIcon className="ml-1 inline-flex h-4 w-auto text-iris-500" />
                   )}
                 </Link>
               </p>
               <p className="text-gray-600">
-                {data.first_name} {data.last_name}
+                {data && data.first_name} {data && data.last_name}
               </p>
             </div>
           </div>

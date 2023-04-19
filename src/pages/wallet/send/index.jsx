@@ -10,7 +10,7 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Layout from '@/hocs/Layout';
 import Walletlayout from '../components/Layout';
 import SendEthereum from './Components/SendEthereum';
-import SendPolygon from './Components/SendPolygon';
+import SendPolygon from '@/components/SendPolygon';
 
 const SeoList = {
   title: 'Boomslag - Send ERC20 Tokens | Manage Your ERC20 Funds and Transactions',

@@ -1,5 +1,5 @@
 import React from 'react';
-import EpisodeItem from './EpisodeItem';
+import EpisodeItem from '@/components/EpisodeItem';
 
 export default function EpisodesList({
   section,

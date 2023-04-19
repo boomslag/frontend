@@ -16,7 +16,7 @@ import {
   ArrowUturnLeftIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid';
-import VoteRadioGroup from './VoteRadioGroup';
+import VoteRadioGroup from '../pages/inbox/components/chat/VoteRadioGroup';
 import VotePoll from '@/api/chat/VotePoll';
 
 const moods = [

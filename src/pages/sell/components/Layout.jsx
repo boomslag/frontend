@@ -26,7 +26,7 @@ import { useEffect, useState, Fragment } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 
-import Sidebar from './sidebar';
+import Sidebar from '@/features/sidebar';
 import DarkModeButton from '@/components/DarkModeButton.jsx';
 import UserDropDownMenu from '@/features/navbar/Auth/UserDropDownMenu';
 

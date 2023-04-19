@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import GetUserInfo from '@/api/chat/GetUserInfo';
 import LoadMessages from '@/api/chat/LoadMessages';
 import Chatbox from './Chatbox';
-import Message from './Message';
+import Message from '@/components/Message';
 import { resetIsInVideoCall, resetVideoSrc } from '@/redux/actions/chat/chat';
 import VideoComponent from './video/VideoComponent';
 

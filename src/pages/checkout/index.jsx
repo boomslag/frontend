@@ -26,7 +26,6 @@ import { ToastError } from '@/components/toast/ToastError';
 import { ToastSuccess } from '@/components/ToastSuccess';
 import { countries } from '@/helpers/fixedCountries';
 import { getUserDelivery } from '@/redux/actions/auth/auth';
-import { emptyCartAuthenticated, getItems } from '@/redux/actions/cart/cart';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');

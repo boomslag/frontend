@@ -63,13 +63,15 @@ export default function CourseTabs({ coursesSold, coursesArrival, coursesViews }
           <Tab.Panels className="">
             <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
               {coursesSold ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex rounded-md p-3 ">
-                    {coursesSold.map((data) => (
-                      <div key={data.course_uuid} className="group relative">
-                        <CourseCard key={data.course_uuid} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {coursesSold.map((data) => (
+                        <div key={data.course_uuid} className="group relative">
+                          <CourseCard key={data.course_uuid} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (

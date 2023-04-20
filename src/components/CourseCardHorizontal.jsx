@@ -9,6 +9,28 @@ function classNames(...classes) {
 }
 
 export default function CourseCardHorizontal({ data }) {
+  console.log(data && data);
+  const {
+    id = null,
+    category = '',
+    student_rating = 0,
+    discount_until = '2023-04-14T18:06:55.812983-05:00',
+    student_rating_no = 0,
+    slug = '',
+    short_description = '',
+    discount = false,
+    published = '2023-04-14T18:06:55.812932-05:00',
+    price = 0,
+    payment = 'Paid',
+    compare_price = null,
+    best_seller = false,
+    language = 'Español',
+    nft_address = '0x3ce71841eccE2C6A5f30a72fB21b73FA232972aB',
+    token_id = '880234624',
+    title = '',
+    thumbnail = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80',
+  } = data ?? {};
+
   const [hover, setHover] = useState(false);
 
   const handleMouseEnter = () => {
@@ -19,7 +41,7 @@ export default function CourseCardHorizontal({ data }) {
   };
 
   const handleUpdateClicks = () => {
-    UpdateCourseClicks(data && data.id);
+    UpdateCourseClicks(data && id);
   };
 
   function calculateDiscountPercentage(originalPrice, discountedPrice) {
@@ -38,19 +60,19 @@ export default function CourseCardHorizontal({ data }) {
           // onClick={() => {
           //   handleUpdateClicks();
           // }}
-          href={`/course/${data && data.slug}`}
+          href={`/course/${slug}`}
           className="relative grid w-full place-items-center dark:bg-dark-bg bg-gray-50 md:w-5/12"
         >
           <Image
-            width={256}
-            height={256}
-            src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
-            alt={data && data.title}
+            width={512}
+            height={512}
+            src={thumbnail}
+            alt={title}
             className="h-full object-cover"
           />
 
           <div
-            id={`img-shadow${data && data.id}`}
+            id={`img-shadow${id}`}
             className="bg-gray-350 absolute inset-0 mix-blend-multiply"
             aria-hidden="true"
           />
@@ -59,42 +81,41 @@ export default function CourseCardHorizontal({ data }) {
         <div className="relative flex w-full flex-col space-y-2 p-4">
           <div className="item-center flex justify-between">
             <Link
-              onClick={() => {
-                handleUpdateClicks();
-              }}
-              href={`/course/${data && data.slug}`}
+              // onClick={() => {
+              //   handleUpdateClicks();
+              // }}
+              href={`/course/${slug}`}
               className={`text-lg font-bold  ${
                 hover ? 'text-iris-500 dark:text-dark-primary' : 'dark:text-dark-txt text-gray-800'
               }`}
             >
-              {data && data.title}
+              {title}
             </Link>
 
             <div className="flex items-center">
-              {data && data.discount ? (
+              {discount ? (
                 <p className=" text-gray-800 dark:text-dark-txt">
                   {' '}
-                  <strong>${data && data.price}</strong> /{' '}
-                  <span className="line-through">{data && data.compare_price}</span>
+                  <strong>${price}</strong> / <span className="line-through">{compare_price}</span>
                 </p>
               ) : (
                 <p className=" text-gray-800 dark:text-dark-txt">
-                  <strong>${data && data.price}</strong>
+                  <strong>${price}</strong>
                 </p>
               )}
             </div>
           </div>
           <div className="item-center flex justify-between">
             <p className=" text-md select-none dark:text-dark-txt-secondary text-gray-600">
-              {data && data && data.short_description && data && data.short_description.length > 46
-                ? data && data.short_description.slice(0, 60)
-                : data && data.short_description}
+              {data && short_description && short_description.length > 46
+                ? short_description.slice(0, 60)
+                : short_description}
             </p>
 
             <div className="flex items-center">
-              {data && data.discount ? (
+              {discount ? (
                 <p className="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800">
-                  {calculateDiscountPercentage(data && data.price, data && data.compare_price)}% Off
+                  {calculateDiscountPercentage(price, compare_price)}% Off
                 </p>
               ) : (
                 <div />
@@ -103,9 +124,9 @@ export default function CourseCardHorizontal({ data }) {
           </div>
           <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="">
-              <p className="text-xs dark:text-dark-txt-secondary text-gray-500">
-                {data?.author?.username}
-              </p>
+              {/* <p className="text-xs dark:text-dark-txt-secondary text-gray-500">
+                X total hours &middot; X lectures &middot; X
+              </p> */}
             </div>
             <div className="ml-4 flex-shrink-0">
               <div className="flex gap-x-2" />
@@ -115,14 +136,14 @@ export default function CourseCardHorizontal({ data }) {
             <div className="hidden md:flex">
               <h3 className="flex space-x-2">
                 <span className="text-md inline-flex font-semibold text-almond-600">
-                  {data && data.student_rating}
+                  {student_rating}
                 </span>
                 <div className="ml-1 flex items-center">
                   {[0, 1, 2, 3, 4].map((rating) => (
                     <StarIcon
                       key={rating}
                       className={classNames(
-                        data && data.student_rating > rating ? 'text-almond-400' : 'text-gray-200',
+                        student_rating > rating ? 'text-almond-400' : 'text-gray-200',
                         'h-5 w-5 flex-shrink-0',
                       )}
                       aria-hidden="true"
@@ -130,7 +151,7 @@ export default function CourseCardHorizontal({ data }) {
                   ))}
                 </div>
                 <span className="inline-flex text-xs dark:text-dark-txt-secondary text-gray-400">
-                  ({data && data.student_rating_no})
+                  ({student_rating_no})
                 </span>
               </h3>
             </div>
@@ -139,16 +160,16 @@ export default function CourseCardHorizontal({ data }) {
             </div>
           </div>
           <div className="absolute bottom-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-            <p className="inline-flex text-xs dark:text-dark-txt-secondary text-gray-500">
-              {data && data.total_duration} total hours &middot; {data && data.total_lectures}{' '}
-              lectures &middot; {data && data.level}
-            </p>
+            {/* <p className="inline-flex text-xs dark:text-dark-txt-secondary text-gray-500">
+              {total_duration} total hours &middot; {total_lectures} lectures &middot;{' '}
+              {level}
+            </p> */}
             <div className="ml-4  flex-shrink-0">
               <div className="flex gap-x-2" />
             </div>
           </div>
           <div className="absolute bottom-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
-            {data && data.best_seller ? (
+            {best_seller ? (
               <span className="relative inline-flex items-center bg-[#eceb98] px-2.5 py-0.5 text-xs font-bold text-[#314d22]">
                 Bestseller
               </span>

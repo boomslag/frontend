@@ -10,7 +10,7 @@ function classNames(...classes) {
 
 export default function PopularTabs({ coursesBySold, courses, coursesByViews }) {
   return (
-    <>
+    <div className=" lg:mx-auto lg:max-w-7xl lg:px-8">
       <div className="mb-4 ">
         <p className="text-2xl font-bold leading-6 text-gray-900 dark:text-dark-txt">
           Courses to get you started
@@ -62,45 +62,51 @@ export default function PopularTabs({ coursesBySold, courses, coursesByViews }) 
           </Tab.List>
 
           <Tab.Panels className="">
-            <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
+            <Tab.Panel className={classNames('', '')}>
               {coursesBySold ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex rounded-md p-3 ">
-                    {coursesBySold.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <CourseCard key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {coursesBySold.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <CourseCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
                 <LoadingMoon size={20} color="#1c1d1f" />
               )}
             </Tab.Panel>
-            <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
+            <Tab.Panel className={classNames('', '')}>
               {courses ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex rounded-md p-3 ">
-                    {courses.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <CourseCard key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {courses.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <CourseCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
                 <LoadingMoon size={20} color="#1c1d1f" />
               )}
             </Tab.Panel>
-            <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
+            <Tab.Panel className={classNames('', '')}>
               {coursesByViews ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex rounded-md p-3 ">
-                    {coursesByViews.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <CourseCard key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {coursesByViews.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <CourseCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
@@ -110,6 +116,6 @@ export default function PopularTabs({ coursesBySold, courses, coursesByViews }) 
           </Tab.Panels>
         </Tab.Group>
       </div>
-    </>
+    </div>
   );
 }

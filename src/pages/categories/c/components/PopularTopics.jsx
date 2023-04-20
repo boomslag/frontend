@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function PopularTopics({ categories }) {
   return (
-    <div className="relative mx-auto max-w-7xl  py-12 ">
+    <div className=" lg:mx-auto lg:max-w-7xl lg:px-8">
       {/* Heading */}
       <div className=" ">
         <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">

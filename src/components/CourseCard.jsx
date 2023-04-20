@@ -5,6 +5,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function CourseCard({ data }) {
+  const {
+    id = null,
+    category = '',
+    student_rating = 0,
+    student_rating_no = 0,
+    slug = '',
+    short_description = '',
+    discount = false,
+    price = 0,
+    compare_price = 0,
+    title = '',
+    thumbnail = '',
+  } = data ?? {};
+
   const [hover, setHover] = useState(false);
 
   const handleMouseEnter = () => {
@@ -20,12 +34,12 @@ export default function CourseCard({ data }) {
   }
 
   return (
-    <div className="flex justify-center">
-      <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="relative mx-auto w-full flex-col space-y-0.5 border-2 border-dark-bg dark:border-dark-second dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
-      >
+    <li
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="inline-flex w-64 flex-col text-center lg:w-full border-2 border-dark-bg dark:border-dark-second dark:bg-dark-bg bg-white dark:shadow-none shadow-neubrutalism-md transition duration-300 ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl"
+    >
+      <div className="group relative">
         {/* Image */}
         <Link
           href={`/course/${data && data.slug}`}
@@ -128,6 +142,6 @@ export default function CourseCard({ data }) {
           </div>
         </div>
       </div>
-    </div>
+    </li>
   );
 }

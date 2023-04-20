@@ -25,6 +25,7 @@ const nextConfig = {
       'boomslagorders.s3.us-east-2.amazonaws.com',
       'boomslagpayments.s3.us-east-2.amazonaws.com',
       'boomslagproducts.s3.us-east-2.amazonaws.com',
+      'images.unsplash.com',
     ],
   },
 };

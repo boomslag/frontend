@@ -30,7 +30,7 @@ export default function PopularInstructors({ instructors }) {
               </div>
               <div className="relative col-span-2 mx-5">
                 <p className="text-md font-bold text-gray-900 dark:text-dark-txt md:text-lg">
-                  {user && user.username}
+                  {user?.username}
                   {user.verified ? (
                     <CheckBadgeIcon
                       className="ml-1 mb-0.5 inline-flex h-4 w-4 text-blue-500"

@@ -104,7 +104,7 @@ export default function CourseCardHorizontal({ data }) {
           <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
             <div className="">
               <p className="text-xs dark:text-dark-txt-secondary text-gray-500">
-                {data && data.author.username}
+                {data?.author?.username}
               </p>
             </div>
             <div className="ml-4 flex-shrink-0">

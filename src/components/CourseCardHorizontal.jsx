@@ -9,7 +9,6 @@ function classNames(...classes) {
 }
 
 export default function CourseCardHorizontal({ data }) {
-  console.log(data && data);
   const {
     id = null,
     category = '',
@@ -68,7 +67,7 @@ export default function CourseCardHorizontal({ data }) {
             height={512}
             src={thumbnail}
             alt={title}
-            className="h-full object-cover"
+            className="h-36 object-cover"
           />
 
           <div

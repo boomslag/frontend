@@ -36,7 +36,8 @@ export default function CartComponent() {
       {/* Cart */}
       <button
         type="button"
-        className="ring-none relative items-center justify-center rounded-full border-none text-dark-gray hover:text-iris-400 dark:text-dark-txt-secondary  dark:hover:text-dark-primary md:inline-flex "
+        onClick={() => setOpen(!open)}
+        className="ring-none relative items-center justify-center rounded-full border-none text-gray-400 md:text-dark-gray hover:text-iris-400 dark:text-dark-txt-secondary  dark:hover:text-dark-primary md:inline-flex "
       >
         <ShoppingCartIcon
           className=" h-6 w-6 

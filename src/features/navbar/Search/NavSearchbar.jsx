@@ -383,11 +383,11 @@ export default function NavSearchbar() {
                     >
                       <div className="mr-4 flex-shrink-0 self-center">
                         <Image
-                          className="inline-block h-8 w-auto rounded-md"
-                          src={course.images[0].file}
+                          className="inline-block h-12 w-auto object-cover"
+                          src={course && course.thumbnail}
                           alt="thumbnail"
-                          width={50}
-                          height={50}
+                          width={512}
+                          height={512}
                         />
                       </div>
                       <div>

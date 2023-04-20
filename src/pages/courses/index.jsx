@@ -1,12 +1,11 @@
+import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-import axios from 'axios';
 import Layout from '@/hocs/Layout';
 import PopularTabs from '../categories/c/components/PopularTabs';
 import FeaturedCourses from '../components/courses/list/FeaturedCourses';
 import PopularTopics from '../categories/c/components/PopularTopics';
 import PopularInstructors from '../categories/c/components/PopularInstructors';
 import SearchCourses from '../categories/c/components/SearchCourses';
-import { useCallback, useEffect, useState } from 'react';
 import FetchBestSellingInstructors from '@/api/courses/instructors/GetBestSelling';
 import FetchPopularCourseCategories from '@/api/GetPopularCategories';
 import FetchCourses from '@/api/courses/List';

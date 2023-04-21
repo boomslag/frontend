@@ -12,7 +12,7 @@ export default function GuestLinks() {
   return (
     <ul className="flex space-x-2">
       {/* Cart */}
-      <div className="mr-3">
+      <div className="mr-4 mt-2">
         <CartComponent isAuthenticated={isAuthenticated} />
       </div>
       <Link href="/auth/login">

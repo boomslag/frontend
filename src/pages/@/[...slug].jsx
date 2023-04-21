@@ -24,6 +24,8 @@ import FetchSearchCourses from '@/api/SearchCourses';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import { useSelector } from 'react-redux';
 import CourseCard from '../library/courses/components/CourseCard';
+import ProductCard from '@/components/ProductCard';
+import Image from 'next/image';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -386,12 +388,20 @@ export default function Profile({ userProfile }) {
       </Head>
       <div>
         <div className="">
-          <img className="h-32 w-full object-cover lg:h-48" src={user && user.banner} alt="" />
+          <Image
+            width={512}
+            height={512}
+            className="h-32 w-full object-cover lg:h-48"
+            src={user && user.banner}
+            alt=""
+          />
         </div>
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-32">
           <div className="-mt-12 sm:-mt-12 sm:flex sm:items-end sm:space-x-5">
             <div className="flex">
-              <img
+              <Image
+                width={512}
+                height={512}
                 className="h-24 w-24 rounded-full  sm:h-32 sm:w-32"
                 src={user && user.picture}
                 alt=""
@@ -678,15 +688,20 @@ export default function Profile({ userProfile }) {
                 </Tab.List>
                 <Tab.Panels>
                   <Tab.Panel>
-                    <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-y-20 gap-x-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                    <div className="mt-6">
                       {loading ? (
                         <LoadingMoon color="#1c1d1f" size={25} />
                       ) : (
-                        <>
-                          Course Card HERE
-                          {/* {courses && courses.map((course) => <CourseCard data={course} />)} */}
-                          <div />
-                        </>
+                        <div className="relative mt-8">
+                          <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                            <ul className="mx-4 sm:mx-6 lg:mx-0 flex flex-col sm:flex-row space-y-8 sm:space-y-0 sm:space-x-8">
+                              {courses &&
+                                courses.map((course) => (
+                                  <CourseCard key={course.id} data={course} />
+                                ))}
+                            </ul>
+                          </div>
+                        </div>
                       )}
                       {courses && courses.length === 0 && (
                         <div className=" text-center">
@@ -713,12 +728,15 @@ export default function Profile({ userProfile }) {
                     </div>
                   </Tab.Panel>
                   <Tab.Panel>
-                    <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-y-20 gap-x-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                    <div className="mt-6">
                       {loading ? (
                         <LoadingMoon color="#1c1d1f" size={25} />
                       ) : (
                         <>
-                          {products && products.map((course) => <CourseCard data={course} />)}
+                          {products &&
+                            products.map((product) => (
+                              <ProductCard key={product.id} data={product} />
+                            ))}
                           <div />
                         </>
                       )}

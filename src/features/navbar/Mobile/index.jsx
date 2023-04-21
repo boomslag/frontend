@@ -97,7 +97,7 @@ export default function MobileNavbar() {
                           leaveTo="-translate-x-full"
                         >
                           <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
-                            <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl dark:bg-dark-main">
+                            <div className="flex h-screen flex-col overflow-y-scroll bg-white py-6 shadow-xl dark:bg-dark-main">
                               <TopPanel>
                                 <DialogContainer>
                                   {isAuthenticated ? (

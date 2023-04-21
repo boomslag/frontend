@@ -24,16 +24,10 @@ export default function GuestLinkNavigation() {
 
   const navigation = [
     {
-      name: 'Ecosystem',
-      href: '/ecosystem',
-      icon: HomeIcon,
-      current: router.pathname === '/ecosystem',
-    },
-    {
-      name: 'Trade',
-      href: '/marketplace',
-      icon: CurrencyDollarIcon,
-      current: router.pathname === '/marketplace',
+      name: 'Courses',
+      href: '/courses',
+      icon: AcademicCapIcon,
+      current: router.pathname === '/courses',
     },
     {
       name: 'Products',
@@ -42,16 +36,22 @@ export default function GuestLinkNavigation() {
       current: router.pathname === '/products',
     },
     {
-      name: 'Courses',
-      href: '/courses',
-      icon: AcademicCapIcon,
-      current: router.pathname === '/courses',
-    },
-    {
       name: 'Become Seller',
-      href: '/teach',
+      href: '/sell',
       icon: UserPlusIcon,
       current: router.pathname === '/teach',
+    },
+    {
+      name: 'Ecosystem',
+      href: '/ecosystem',
+      icon: HomeIcon,
+      current: router.pathname === '/ecosystem',
+    },
+    {
+      name: 'Marketplace',
+      href: '/marketplace',
+      icon: CurrencyDollarIcon,
+      current: router.pathname === '/marketplace',
     },
   ];
 

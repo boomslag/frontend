@@ -18,7 +18,6 @@ export default function PopularInstructors({ instructors }) {
           <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
             {instructors &&
               instructors.map((user) => {
-                console.log(user);
                 return <UserCard key={user.id} data={user} />;
               })}
           </ul>

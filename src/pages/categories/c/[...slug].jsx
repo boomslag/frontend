@@ -8,8 +8,11 @@ import PopularInstructors from './components/PopularInstructors';
 import SearchCourses from './components/SearchCourses';
 
 export default function Categories({ slug, categories, instructors, courses }) {
+  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
+  const capitalizedSlug = capitalizeFirstLetter(slug[0]);
   const SeoList = {
-    title: 'Category:  - Explore Premium Online Courses',
+    title: `Category ${capitalizedSlug} - Explore Premium Online Courses`,
     description:
       'Find and buy high-quality online courses at Boomslag, a cutting-edge marketplace where you can acquire knowledge through secure and seamless transactions using NFTs and ERC1155 tokens.',
     href: '/',
@@ -25,10 +28,6 @@ export default function Categories({ slug, categories, instructors, courses }) {
 
     twitterHandle: '@boomslag_',
   };
-
-  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
-
-  const capitalizedSlug = capitalizeFirstLetter(slug[0]);
 
   return (
     <div className="dark:bg-dark-bg">

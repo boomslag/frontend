@@ -1,15 +1,16 @@
+import Link from 'next/link';
+import { Router, useRouter } from 'next/router';
+import Web3 from 'web3';
 import Layout from '@/hocs/Layout';
 import axios from 'axios';
 import cookie from 'cookie';
 import Head from 'next/head';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import sanitizeHtml from 'sanitize-html';
 
 import parse from 'html-react-parser';
 import FetchSectionsUnpaid from '@/api/courses/sections/unpaid/List';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
 import { ToastError } from '@/components/toast/ToastError';
 import FetchCourseReviews from '@/api/courses/ListReviews';
 import UpdateAnalytics from '@/api/courses/UpdateAnalytics';
@@ -83,19 +84,19 @@ import RelatedCourses from './components/RelatedCourses';
 import Reviews from './components/Reviews';
 import InstructorDetails from './components/InstructorDetails';
 import CustomVideo from '@/components/CustomVideo';
-import Link from 'next/link';
 import { checkCoupon } from '@/redux/actions/coupons/coupons';
 import BecomeAffiliate from '@/api/tokens/BecomeAffiliate';
-import { Router, useRouter } from 'next/router';
 import Button from '@/components/Button';
 import { ToastSuccess } from '@/components/ToastSuccess';
 import BuyNow from '@/api/BuyNow';
+import GetContractABIPolygon from '@/api/tokens/GetContractABIPolygon';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function Courses({ course, author, courseUUID, referrer, authorProfile }) {
+  const web3 = new Web3(process.env.NEXT_PUBLIC_APP_RPC_POLYGON_PROVIDER);
   const SeoList = {
     title: course.details.title
       ? `${course.details.title} - ${course.details.short_description}`
@@ -450,33 +451,53 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
 
   const nftAddress = course && course.details.nft_address;
   const ticketId = course && course.details.token_id;
+  const [contractABI, setContractABI] = useState('');
 
   const [ownsTicket, setOwnsTicket] = useState(false);
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && polygonAddress) {
       const fetchData = async () => {
-        if (nftAddress) {
-          const res = await VerifyTokenOwnership(polygonAddress, nftAddress, ticketId);
-          if (res && res.status === 200) {
-            setOwnsTicket(res.data.results);
+        if (nftAddress && contractABI && ticketId) {
+          const contract = new web3.eth.Contract(contractABI, nftAddress);
+          const hasAccess = await contract.methods
+            .hasAccess(parseInt(ticketId), polygonAddress)
+            .call();
+          console.log(hasAccess);
+          setOwnsTicket(hasAccess);
+        }
+      };
+      fetchData();
+    }
+  }, [nftAddress, ticketId, isAuthenticated, polygonAddress, contractABI]);
+
+  const [stock, setStock] = useState(false);
+  useEffect(() => {
+    if (nftAddress) {
+      const fetchData = async () => {
+        let retry = true;
+        while (retry) {
+          const res = await GetContractABIPolygon(nftAddress);
+          if (res.data.result === 'Contract source code not verified') {
+            console.warn('Contract ABI not available: Contract source code not verified');
+            setContractABI('');
+            break;
+          } else {
+            try {
+              const abi = JSON.parse(res.data.result);
+              const contract = new web3.eth.Contract(abi, nftAddress);
+              const fetchedStock = await contract.methods.getStock(Number(ticketId)).call();
+              setStock(Number(fetchedStock));
+              setContractABI(abi);
+              retry = false;
+            } catch (error) {
+              console.warn('Invalid JSON data. Retrying...');
+              await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+            }
           }
         }
       };
       fetchData();
     }
-  }, [nftAddress, ticketId, isAuthenticated]);
-
-  const [stock, setStock] = useState(false);
-  useEffect(() => {
-    const fetchData = async () => {
-      if (nftAddress) {
-        const res = await GetNFTStock(nftAddress, ticketId);
-        if (res && res.status === 200) {
-          setStock(res.data.results);
-        }
-      }
-    };
-    fetchData();
   }, [nftAddress, ticketId]);
 
   const [loadingAffiliate, setLoadingAffiliate] = useState(false);
@@ -495,18 +516,36 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && polygonAddress) {
       const fetchData = async () => {
-        if (nftAddress) {
-          const res = await VerifyAffiliate(polygonAddress, ticketId);
-          if (res && res.status === 200) {
-            setIsAffiliate(res.data.results);
+        let retry = true;
+        while (retry) {
+          const res = await GetContractABIPolygon(process.env.NEXT_PUBLIC_APP_BOOTH_CONTRACT);
+          if (res.data.result === 'Contract source code not verified') {
+            console.warn('Contract ABI not available: Contract source code not verified');
+            break;
+          } else {
+            try {
+              const abi = JSON.parse(res.data.result);
+              const contract = new web3.eth.Contract(
+                abi,
+                process.env.NEXT_PUBLIC_APP_BOOTH_CONTRACT,
+              );
+              const verifyAffiliate = await contract.methods
+                .verifyAffiliate(Number(ticketId), polygonAddress)
+                .call();
+              setIsAffiliate(Boolean(verifyAffiliate));
+              retry = false;
+            } catch (error) {
+              console.warn('Invalid JSON data. Retrying...');
+              await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+            }
           }
         }
       };
       fetchData();
     }
-  }, [nftAddress, ticketId, isAuthenticated]);
+  }, [nftAddress, ticketId, isAuthenticated, polygonAddress]);
 
   const [loadingBuyNow, setLoadingBuyNow] = useState(false);
   async function handleBuyNow() {

@@ -134,7 +134,7 @@ export default function Checkout() {
 
   const [processing, setProcessing] = useState(false);
   const onSubmitCrypto = async () => {
-    // setProcessing(true);
+    setProcessing(true);
     try {
       if (
         deliveryAddressRedux &&

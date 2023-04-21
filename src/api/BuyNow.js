@@ -1,33 +1,26 @@
 import axios from 'axios';
 import { ToastError } from '../components/toast/ToastError';
 
-export default async function BuyNow(courseUUID, coupon, referrer) {
+export default async function BuyNow(address, polygonAddress, courseUUID, coupon, referrer) {
   const controller = new AbortController();
   const abortSignal = controller.signal;
 
   try {
-    const access = localStorage.getItem('access');
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${access}`,
-      },
-    };
-
     const body = JSON.stringify({
+      buyer_address: address,
+      polygon_address: polygonAddress,
       course: courseUUID,
       coupon,
       referrer,
     });
 
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/buy_now/`,
-      body,
-      {
-        ...config,
-        signal: abortSignal,
+    const res = await axios.post('/api/tokens/buyNow', body, {
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      signal: abortSignal,
+    });
+
     return res;
   } catch (err) {
     if (axios.isCancel(err)) {

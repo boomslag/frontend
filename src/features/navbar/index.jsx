@@ -50,9 +50,11 @@ export default function Navbar() {
     const fetchData = async () => {
       const fetchPromises = [];
 
-      if (productUUIDs.length > 0) fetchPromises.push(dispatch(getProductsFromCart(productUUIDs)));
+      // if (productUUIDs.length > 0)
+      fetchPromises.push(dispatch(getProductsFromCart(productUUIDs)));
 
-      if (courseUUIDs.length > 0) fetchPromises.push(dispatch(getCoursesFromCart(courseUUIDs)));
+      // if (courseUUIDs.length > 0)
+      fetchPromises.push(dispatch(getCoursesFromCart(courseUUIDs)));
 
       await Promise.all(fetchPromises);
     };

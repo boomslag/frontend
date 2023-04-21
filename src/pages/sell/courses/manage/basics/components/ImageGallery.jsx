@@ -34,31 +34,37 @@ export default function ImageGallery({
   const [base64Images, setBase64Images] = useState([]);
 
   const handleDrop = (acceptedFiles) => {
-    const newItems = acceptedFiles
-      .filter(
-        (file) =>
-          file.size <= 2 * 1024 * 1024 && (file.type === 'image/jpeg' || file.type === 'image/png'),
-      )
-      .map((file, index) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        return new Promise((resolve, reject) => {
-          reader.onload = () => {
-            resolve({
-              id: uuidv4(),
-              position_id: index,
-              title: file.name,
-              file: reader.result,
-            });
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-        });
+    const newItems = [];
+    acceptedFiles.forEach((file) => {
+      if (file.size > 2 * 1024 * 1024) {
+        ToastError('Image must be Max 2mb');
+        return;
+      }
+      if (file.type !== 'image/jpeg') {
+        ToastError('Only .jpg or .jpeg files are allowed');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      const promise = new Promise((resolve, reject) => {
+        reader.onload = () => {
+          resolve({
+            id: uuidv4(),
+            position_id: newItems.length,
+            title: file.name,
+            file: reader.result,
+          });
+        };
+        reader.onerror = (error) => {
+          reject(error);
+        };
       });
 
+      newItems.push(promise);
+    });
+
     if (newItems.length === 0) {
-      ToastError('Image must be Max 2mb and .jpg or .png');
       return;
     }
 

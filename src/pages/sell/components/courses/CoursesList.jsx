@@ -1,5 +1,5 @@
 import StandardPagination from '@/components/pagination/StandardPagination';
-import CourseCardHorizontal from '@/components/CourseCardHorizontal';
+import CourseCardHorizontal from '@/components/sell/CourseCardHorizontal';
 
 function CourseList({ pageSize, courses, count, currentPage, setCurrentPage }) {
   return (

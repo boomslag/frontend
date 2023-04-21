@@ -127,6 +127,7 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
   const wallet = useSelector((state) => state.auth.wallet);
   const user = useSelector((state) => state.auth.user);
   const polygonAddress = wallet && wallet.polygon_address;
+  const buyerAddress = wallet && wallet.address;
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const cartItems = useSelector((state) => state.cart.items);
   const coupon = useSelector((state) => state.coupons.coupon);
@@ -552,7 +553,13 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
     if (isAuthenticated) {
       try {
         setLoadingBuyNow(true);
-        const buyNowResponse = await BuyNow(course && course.details.id, coupon, referrer);
+        const buyNowResponse = await BuyNow(
+          buyerAddress,
+          polygonAddress,
+          course && course.details.id,
+          coupon,
+          referrer,
+        );
 
         if (buyNowResponse.status === 200 && nftAddress) {
           const tokenOwnershipResponse = await VerifyTokenOwnership(
@@ -735,7 +742,10 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
                     Go to cart
                   </Link>
                 ) : (
-                  <form className="col-span-3" onSubmit={handleAddToCart}>
+                  <form
+                    className={`${isAuthenticated ? 'col-span-3' : 'col-span-4'}`}
+                    onSubmit={handleAddToCart}
+                  >
                     <button
                       type="submit"
                       onMouseDown={() => {
@@ -779,27 +789,30 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
                     </button>
                   </form>
                 )}
-
-                {inWishlist ? (
-                  <button
-                    type="button"
-                    onClick={handleAddOrRemoveWishlist}
-                    className="text-md focus:ring-none col-span-1 inline-flex w-full cursor-pointer items-center justify-center border-rose-400 px-3 py-4  font-bold leading-4  text-rose-500 transition duration-300 ease-in-out focus:outline-none"
-                  >
-                    <i className="bx bxs-heart text-2xl" aria-hidden="true" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleAddOrRemoveWishlist}
-                    className="text-md focus:ring-none col-span-1 inline-flex w-full cursor-pointer items-center justify-center px-3 py-4 font-bold  leading-4 text-gray-600 transition  duration-300 ease-in-out hover:border-rose-400 hover:text-rose-500 focus:outline-none"
-                  >
-                    <i className="bx bx-heart text-2xl" aria-hidden="true" />
-                  </button>
+                {isAuthenticated && (
+                  <>
+                    {inWishlist ? (
+                      <button
+                        type="button"
+                        onClick={handleAddOrRemoveWishlist}
+                        className="text-md focus:ring-none col-span-1 inline-flex w-full cursor-pointer items-center justify-center border-rose-400 px-3 py-4  font-bold leading-4  text-rose-500 transition duration-300 ease-in-out focus:outline-none"
+                      >
+                        <i className="bx bxs-heart text-2xl" aria-hidden="true" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleAddOrRemoveWishlist}
+                        className="text-md focus:ring-none col-span-1 inline-flex w-full cursor-pointer items-center justify-center px-3 py-4 font-bold  leading-4 text-gray-600 transition  duration-300 ease-in-out hover:border-rose-400 hover:text-rose-500 focus:outline-none"
+                      >
+                        <i className="bx bx-heart text-2xl" aria-hidden="true" />
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             )}
-            {stock !== false && (stock === -1 || stock > 0) && (
+            {stock !== false && (stock === -1 || stock > 0) && isAuthenticated && (
               <div className=" py-2">
                 {loadingBuyNow ? (
                   <>
@@ -847,11 +860,10 @@ export default function Courses({ course, author, courseUUID, referrer, authorPr
                 )}
               </div>
             )}
-
-            <div className="my-2 items-center text-center text-xs font-medium text-gray-700 dark:text-dark-txt">
+            {/* <div className="my-2 items-center text-center text-xs font-medium text-gray-700 dark:text-dark-txt">
               1-Day Money-Back Guarantee (Limited)
-            </div>
-            <div className="items-left text-md my-3 text-left font-bold dark:text-dark-txt">
+            </div> */}
+            <div className="items-left text-md mt-8 my-3 text-left font-bold dark:text-dark-txt">
               This course includes:
             </div>
             <div className="space-y-2">

@@ -9,21 +9,22 @@ export default async function handler(req, res) {
 
       const config = {
         headers: {
-          'Content-Type': req.headers['content-type'],
+          'Content-Type': 'application/json',
           Authorization: `JWT ${access}`,
         },
       };
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_APP_COURSES_URL}/api/courses/images/create/`,
+        `${process.env.NEXT_PUBLIC_APP_PAYMENT_URL}/api/crypto/buy_now/`,
         req.body,
         config,
       );
 
       res.status(200).json(response.data);
     } catch (err) {
+      console.log(err);
       res.status(err.response.status).json({
-        error: `Error: ${err.response.statusText}`,
+        error: `Error: ${err.response.data.error}`,
       });
     }
   } else {

@@ -626,6 +626,12 @@ export const synchCartAuthenticated = () => async (dispatch) => {
       if (cart_item.product) {
         item.product_id = cart_item.product;
         item.type = 'Product';
+        item.color = cart_item.color;
+        item.count = cart_item.count;
+        item.material = cart_item.material;
+        item.shipping = cart_item.shipping;
+        item.size = cart_item.size;
+        item.weight = cart_item.weight;
       } else if (cart_item.course) {
         item.course_id = cart_item.course;
         item.type = 'Course';

@@ -146,7 +146,7 @@ export default function CreateCourse4() {
                         dedication,
                         myUser,
                         wallet.address,
-                        wallet.address,
+                        wallet.polygon_address,
                       ),
                     );
                   };

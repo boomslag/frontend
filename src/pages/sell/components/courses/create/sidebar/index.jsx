@@ -17,6 +17,7 @@ export default function Sidebar({ course, courseUUID }) {
   const readCourseSetup = useSelector((state) => state.create.read_course_setup);
   const readCourseFilm = useSelector((state) => state.create.read_course_film);
 
+  const goals = course && course.details && course && course.details.goals;
   const courseStructure = course && course.details && course && course.details.course_structure;
   const setup = course && course.details && course && course.details.setup;
   const film = course && course.details && course && course.details.film;
@@ -36,13 +37,7 @@ export default function Sidebar({ course, courseUUID }) {
       href: `/sell/courses/manage/goals/${courseUUID}`,
       icon: AcademicCapIcon,
       current: router.pathname.startsWith(`/sell/courses/manage/goals/`),
-      ready:
-        whoIsFor &&
-        whoIsFor.length !== 0 &&
-        requisites &&
-        requisites.length !== 0 &&
-        whatlearnt &&
-        whatlearnt.length !== 0,
+      ready: goals,
     },
 
     {

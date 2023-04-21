@@ -218,7 +218,7 @@ export const addItemAnonymous =
         size: (size && size.id) || '',
         weight: (weight && weight.id) || '',
         material: (material && material.id) || '',
-        quantity,
+        count: quantity,
         coupon,
         referrer,
       };
@@ -249,8 +249,6 @@ export const addItemAuthenticated =
       coupon,
       referrer,
     });
-
-    console.log(body);
 
     try {
       const res = await fetch('/api/cart/add-item', {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import PopularTabs from '../categories/p/components/PopularTabs';
 import FeaturedProducts from '../components/products/list/FeaturedProducts';
 import PopularTopics from '../categories/p/components/PopularTopics';
-import PopularInstructors from '../categories/p/components/PopularInstructors';
+import PopularInstructors from '../categories/c/components/PopularInstructors';
 import SearchProducts from '../categories/p/components/SearchProducts';
 import { useCallback, useEffect, useState } from 'react';
 import FetchBestSellingInstructors from '@/api/courses/instructors/GetBestSelling';

@@ -142,7 +142,7 @@ export default function SearchProducts({ categories }) {
   );
 
   return (
-    <div className="">
+    <div className="px-8">
       <div>
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>

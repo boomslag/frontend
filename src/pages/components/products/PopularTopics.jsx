@@ -3,12 +3,12 @@ import React from 'react';
 
 export default function PopularProductCategories({ categories }) {
   return (
-    <div className="relative mx-auto max-w-7xl  px-4 sm:px-6 lg:px-8 ">
+    <div className=" lg:mx-auto lg:max-w-7xl lg:px-8">
       {/* Heading */}
       <div className=" ">
-        <div className="-ml-4 mb-6 flex flex-wrap items-center justify-between sm:flex-nowrap">
-          <div className="ml-4 ">
-            <h3 className="text-3xl font-medium tracking-tight text-gray-900  dark:text-dark-txt">
+        <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
+          <div className="ml-4">
+            <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-dark-txt">
               Shop by category
             </h3>
           </div>

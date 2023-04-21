@@ -1,3 +1,4 @@
+import { useCallback, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '@/hocs/Layout';
 import Header from './components/Header';
@@ -5,18 +6,14 @@ import Badges from './components/Badges';
 import AffiliatesInfo from './components/AffiliatesInfo';
 import Teach from './components/Teach';
 import TeachCTA from './components/TeachCTA';
-import { useCallback } from 'react';
 import FetchCourses from '@/api/courses/List';
-import { useState } from 'react';
-import { useEffect } from 'react';
 import FetchPopularCourseCategories from '@/api/courses/GetPopularCategories';
-import CategoryTabs from './components/courses/CategoryTabs';
-import MostViewed from './components/courses/MostViewed';
-import PopularTopics from './components/courses/PopularTopics';
 import FetchProducts from '@/api/products/List';
-import MostViewedProducts from './components/products/MostViewed';
 import FetchProductPopularCourseCategories from '@/api/products/GetPopularCategories';
 import PopularProductCategories from './components/products/PopularTopics';
+import FeaturedCourses from './components/courses/list/FeaturedCourses';
+import FeaturedProducts from './components/products/list/FeaturedProducts';
+import PopularTopics from './categories/c/components/PopularTopics';
 
 const SeoList = {
   title: 'Boomslag - The Ultimate NFT Marketplace for Courses & Products',
@@ -207,14 +204,17 @@ export default function Home() {
         <meta name="twitter:player:stream" content={SeoList.video} />
       </Head>
       <main className="dark:bg-dark-main">
-        <div className="text-gray-700 dark:text-dark-txt space-y-12">
+        <div className="text-gray-700 dark:text-dark-txt space-y-6">
           <Header />
           <Badges />
           {/* <CategoryTabs categories={categories} /> */}
-          <MostViewed courses={courses} />
-          <MostViewedProducts products={products} />
-          <PopularTopics categories={categories} />
-          <PopularProductCategories categories={productCategories} />
+          {/* <MostViewed courses={courses} /> */}
+          <FeaturedCourses data={courses} />
+          <FeaturedProducts data={products} />
+          <div className="space-y-24">
+            <PopularTopics categories={categories} />
+            <PopularProductCategories categories={productCategories} />
+          </div>
           <AffiliatesInfo />
           <Teach />
           <TeachCTA />

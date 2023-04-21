@@ -1,6 +1,7 @@
 import { Dialog, RadioGroup, Tab, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Web3 from 'web3';
 import axios from 'axios';
 import Head from 'next/head';
 import cookie from 'cookie';
@@ -57,6 +58,7 @@ import VerifyAffiliate from '@/api/tokens/VerifyAffiliate';
 import BecomeAffiliate from '@/api/tokens/BecomeAffiliate';
 import Image from 'next/image';
 import { MoonLoader } from 'react-spinners';
+import GetContractABIPolygon from '@/api/tokens/GetContractABIPolygon';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -71,6 +73,8 @@ export default function Product({
   initialIsAffiliate,
   initialOwnsTicket,
 }) {
+  const web3 = new Web3(process.env.NEXT_PUBLIC_APP_RPC_POLYGON_PROVIDER);
+
   const SeoList = {
     title: product.details.title
       ? `${product.details.title} - ${product.details.short_description}`
@@ -1043,25 +1047,28 @@ export default function Product({
             >
               {productExistsInCart ? 'Go to cart' : 'Add to Cart'}
             </button>
-            <button
-              type="button"
-              // onClick={addToWishlist}
-              className="text-md focus:ring-none col-span-1 mt-2 inline-flex w-full cursor-pointer items-center justify-center px-3 py-4 font-bold  leading-4 text-gray-600 transition  duration-300 ease-in-out hover:border-rose-400 hover:text-rose-500 focus:outline-none"
-            >
-              <HeartIcon className="h-5 w-5" aria-hidden="true" />
-            </button>
+            {isAuthenticated && (
+              <button
+                type="button"
+                // onClick={addToWishlist}
+                className="text-md focus:ring-none col-span-1 mt-2 inline-flex w-full cursor-pointer items-center justify-center px-3 py-4 font-bold  leading-4 text-gray-600 transition  duration-300 ease-in-out hover:border-rose-400 hover:text-rose-500 focus:outline-none"
+              >
+                <HeartIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+            )}
           </div>
-          <div className=" py-4">
-            <button
-              type="button"
-              onMouseDown={() => {
-                setEffectClick(true);
-              }}
-              onMouseUp={() => setEffectClick(false)}
-              className={`${
-                effectClick &&
-                'duration-400 animate-click hover:translate-x-0.5  hover:translate-y-0.5 hover:shadow-neubrutalism-sm'
-              } text-md inline-flex w-full 
+          {isAuthenticated && (
+            <div className=" py-4">
+              <button
+                type="button"
+                onMouseDown={() => {
+                  setEffectClick(true);
+                }}
+                onMouseUp={() => setEffectClick(false)}
+                className={`${
+                  effectClick &&
+                  'duration-400 animate-click hover:translate-x-0.5  hover:translate-y-0.5 hover:shadow-neubrutalism-sm'
+                } text-md inline-flex w-full 
                       items-center
                       justify-center
                       border 
@@ -1079,10 +1086,11 @@ export default function Product({
                       hover:-translate-x-0.5  hover:-translate-y-0.5 hover:bg-gray-50 hover:text-iris-600  
                       hover:shadow-neubrutalism-lg
                       dark:text-dark `}
-            >
-              Buy now
-            </button>
-          </div>
+              >
+                Buy now
+              </button>
+            </div>
+          )}
         </div>
         {/* Coupon form */}
         <Tab.Group>
@@ -1289,33 +1297,53 @@ export default function Product({
 
   const nftAddress = product && product.details.nft_address;
   const ticketId = product && product.details.token_id;
+  const [contractABI, setContractABI] = useState('');
 
-  const [ownsTicket, setOwnsTicket] = useState(initialOwnsTicket);
+  const [ownsTicket, setOwnsTicket] = useState(false);
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && polygonAddress) {
       const fetchData = async () => {
-        if (nftAddress) {
-          const res = await VerifyTokenOwnership(polygonAddress, nftAddress, ticketId);
-          if (res && res.status === 200) {
-            setOwnsTicket(res.data.results);
+        if (nftAddress && contractABI && ticketId) {
+          const contract = new web3.eth.Contract(contractABI, nftAddress);
+          const hasAccess = await contract.methods
+            .hasAccess(parseInt(ticketId), polygonAddress)
+            .call();
+          console.log(hasAccess);
+          setOwnsTicket(hasAccess);
+        }
+      };
+      fetchData();
+    }
+  }, [nftAddress, ticketId, isAuthenticated, polygonAddress, contractABI]);
+
+  const [stock, setStock] = useState(false);
+  useEffect(() => {
+    if (nftAddress) {
+      const fetchData = async () => {
+        let retry = true;
+        while (retry) {
+          const res = await GetContractABIPolygon(nftAddress);
+          if (res.data.result === 'Contract source code not verified') {
+            console.warn('Contract ABI not available: Contract source code not verified');
+            setContractABI('');
+            break;
+          } else {
+            try {
+              const abi = JSON.parse(res.data.result);
+              const contract = new web3.eth.Contract(abi, nftAddress);
+              const fetchedStock = await contract.methods.getStock(Number(ticketId)).call();
+              setStock(Number(fetchedStock));
+              setContractABI(abi);
+              retry = false;
+            } catch (error) {
+              console.warn('Invalid JSON data. Retrying...');
+              await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+            }
           }
         }
       };
       fetchData();
     }
-  }, [nftAddress, ticketId, isAuthenticated]);
-
-  const [stock, setStock] = useState(false);
-  useEffect(() => {
-    const fetchData = async () => {
-      if (nftAddress) {
-        const res = await GetNFTStock(nftAddress, ticketId);
-        if (res && res.status === 200) {
-          setStock(res.data.results);
-        }
-      }
-    };
-    fetchData();
   }, [nftAddress, ticketId]);
 
   const [loadingAffiliate, setLoadingAffiliate] = useState(false);
@@ -1332,18 +1360,36 @@ export default function Product({
     setLoadingAffiliate(false);
   };
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && polygonAddress) {
       const fetchData = async () => {
-        if (nftAddress) {
-          const res = await VerifyAffiliate(polygonAddress, ticketId);
-          if (res && res.status === 200) {
-            setIsAffiliate(res.data.results);
+        let retry = true;
+        while (retry) {
+          const res = await GetContractABIPolygon(process.env.NEXT_PUBLIC_APP_BOOTH_CONTRACT);
+          if (res.data.result === 'Contract source code not verified') {
+            console.warn('Contract ABI not available: Contract source code not verified');
+            break;
+          } else {
+            try {
+              const abi = JSON.parse(res.data.result);
+              const contract = new web3.eth.Contract(
+                abi,
+                process.env.NEXT_PUBLIC_APP_BOOTH_CONTRACT,
+              );
+              const verifyAffiliate = await contract.methods
+                .verifyAffiliate(Number(ticketId), polygonAddress)
+                .call();
+              setIsAffiliate(Boolean(verifyAffiliate));
+              retry = false;
+            } catch (error) {
+              console.warn('Invalid JSON data. Retrying...');
+              await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying
+            }
           }
         }
       };
       fetchData();
     }
-  }, [nftAddress, ticketId, isAuthenticated]);
+  }, [nftAddress, ticketId, isAuthenticated, polygonAddress]);
 
   return (
     <div className="dark:bg-dark-bg">

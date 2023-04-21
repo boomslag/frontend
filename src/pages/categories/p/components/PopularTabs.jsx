@@ -3,6 +3,7 @@ import { Tab } from '@headlessui/react';
 // eslint-disable-next-line
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import ProductCardHorizontal from '@/components/ProductCardHorizontal';
+import ProductCard from '@/components/ProductCard';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -10,14 +11,14 @@ function classNames(...classes) {
 
 export default function PopularTabs({ productsBySold, products, productsByViews }) {
   return (
-    <>
+    <div>
       <div className="mb-4 ">
-        <p className="text-2xl font-bold leading-6 text-gray-900 dark:text-dark-txt">
-          Products to get you started
-        </p>
+        <h3 className="text-2xl font-worksans-bold leading-6 dark:text-dark-txt text-gray-900">
+          Products
+        </h3>
       </div>
 
-      <div className="w-full max-w-full px-2 py-4 sm:px-0">
+      <div className="w-full max-w-full  py-4 sm:px-0">
         <Tab.Group>
           <Tab.List className=" grid grid-cols-3 space-x-1 p-1 md:grid-cols-12">
             <Tab
@@ -64,13 +65,15 @@ export default function PopularTabs({ productsBySold, products, productsByViews 
           <Tab.Panels className="">
             <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
               {productsBySold ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex  rounded-md p-3 ">
-                    {productsBySold.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <ProductCardHorizontal key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {productsBySold.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <ProductCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
@@ -79,13 +82,15 @@ export default function PopularTabs({ productsBySold, products, productsByViews 
             </Tab.Panel>
             <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
               {products ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex  rounded-md p-3 ">
-                    {products.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <ProductCardHorizontal key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {products.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <ProductCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
@@ -94,13 +99,15 @@ export default function PopularTabs({ productsBySold, products, productsByViews 
             </Tab.Panel>
             <Tab.Panel className={classNames('rounded-xl  p-3', '')}>
               {productsByViews ? (
-                <div className="relative -mb-6 w-full overflow-x-auto pb-6">
-                  <div className="relative inline-flex  rounded-md p-3 ">
-                    {productsByViews.map((data) => (
-                      <div key={data.id} className="group relative">
-                        <ProductCardHorizontal key={data.id} data={data} />
-                      </div>
-                    ))}
+                <div className="relative mt-8">
+                  <div className="relative -mb-6 w-full overflow-x-auto pb-6">
+                    <ul className="mx-4 p-1 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-x-2">
+                      {productsByViews.map((data) => (
+                        <div key={data.id} className="group relative">
+                          <ProductCard key={data.id} data={data} />
+                        </div>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : (
@@ -110,6 +117,6 @@ export default function PopularTabs({ productsBySold, products, productsByViews 
           </Tab.Panels>
         </Tab.Group>
       </div>
-    </>
+    </div>
   );
 }

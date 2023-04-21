@@ -49,15 +49,15 @@ export default function ProductCardHorizontal({ data }) {
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="m-4 flex flex-col justify-center"
+      className="m-4 flex flex-col justify-center w-full"
     >
-      <div className="relative mx-auto flex h-full max-w-xs flex-col border-t-2 border-l-2 border-r-2 dark:border-b-2 dark:border-dark-border border-dark-bg dark:shadow-none shadow-neubrutalism-md transition duration-300  ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl md:max-w-full md:flex-row ">
+      <div className="relative mx-auto flex h-full w-full flex-col border-t-2 border-l-2 border-r-2 dark:border-b-2 dark:border-dark-border border-dark-bg dark:shadow-none shadow-neubrutalism-md transition duration-300  ease-in-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neubrutalism-xl md:max-w-full md:flex-row ">
         <Link
           // onClick={() => {
           //   handleUpdateClicks();
           // }}
           href={`/product/${slug}`}
-          className="relative grid w-full place-items-center dark:bg-dark-bg bg-gray-50 md:w-5/12"
+          className="relative grid w-full place-items-center  md:w-5/12"
         >
           <Image
             width={256}
@@ -77,9 +77,9 @@ export default function ProductCardHorizontal({ data }) {
         <div className="relative flex w-full flex-col space-y-2 p-4">
           <div className="item-center flex justify-between">
             <Link
-              onClick={() => {
-                handleUpdateClicks();
-              }}
+              // onClick={() => {
+              //   handleUpdateClicks();
+              // }}
               href={`/product/${slug}`}
               className={`text-lg font-bold  ${
                 hover ? 'text-iris-500 dark:text-dark-primary' : 'dark:text-dark-txt text-gray-800'
